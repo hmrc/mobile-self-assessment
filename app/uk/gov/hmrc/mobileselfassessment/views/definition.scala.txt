@@ -1,0 +1,29 @@
+@import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
+@import play.api.libs.json.Json
+
+@(apiAccess: ApiAccess)
+{
+  "scopes":[
+    {
+      "key":"read:native-apps-api-orchestration",
+      "name":"Execute mobile-self-assessment call",
+      "description":"Mobile Self Assessment"
+    }
+  ],
+  "api":{
+    "name":"Mobile Self Assessment",
+    "description":"Service to retrieve a SA user's liabilities",
+    "context":"mobile/self-assessment",
+    "categories": [
+      "PRIVATE_GOVERNMENT"
+    ],
+    "versions":[
+      {
+        "version":"1.0",
+        "status":"STABLE",
+        "endpointsEnabled": true,
+        "access": @Json.toJson(apiAccess)
+      }
+    ]
+  }
+}

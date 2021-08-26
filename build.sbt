@@ -18,7 +18,7 @@ lazy val microservice = Project(appName, file("."))
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
     ),
-    coverageMinimumStmtTotal := 45,
+    coverageMinimumStmtTotal := 25,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;app.*;.*BuildInfo.*;.*Routes.*;.*javascript.*;.*Reverse.*"
