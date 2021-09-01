@@ -23,22 +23,23 @@ uses:
 
 /mobile/self-assessment:
   /{utr}:
-    uriParameters:
-      utr:
-        description: The UTR for the individual.
-        type: string
-        example: UTR123123
-    get:
-      displayName: Get the user's current liabilities
-      description: This endpoint retrieves the SA user's liabilities
-      is: [headers.acceptHeader]
-      (annotations.scope): "read:native-apps-api-orchestration"
-      securedBy: [ sec.oauth_2_0: { scopes: [ "read:native-apps-api-orchestration" ] } ]
-      queryParameters:
-        journeyId:
+    /liabilities:
+      uriParameters:
+        utr:
+          description: The UTR for the individual.
           type: string
-          required: true
-      responses:
-        200:
-          body:
-            application/json:
+          example: UTR123123
+      get:
+        displayName: Get the user's current liabilities
+        description: This endpoint retrieves the SA user's liabilities
+        is: [headers.acceptHeader]
+        (annotations.scope): "read:native-apps-api-orchestration"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "read:native-apps-api-orchestration" ] } ]
+        queryParameters:
+          journeyId:
+            type: string
+            required: true
+        responses:
+          200:
+            body:
+              application/json:
