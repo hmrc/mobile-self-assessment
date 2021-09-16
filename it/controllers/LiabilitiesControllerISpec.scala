@@ -28,7 +28,6 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val response = await(request.get())
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
-      println(Json.prettyPrint(Json.toJson(parsedResponse)))
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       parsedResponse.accountSummary.amountHmrcOwe shouldBe 0
       parsedResponse.futureLiability.isEmpty shouldBe false
