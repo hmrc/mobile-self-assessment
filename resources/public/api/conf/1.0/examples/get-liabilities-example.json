@@ -1,0 +1,34 @@
+{
+  "accountSummary": {
+    "totalAmountDueToHmrc": {
+      "amount": 12345.67,
+      "requiresPayment": true
+    },
+    "nextPayment": {
+      "dueDate": "2014-01-31",
+      "amount": 12345.67
+    },
+    "amountHmrcOwe": 0
+  },
+  "futureLiability": [
+    {
+      "descriptionCode": "BCD",
+      "dueDate": "2015-01-31",
+      "amount": 503.2,
+      "taxYear": {
+        "start": 2014,
+        "end": 2015
+      }
+    },
+    {
+      "descriptionCode": "IN1",
+      "partnershipReference": "1097172564",
+      "dueDate": "2015-01-31",
+      "amount": 2300,
+      "taxYear": {
+        "start": 2014,
+        "end": 2015
+      }
+    }
+  ]
+}

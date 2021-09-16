@@ -24,6 +24,9 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
+import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import eu.timepit.refined.auto._
 
 abstract class BaseISpec
     extends AnyWordSpecLike
@@ -32,16 +35,20 @@ abstract class BaseISpec
     with GuiceOneServerPerSuite
     with WireMockSupport
     with FutureAwaits
-    with DefaultAwaitTimeout {
+    with DefaultAwaitTimeout
+    with MobileSelfAssessmentTestData {
 
   override implicit lazy val app: Application = appBuilder.build()
 
   protected val acceptJsonHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  val journeyId:                  JourneyId        = "27085215-69a4-4027-8f72-b04b10ec16b0"
 
   def config: Map[String, Any] =
     Map[String, Any](
       "auditing.enabled"                             -> false,
-      "microservice.services.auth.port"              -> wireMockPort
+      "microservice.services.auth.port"              -> wireMockPort,
+      "microservice.services.cesa.port"              -> wireMockPort,
+      "microservice.services.mobile-shuttering.port" -> wireMockPort
     )
 
   protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(config)

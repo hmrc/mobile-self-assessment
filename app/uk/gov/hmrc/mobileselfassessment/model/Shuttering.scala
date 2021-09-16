@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileselfassessment.config
+package uk.gov.hmrc.mobileselfassessment.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.{Json, OFormat}
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+case class Shuttering(
+  shuttered: Boolean,
+  title:     Option[String] = None,
+  message:   Option[String] = None)
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
+case object Shuttering {
+  implicit val format: OFormat[Shuttering] = Json.format[Shuttering]
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+  def shutteringDisabled: Shuttering = this.apply(shuttered = false)
 }

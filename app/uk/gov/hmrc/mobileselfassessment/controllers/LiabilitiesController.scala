@@ -16,16 +16,54 @@
 
 package uk.gov.hmrc.mobileselfassessment.controllers
 
+import com.google.inject.name.Named
+import play.api.Logger
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, BodyParser, ControllerComponents}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
+import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
+import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.services.SaService
+import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
+import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
+
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class LiabilitiesController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
+class LiabilitiesController @Inject() (
+  override val authConnector:                                   AuthConnector,
+  @Named("controllers.confidenceLevel") override val confLevel: Int,
+  cc:                                                           ControllerComponents,
+  saService:                                                    SaService,
+  shutteringConnector:                                          ShutteringConnector
+)(implicit val executionContext:                                ExecutionContext)
+    extends BackendController(cc)
+    with AccessControl
+    with ControllerChecks
+    with ErrorHandling {
 
-  def getLiabilities(utr: String, journeyId: String): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
+  override def parser: BodyParser[AnyContent] = controllerComponents.parsers.anyContent
+  override val app:    String                 = "Liabilities-Controller"
+  override val logger: Logger                 = Logger(this.getClass)
+
+  def getLiabilities(
+    utr:       SaUtr,
+    journeyId: JourneyId
+  ): Action[AnyContent] = validateAcceptWithAuth(acceptHeaderValidationRules).async { implicit request =>
+    implicit val hc: HeaderCarrier = fromRequest(request).withExtraHeaders(HeaderNames.xSessionId -> journeyId.value)
+    shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
+      withShuttering(shuttered) {
+        errorWrapper {
+          saService.getLiabilitiesResponse(utr).map {
+            case None           => NotFound
+            case Some(response) => Ok(Json.toJson(response))
+          }
+        }
+      }
+    }
   }
 }

@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileselfassessment.config
+package uk.gov.hmrc.mobileselfassessment.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.Json
+import play.api.mvc.{Result, Results}
+import uk.gov.hmrc.mobileselfassessment.model.Shuttering
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+import scala.concurrent.Future
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
+trait ControllerChecks extends Results {
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+  private final val WebServerIsDown = new Status(521)
+
+  def withShuttering(shuttering: Shuttering)(fn: => Future[Result]): Future[Result] =
+    if (shuttering.shuttered) Future.successful(WebServerIsDown(Json.toJson(shuttering))) else fn
+
 }
