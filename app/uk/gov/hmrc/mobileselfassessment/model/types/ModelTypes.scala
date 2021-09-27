@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileselfassessment.config
+package uk.gov.hmrc.mobileselfassessment.model.types
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import eu.timepit.refined._
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.string.MatchesRegex
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+object ModelTypes {
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
+  type JourneyId = String Refined ValidJourneyId
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+  private type ValidJourneyId =
+    MatchesRegex[W.`"""[A-Fa-f0-9]{8}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{12}"""`.T]
+
 }

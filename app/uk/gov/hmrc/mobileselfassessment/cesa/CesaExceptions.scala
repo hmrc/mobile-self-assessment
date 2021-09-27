@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileselfassessment.config
+package uk.gov.hmrc.mobileselfassessment.cesa
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.http.Status._
+import uk.gov.hmrc.http.HttpException
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+class CesaDataInconsistencyException(message: String) extends HttpException(message, INTERNAL_SERVER_ERROR)
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
-
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
-}
+class CesaInvalidDataException(message: String) extends HttpException(message, INTERNAL_SERVER_ERROR)

@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileselfassessment.config
+package uk.gov.hmrc.mobileselfassessment.config.binders
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.mvc.PathBindable
+import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+object Binders {
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
+  implicit def utrBinder(implicit stringBinder: PathBindable[String]): PathBindable[SaUtr] = new PathBindable[SaUtr] {
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+    def unbind(
+      key: String,
+      utr: SaUtr
+    ): String = stringBinder.unbind(key, utr.value)
+
+    def bind(
+      key:   String,
+      value: String
+    ): Either[String, SaUtr] =
+      Right(SaUtr(value))
+  }
 }
