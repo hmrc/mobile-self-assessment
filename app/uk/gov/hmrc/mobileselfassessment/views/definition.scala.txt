@@ -6,8 +6,8 @@
   "scopes":[
     {
       "key":"read:native-apps-api-orchestration",
-      "name":"Execute mobile-self-assessment call",
-      "description":"Mobile Self Assessment"
+      "name":"Native Apps API Orchestration",
+      "description":"Access APIs that are provided specifically for use by the HMRC mobile apps"
     }
   ],
   "api":{
