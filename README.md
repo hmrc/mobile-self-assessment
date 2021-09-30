@@ -18,9 +18,10 @@ API
 Shuttered
 ---------
 Shuttering of this service is handled by [mobile-shuttering](https://github.com/hmrc/mobile-shuttering)
-```
 
-# Sandbox
+
+Sandbox
+---------
 To trigger the sandbox endpoints locally, use the "X-MOBILE-USER-ID" header with one of the following values:
 208606423740 or 167927702220
 
@@ -29,7 +30,8 @@ To test different scenarios, add a header "SANDBOX-CONTROL" with one of the foll
 | *Value* | *Description* |
 |--------|----|
 
-# Definition
+Definition
+---------
 API definition for the service will be available under `/api/definition` endpoint.
 See definition in `/conf/api-definition.json` for the format.
 
