@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobileselfassessment.services
 
-import mocks.CesaMock
+import uk.gov.hmrc.mobileselfassessment.mocks.CesaMock
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

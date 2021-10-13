@@ -16,7 +16,8 @@
 
 package stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson, post, stubFor, urlEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object AuthStub {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mocks
+package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
