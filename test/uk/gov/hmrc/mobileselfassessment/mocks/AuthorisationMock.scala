@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package mocks
+package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.{AuthConnector, BearerTokenExpired, ConfidenceLevel}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException, BearerTokenExpired, ConfidenceLevel}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,4 +40,9 @@ trait AuthorisationMock extends MockFactory {
       .expects(*, *, *, *)
       .returning(Future failed BearerTokenExpired())
 
+  def mockAuthorisationFailure(exception: AuthorisationException)(implicit authConnector: AuthConnector) =
+    (authConnector
+      .authorise(_: Predicate, _: Retrieval[GrantAccess])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
+      .returning(Future failed UpstreamErrorResponse("Error", 401, 401))
 }

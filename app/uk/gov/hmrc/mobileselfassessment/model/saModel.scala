@@ -44,7 +44,8 @@ object AccountSummary {
 case class AccountSummary(
   totalAmountDueToHmrc: AmountDue,
   nextPayment:          Option[Liability],
-  amountHmrcOwe:        BigDecimal)
+  amountHmrcOwe:        BigDecimal,
+  )
 
 object TaxYear {
   implicit val formats = Json.format[TaxYear]

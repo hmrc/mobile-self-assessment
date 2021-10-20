@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package mocks
+package uk.gov.hmrc.mobileselfassessment.services
 
-import org.scalamock.handlers.CallHandler
-import org.scalamock.scalatest.MockFactory
+import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.mobileselfassessment.model.Shuttering
@@ -25,15 +24,12 @@ import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ShutteringMock extends MockFactory {
+@Singleton
+class ShutteringService @Inject()(connector: ShutteringConnector) {
 
-  protected def mockShutteringResponse(
-    response:                     Shuttering
-  )(implicit shutteringConnector: ShutteringConnector
-  ): CallHandler[Future[Shuttering]] =
-    (shutteringConnector
-      .getShutteringStatus(_: JourneyId)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *)
-      .returning(Future successful response)
-
+  def getShutteringStatus(
+    journeyId:              JourneyId
+  )(implicit headerCarrier: HeaderCarrier,
+    ex:                     ExecutionContext
+  ): Future[Shuttering] = connector.getShutteringStatus(journeyId)
 }
