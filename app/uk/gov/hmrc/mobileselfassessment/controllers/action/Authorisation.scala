@@ -22,7 +22,7 @@ import play.api.mvc._
 import uk.gov.hmrc.api.controllers._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, ConfidenceLevel, CredentialStrength}
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.controllers._
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
