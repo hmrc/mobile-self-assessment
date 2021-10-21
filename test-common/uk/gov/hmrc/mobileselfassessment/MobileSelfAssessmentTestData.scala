@@ -270,7 +270,12 @@ trait MobileSelfAssessmentTestData {
        |              }
        |          ]
        |      }
-       |  ]
+       |  ],
+       |  "setUpPaymentPlanUrl": "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
+       |  "updateOrSubmitAReturnUrl": "/personal-account/self-assessment-summary",
+       |  "viewPaymentHistoryUrl":  "/self-assessment/ind/123123123/account/payments",
+       |  "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
+       |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account"
        |}
        |""".stripMargin
 

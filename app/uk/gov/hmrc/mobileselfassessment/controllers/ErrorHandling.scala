@@ -19,8 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.controllers
 import play.api.libs.json.Json.toJson
 import play.api.mvc.Result
 import play.api.{Logger, mvc}
-import uk.gov.hmrc.api.controllers.{ErrorNotFound, _}
-import uk.gov.hmrc.auth.core.AuthorisationException
+import uk.gov.hmrc.api.controllers.{ErrorInternalServerError, ErrorNotFound, ErrorResponse}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendBaseController
 

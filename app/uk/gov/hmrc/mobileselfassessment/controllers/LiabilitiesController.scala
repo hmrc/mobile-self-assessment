@@ -24,14 +24,14 @@ import play.api.mvc.{Action, AnyContent, BodyParser, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
-import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 import uk.gov.hmrc.mobileselfassessment.services.SaService
 import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
 import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class LiabilitiesController @Inject() (

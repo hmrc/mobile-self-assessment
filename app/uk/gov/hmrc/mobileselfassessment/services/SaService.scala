@@ -18,14 +18,11 @@ package uk.gov.hmrc.mobileselfassessment.services
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json._
-import play.api.mvc.Results.{NotFound, Ok}
-import play.api.mvc.Result
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
 import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, FutureLiability, GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -63,7 +60,16 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
       futureLiabilities <- getFutureLiabilities(utr)
     } yield {
       accountSummary.map(summary =>
-        GetLiabilitiesResponse(accountSummary = summary, futureLiability = futureLiabilities)
+        GetLiabilitiesResponse(
+          accountSummary               = summary,
+          futureLiability              = futureLiabilities,
+          viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
+          viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
+          moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account"
+        )
       )
     }
+
+  private def currentTaxYear: String =
+    TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
 }

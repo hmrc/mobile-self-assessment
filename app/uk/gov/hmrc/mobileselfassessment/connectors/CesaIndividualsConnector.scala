@@ -18,14 +18,11 @@ package uk.gov.hmrc.mobileselfassessment.connectors
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import play.api.libs.json.Json.toJson
-import uk.gov.hmrc.api.controllers.ErrorResponse
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, JsValidationException, NotFoundException, Upstream4xxResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaFutureLiability, CesaInvalidDataException, CesaRootLinks, CesaRootLinksWrapper}
 import uk.gov.hmrc.mobileselfassessment.config.AppConfig
-import uk.gov.hmrc.mobileselfassessment.controllers.ErrorUnauthorizedUpstream
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 
 import scala.concurrent.{ExecutionContext, Future}
