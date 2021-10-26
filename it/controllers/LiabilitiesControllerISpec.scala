@@ -44,6 +44,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.viewPaymentHistoryUrl                      shouldBe s"/self-assessment/ind/$utr/account/payments"
       parsedResponse.viewOtherYearsUrl                          shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
       parsedResponse.moreSelfAssessmentDetailsUrl               shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
     }
 
     "return 200 and full account summary in response when future liabilities unavailable" in {

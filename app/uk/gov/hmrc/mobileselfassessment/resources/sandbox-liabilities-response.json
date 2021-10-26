@@ -35,5 +35,6 @@
   "updateOrSubmitAReturnUrl": "/",
   "viewPaymentHistoryUrl":  "/",
   "viewOtherYearsUrl": "/",
-  "moreSelfAssessmentDetailsUrl":  "/"
+  "moreSelfAssessmentDetailsUrl":  "/",
+  "payByDebitOrCardPaymentUrl": "/"
 }
