@@ -56,7 +56,13 @@ The Get Liabilities response
         "end": 2015
       }
     }
-  ]
+  ],
+  "setUpPaymentPlanUrl": "/",
+  "updateOrSubmitAReturnUrl": "/",
+  "viewPaymentHistoryUrl":  "/",
+  "viewOtherYearsUrl": "/",
+  "moreSelfAssessmentDetailsUrl":  "/",
+  "payByDebitOrCardPaymentUrl": "/"
 }
 ```
 
