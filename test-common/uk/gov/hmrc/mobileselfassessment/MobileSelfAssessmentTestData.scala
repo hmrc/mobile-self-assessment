@@ -276,7 +276,8 @@ trait MobileSelfAssessmentTestData {
        |  "viewPaymentHistoryUrl":  "/self-assessment/ind/123123123/account/payments",
        |  "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
-       |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary"
+       |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
+       |  "setUpAPaymentPlanUrl": "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
        |}
        |""".stripMargin
 

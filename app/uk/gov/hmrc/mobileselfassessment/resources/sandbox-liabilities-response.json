@@ -33,8 +33,9 @@
   ],
   "setUpPaymentPlanUrl": "/",
   "updateOrSubmitAReturnUrl": "/",
-  "viewPaymentHistoryUrl":  "/",
+  "viewPaymentHistoryUrl": "/",
   "viewOtherYearsUrl": "/",
-  "moreSelfAssessmentDetailsUrl":  "/",
-  "payByDebitOrCardPaymentUrl": "/"
+  "moreSelfAssessmentDetailsUrl": "/",
+  "payByDebitOrCardPaymentUrl": "/",
+  "setUpAPaymentPlanUrl": "/"
 }
