@@ -62,8 +62,7 @@ Fetch the GetLiabilities object.
   "viewPaymentHistoryUrl": "/",
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
-  "payByDebitOrCardPaymentUrl": "/",
-  "setUpAPaymentPlanUrl": "/"
+  "payByDebitOrCardPaymentUrl": "/"
 }
 ```
 
