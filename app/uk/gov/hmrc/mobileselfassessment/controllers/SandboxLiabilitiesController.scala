@@ -28,7 +28,6 @@ import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import java.time.LocalDate
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -62,7 +61,7 @@ class SandboxLiabilitiesController @Inject()(
     toJson(
       Json
         .parse(
-          findResource(s"/resources/mobileselfassessmentsummary/$resource")
+          findResource(s"/resources/mobileselfassessment/$resource")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
         )
         .as[GetLiabilitiesResponse]

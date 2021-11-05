@@ -28,8 +28,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.12.8",
-    playDefaultPort := 8247,
+    scalaVersion := "2.12.13",
+    playDefaultPort := 8261,
     libraryDependencies ++= AppDependencies(),
     dependencyOverrides ++= overrides,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
@@ -58,7 +58,7 @@ lazy val microservice = Project(appName, file("."))
       //"-Xfatal-warnings",
       "-Xlint"
     ),
-    coverageMinimumStmtTotal := 80,
+    coverageMinimumStmtTotal := 85,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;app.*;.*BuildInfo.*;.*Routes.*;.*javascript.*;.*Reverse.*;.*Hooks.*"
