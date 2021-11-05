@@ -16,15 +16,18 @@
 
 package uk.gov.hmrc.mobileselfassessment.services
 
+import org.joda.time.LocalDate
+
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, FutureLiability, GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, Liability, NoTaxToPay, OnlyBill, OnlyCredit, OverDue, SaUtr, TaxToPayStatus}
 import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.math.BigDecimal
 
 @Singleton
 class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logging {
@@ -61,7 +64,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     } yield {
       accountSummary.map(summary =>
         GetLiabilitiesResponse(
-          accountSummary               = summary,
+          accountSummary               = buildAccountSummary(summary, futureLiabilities),
           futureLiability              = futureLiabilities,
           viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
@@ -70,6 +73,44 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
       )
     }
 
+  private def buildAccountSummary(
+    summary:     AccountSummary,
+    liabilities: Option[Seq[FutureLiability]]
+  ): AccountSummary = {
+    val nextBill = liabilities.flatMap(calculateNextBill)
+    summary.copy(taxToPayStatus = getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill),nextBill = nextBill)
+  }
+
   private def currentTaxYear: String =
     TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
+
+  private def calculateNextBill(futureLiabilities: Seq[FutureLiability]): Option[Liability] = {
+    val nextBillDate = getNextBillDate(futureLiabilities)
+    nextBillDate.map(date => Liability(date, sumOfLiabilitiesOccuringOnDate(futureLiabilities, date)))
+  }
+
+  private def getNextBillDate(futureLiabilities: Seq[FutureLiability]): Option[LocalDate] =
+    futureLiabilities.sortBy(_.dueDate.toString()).headOption.map(_.dueDate)
+
+  private def sumOfLiabilitiesOccuringOnDate(
+    liabilities:   Seq[FutureLiability],
+    liabilityDate: LocalDate
+  ): BigDecimal =
+    liabilities.filter(_.dueDate equals liabilityDate).map(_.amount).sum
+
+  private def getTaxToPayStatus(
+    amountDue:  BigDecimal,
+    amountOwed: BigDecimal,
+    nextBill:   Option[BigDecimal]
+  ): TaxToPayStatus =
+    (amountDue, amountOwed, nextBill) match {
+      case (amountDue, _, _) if amountDue > 0                                          => OverDue
+      case (BigDecimal(0), amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed == nextBill => CreditAndBillSame
+      case (0, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed < nextBill  => CreditLessThanBill
+      case (0, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed > nextBill  => CreditMoreThanBill
+      case (0, amountOwed, None) if amountOwed > 0                                     => OnlyCredit
+      case (0, _, Some(nextBill)) if nextBill > 0                                      => OnlyBill
+      case _                                                                           => NoTaxToPay
+    }
+
 }
