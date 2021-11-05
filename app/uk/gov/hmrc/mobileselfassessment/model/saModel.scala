@@ -45,7 +45,7 @@ case class AccountSummary(
   taxToPayStatus:       TaxToPayStatus = NoTaxToPay,
   totalAmountDueToHmrc: AmountDue,
   nextPayment:          Option[Liability],
-  nextBill:             Option[Liability],
+  nextBill:             Option[Liability] = None,
   amountHmrcOwe:        BigDecimal)
 
 object TaxYear {

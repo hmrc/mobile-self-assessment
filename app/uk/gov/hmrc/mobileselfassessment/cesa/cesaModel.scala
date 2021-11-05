@@ -40,9 +40,11 @@ object CesaAmount {
   implicit val formats = Json.format[CesaAmount]
 }
 
-case class CesaAmount(amount: BigDecimal, currency: String) {
+case class CesaAmount(
+  amount:   BigDecimal,
+  currency: String) {
 
-  private val paymentThreshold = BigDecimal(32D)
+  private val paymentThreshold = BigDecimal(32d)
 
   if (currency != "GBP") {
     throw new CesaInvalidDataException(s"Currency string is '$currency'.  The only valid value for this is 'GBP'")
@@ -59,12 +61,14 @@ object CesaLiability {
   implicit val formats = Json.format[CesaLiability]
 }
 
-case class CesaLiability(paymentDueDate: Option[LocalDate], amount: CesaAmount) {
+case class CesaLiability(
+  paymentDueDate: Option[LocalDate],
+  amount:         CesaAmount) {
 
   lazy val toLiability: Option[Liability] = {
     paymentDueDate match {
       case Some(dueDate) => Some(Liability(dueDate, amount.toSaAmount))
-      case _ => None
+      case _             => None
     }
   }
 }
@@ -73,29 +77,35 @@ object CesaAccountSummary {
   implicit val formats = Json.format[CesaAccountSummary]
 }
 
-case class CesaAccountSummary(totalAmountDueToHmrc: CesaAmount,
-                              nextPayment: CesaLiability,
-                              amountHmrcOwe: CesaAmount) {
+case class CesaAccountSummary(
+  totalAmountDueToHmrc: CesaAmount,
+  nextPayment:          CesaLiability,
+  amountHmrcOwe:        CesaAmount) {
 
-  lazy val toSaAccountSummary: AccountSummary = AccountSummary(totalAmountDueToHmrc.toSaAmountDue, nextPayment.toLiability, amountHmrcOwe.toSaAmount)
+  lazy val toSaAccountSummary: AccountSummary = AccountSummary(
+    totalAmountDueToHmrc = totalAmountDueToHmrc.toSaAmountDue,
+    nextPayment          = nextPayment.toLiability,
+    amountHmrcOwe        = amountHmrcOwe.toSaAmount
+  )
 }
 
 object CesaFutureLiability {
   implicit val formats = Json.format[CesaFutureLiability]
 }
 
-case class CesaFutureLiability(statutoryDueDate: LocalDate,
-                               taxYearEndDate: LocalDate,
-                               partnershipReference: Option[Long],
-                               amount: CesaAmount,
-                               descriptionCode: String) {
+case class CesaFutureLiability(
+  statutoryDueDate:     LocalDate,
+  taxYearEndDate:       LocalDate,
+  partnershipReference: Option[Long],
+  amount:               CesaAmount,
+  descriptionCode:      String) {
 
   lazy val toSaFutureLiability =
     FutureLiability(
       descriptionCode,
       partnershipReference match {
         case None => None
-        case Some(a:Long) if a == 0 => None
+        case Some(a: Long) if a == 0 => None
         case Some(value) => Some(SaUtr(value.toString))
       },
       statutoryDueDate,

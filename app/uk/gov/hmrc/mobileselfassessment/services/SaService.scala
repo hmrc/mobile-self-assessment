@@ -78,7 +78,11 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     liabilities: Option[Seq[FutureLiability]]
   ): AccountSummary = {
     val nextBill = liabilities.flatMap(calculateNextBill)
-    summary.copy(taxToPayStatus = getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill),nextBill = nextBill)
+    summary.copy(
+      taxToPayStatus =
+        getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill.map(_.amount)),
+      nextBill = nextBill
+    )
   }
 
   private def currentTaxYear: String =
@@ -105,11 +109,11 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   ): TaxToPayStatus =
     (amountDue, amountOwed, nextBill) match {
       case (amountDue, _, _) if amountDue > 0                                          => OverDue
-      case (BigDecimal(0), amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed == nextBill => CreditAndBillSame
-      case (0, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed < nextBill  => CreditLessThanBill
-      case (0, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed > nextBill  => CreditMoreThanBill
-      case (0, amountOwed, None) if amountOwed > 0                                     => OnlyCredit
-      case (0, _, Some(nextBill)) if nextBill > 0                                      => OnlyBill
+      case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed == nextBill => CreditAndBillSame
+      case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed < nextBill  => CreditLessThanBill
+      case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed > nextBill  => CreditMoreThanBill
+      case (_, amountOwed, None) if amountOwed > 0                                     => OnlyCredit
+      case (_, _, Some(nextBill)) if nextBill > 0                                      => OnlyBill
       case _                                                                           => NoTaxToPay
     }
 
