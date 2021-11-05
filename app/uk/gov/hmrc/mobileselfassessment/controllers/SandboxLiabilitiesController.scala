@@ -16,18 +16,21 @@
 
 package uk.gov.hmrc.mobileselfassessment.controllers
 
+import play.api.Logger
+import play.api.libs.json.Json.toJson
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, BodyParser, ControllerComponents}
+import play.api.mvc._
+import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
-import uk.gov.hmrc.mobileselfassessment.model.SaUtr
+import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
 import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.Source
+
 
 @Singleton()
 class SandboxLiabilitiesController @Inject()(
@@ -38,23 +41,29 @@ class SandboxLiabilitiesController @Inject()(
                                             )(implicit override val executionContext: ExecutionContext)
   extends BackendController(cc)
     with ControllerChecks
-    with AccessControl {
+    with AccessControl
+    with FileResource {
 
   override def parser: BodyParser[AnyContent] = controllerComponents.parsers.anyContent
+
+  override val logger: Logger = Logger(this.getClass)
 
   def getLiabilities(utr: SaUtr, journeyId: JourneyId): Action[AnyContent] =
     validateAcceptWithAuth(acceptHeaderValidationRules).async { implicit request =>
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
         withShuttering(shuttered) {
-          Future.successful(Ok(Json.toJson(sampleJson)))
+          Future successful Ok(readData(resource= "sandbox-liabilities-response.json"))
         }
       }
     }
 
-  private def sampleJson: JsValue = {
-    val source = Source.fromFile("app/uk/gov/hmrc/mobileselfassessment/resources/sandbox-liabilities-response.json")
-    val raw = source.getLines.mkString
-    source.close()
-    Json.parse(raw)
-  }
+  private def readData(resource: String): JsValue =
+    toJson(
+      Json
+        .parse(
+          findResource(s"/resources/mobileselfassessment/$resource")
+            .getOrElse(throw new IllegalArgumentException("Resource not found!"))
+        )
+        .as[GetLiabilitiesResponse]
+    )
 }
