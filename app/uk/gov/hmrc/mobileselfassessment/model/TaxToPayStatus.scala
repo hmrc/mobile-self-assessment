@@ -16,14 +16,9 @@
 
 package uk.gov.hmrc.mobileselfassessment.model
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsString, JsSuccess, JsValue}
 
 sealed trait TaxToPayStatus
-
-object TaxToPayStatus {
-  implicit val format: Format[TaxToPayStatus] = Json.format[TaxToPayStatus]
-}
-
 case object OverDue extends TaxToPayStatus
 case object CreditAndBillSame extends TaxToPayStatus
 case object CreditLessThanBill extends TaxToPayStatus
@@ -31,3 +26,22 @@ case object CreditMoreThanBill extends TaxToPayStatus
 case object OnlyCredit extends TaxToPayStatus
 case object OnlyBill extends TaxToPayStatus
 case object NoTaxToPay extends TaxToPayStatus
+
+object TaxToPayStatus extends TaxToPayStatus {
+
+  implicit val taxToPayStatusFormat: Format[TaxToPayStatus] = new Format[TaxToPayStatus] {
+
+    override def reads(json: JsValue): JsSuccess[TaxToPayStatus] = json.as[String] match {
+      case "OverDue"            => JsSuccess(OverDue)
+      case "CreditAndBillSame"  => JsSuccess(CreditAndBillSame)
+      case "CreditLessThanBill" => JsSuccess(CreditLessThanBill)
+      case "CreditMoreThanBill" => JsSuccess(CreditMoreThanBill)
+      case "OnlyCredit"         => JsSuccess(OnlyCredit)
+      case "OnlyBill"           => JsSuccess(OnlyBill)
+      case "NoTaxToPay"         => JsSuccess(NoTaxToPay)
+      case _                    => throw new IllegalArgumentException("Invalid taxToPay status value")
+    }
+
+    override def writes(taxToPayStatus: TaxToPayStatus) = JsString(taxToPayStatus.toString)
+  }
+}

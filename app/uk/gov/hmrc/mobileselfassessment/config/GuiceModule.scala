@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mobileselfassessment.config
 
 import com.google.inject.name.Names.named
-import com.google.inject.{AbstractModule, TypeLiteral}
+import com.google.inject.AbstractModule
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.CorePost
