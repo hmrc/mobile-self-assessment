@@ -20,7 +20,7 @@ import com.google.inject.name.Names.named
 import com.google.inject.{AbstractModule, TypeLiteral}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{CoreGet, CorePost, HttpClient}
+import uk.gov.hmrc.http.CorePost
 import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -54,25 +54,9 @@ class GuiceModule(
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
   }
 
-  private def bindConfigStringSeq(path: String): Unit = {
-    val configValue: Seq[String] = configuration
-      .getOptional[Seq[String]](path)
-      .getOrElse(
-        throw new RuntimeException(s"""Config property "$path" missing""")
-      )
-    bind(new TypeLiteral[Seq[String]] {})
-      .annotatedWith(named(path))
-      .toInstance(configValue)
-  }
-
   private def bindConfigInt(path: String): Unit =
     bindConstant()
       .annotatedWith(named(path))
       .to(configuration.underlying.getInt(path))
 
-  private def bindConfigString(
-    name: String,
-    path: String
-  ): Unit =
-    bindConstant().annotatedWith(named(name)).to(configuration.underlying.getString(path))
 }

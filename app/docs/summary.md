@@ -1,27 +1,27 @@
 The Get Liabilities response
 ----
-  Fetch the GetLiabilities object.
-  
+Fetch the GetLiabilities object.
+
 * **URL**
 
-  `/mobile-self-assessment/:utr/liabilities` 
+  `/mobile-self-assessment/:utr/liabilities`
 
 * **Method:**
-  
-  `GET`
-  
-*  **URL Params**
 
-   **Required:**
-  
-   `journeyId=[String]`
-  
-   a string which is included for journey tracking purposes but has no functional impact
-  
+  `GET`
+
+* **URL Params**
+
+  **Required:**
+
+  `journeyId=[String]`
+
+  a string which is included for journey tracking purposes but has no functional impact
+
 * **Success Responses:**
 
-  * **Code:** 200 <br />
-    **Content:** Full Response
+    * **Code:** 200 <br />
+      **Content:** Full Response
 
 ```json
 {
@@ -56,12 +56,18 @@ The Get Liabilities response
         "end": 2015
       }
     }
-  ]
+  ],
+  "setUpPaymentPlanUrl": "/",
+  "updateOrSubmitAReturnUrl": "/",
+  "viewPaymentHistoryUrl": "/",
+  "viewOtherYearsUrl": "/",
+  "moreSelfAssessmentDetailsUrl": "/",
+  "payByDebitOrCardPaymentUrl": "/"
 }
 ```
 
- * **Code:** 200 <br />
-    **Content:** No future liabilities
+* **Code:** 200 <br />
+  **Content:** No future liabilities
 
 ```json
 {
@@ -78,27 +84,27 @@ The Get Liabilities response
   }
 }
 ```
-    
+
 * **Error Responses:**
 
-  * **Code:** 401 UNAUTHORIZED <br/>
-    **Content:** `{"code":"UNAUTHORIZED","message":"Bearer token is missing or not authorized for access"}`
-  
-  * **Code:** 404 NOT_FOUND <br/>
-    
-  * **Code:** 406 NOT_ACCEPTABLE <br/>
-    **Content:** `{"code":"NOT_ACCEPTABLE","message":Missing Accept Header"}`
+    * **Code:** 401 UNAUTHORIZED <br/>
+      **Content:** `{"code":"UNAUTHORIZED","message":"Bearer token is missing or not authorized for access"}`
+
+    * **Code:** 404 NOT_FOUND <br/>
+
+    * **Code:** 406 NOT_ACCEPTABLE <br/>
+      **Content:** `{"code":"NOT_ACCEPTABLE","message":Missing Accept Header"}`
 
   OR when a user does not exist or server failure
 
-  * **Code:** 500 INTERNAL_SERVER_ERROR <br/>
-  
-  * **Code:** 521 SHUTTERED <br/>
-  **Content:** ```{
-  "shuttered": true,
-  "title": "Service Unavailable",
-  "message": "You’ll be able to use the SA service at 9am on Monday 29 May 2017."
-}```
+    * **Code:** 500 INTERNAL_SERVER_ERROR <br/>
+
+    * **Code:** 521 SHUTTERED <br/>
+      **Content:** ```{
+      "shuttered": true,
+      "title": "Service Unavailable",
+      "message": "You’ll be able to use the SA service at 9am on Monday 29 May 2017."
+      }```
 
 
 

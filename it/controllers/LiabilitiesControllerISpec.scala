@@ -9,6 +9,7 @@ import stubs.AuthStub._
 import stubs.ShutteringStub._
 import stubs.CesaStub._
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.time.TaxYear
 
 class LiabilitiesControllerISpec extends BaseISpec {
 
@@ -22,6 +23,9 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetAccountSummary(utr, accountSummaryResponse)
       stubForGetFutureLiabilities(utr, futureLiabilitiesResponse)
 
+      val currentTaxYear =
+        TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
+
       val request: WSRequest = wsUrl(
         s"/$utr/liabilities?journeyId=$journeyId"
       ).addHttpHeaders(acceptJsonHeader)
@@ -29,13 +33,18 @@ class LiabilitiesControllerISpec extends BaseISpec {
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
-      parsedResponse.accountSummary.amountHmrcOwe shouldBe 0
-      parsedResponse.futureLiability.isEmpty shouldBe false
-      parsedResponse.futureLiability.get.head.amount shouldBe 503.20
-      parsedResponse.futureLiability.get.head.descriptionCode shouldBe "BCD"
-      parsedResponse.futureLiability.get.head.taxYear.start shouldBe 2014
-      parsedResponse.futureLiability.get.head.taxYear.end shouldBe 2015
-
+      parsedResponse.accountSummary.amountHmrcOwe               shouldBe 0
+      parsedResponse.futureLiability.isEmpty                    shouldBe false
+      parsedResponse.futureLiability.get.head.amount            shouldBe 503.20
+      parsedResponse.futureLiability.get.head.descriptionCode   shouldBe "BCD"
+      parsedResponse.futureLiability.get.head.taxYear.start     shouldBe 2014
+      parsedResponse.futureLiability.get.head.taxYear.end       shouldBe 2015
+      parsedResponse.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
+      parsedResponse.updateOrSubmitAReturnUrl                   shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.viewPaymentHistoryUrl                      shouldBe s"/self-assessment/ind/$utr/account/payments"
+      parsedResponse.viewOtherYearsUrl                          shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
+      parsedResponse.moreSelfAssessmentDetailsUrl               shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
     }
 
     "return 200 and full account summary in response when future liabilities unavailable" in {
@@ -52,8 +61,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
-      parsedResponse.accountSummary.amountHmrcOwe shouldBe 0
-      parsedResponse.futureLiability.isEmpty shouldBe true
+      parsedResponse.accountSummary.amountHmrcOwe               shouldBe 0
+      parsedResponse.futureLiability.isEmpty                    shouldBe true
     }
 
     "return 500 when accountSummary response from CESA is malformed" in {

@@ -11,6 +11,7 @@ object AppDependencies {
   private val jsonJodaVersion        = "2.9.2"
   private val domainVersion          = "6.2.0-play-28"
   private val refinedVersion         = "0.9.26"
+  private val taxYearVersion         = "1.6.0"
 
   private val pegdownVersion       = "1.6.0"
   private val wireMockVersion      = "2.20.0"
@@ -23,7 +24,8 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "play-hmrc-api"             % playHmrcApiVersion,
     "com.typesafe.play" %% "play-json-joda"            % jsonJodaVersion,
     "uk.gov.hmrc"       %% "domain"                    % domainVersion,
-    "eu.timepit"        %% "refined"                   % refinedVersion
+    "eu.timepit"        %% "refined"                   % refinedVersion,
+    "uk.gov.hmrc"       %% "tax-year"                  % taxYearVersion
   )
 
   val test = Seq(
