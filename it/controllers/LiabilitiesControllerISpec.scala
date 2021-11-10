@@ -2,7 +2,7 @@ package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo}
 import play.api.libs.json.Json
-import play.api.libs.ws.WSRequest
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.contentAsString
 import utils.BaseISpec
 import stubs.AuthStub._
@@ -32,19 +32,23 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val response = await(request.get())
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
-      parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
-      parsedResponse.accountSummary.amountHmrcOwe               shouldBe 0
-      parsedResponse.futureLiability.isEmpty                    shouldBe false
-      parsedResponse.futureLiability.get.head.amount            shouldBe 503.20
-      parsedResponse.futureLiability.get.head.descriptionCode   shouldBe "BCD"
-      parsedResponse.futureLiability.get.head.taxYear.start     shouldBe 2014
-      parsedResponse.futureLiability.get.head.taxYear.end       shouldBe 2015
-      parsedResponse.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
-      parsedResponse.updateOrSubmitAReturnUrl                   shouldBe "/personal-account/self-assessment-summary"
-      parsedResponse.viewPaymentHistoryUrl                      shouldBe s"/self-assessment/ind/$utr/account/payments"
-      parsedResponse.viewOtherYearsUrl                          shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
-      parsedResponse.moreSelfAssessmentDetailsUrl               shouldBe s"/self-assessment/ind/$utr/account"
-      parsedResponse.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.accountSummary.totalAmountDueToHmrc.amount        shouldBe 12345.67
+      parsedResponse.accountSummary.amountHmrcOwe                      shouldBe 0
+      parsedResponse.accountSummary.taxToPayStatus.toString            shouldBe "OverDue"
+      parsedResponse.accountSummary.nextBill.isEmpty                   shouldBe false
+      parsedResponse.accountSummary.nextBill.get.amount                shouldBe 2803.20
+      parsedResponse.accountSummary.nextBill.get.dueDate.toString      shouldBe "2015-01-31"
+      parsedResponse.futureLiability.isEmpty                           shouldBe false
+      parsedResponse.futureLiability.get.head.amount                   shouldBe 503.20
+      parsedResponse.futureLiability.get.head.descriptionCode.toString shouldBe "JEP"
+      parsedResponse.futureLiability.get.head.taxYear.start            shouldBe 2014
+      parsedResponse.futureLiability.get.head.taxYear.end              shouldBe 2015
+      parsedResponse.setUpPaymentPlanUrl                               shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
+      parsedResponse.updateOrSubmitAReturnUrl                          shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.viewPaymentHistoryUrl                             shouldBe s"/self-assessment/ind/$utr/account/payments"
+      parsedResponse.viewOtherYearsUrl                                 shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
+      parsedResponse.moreSelfAssessmentDetailsUrl                      shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.payByDebitOrCardPaymentUrl                        shouldBe "/personal-account/self-assessment-summary"
     }
 
     "return 200 and full account summary in response when future liabilities unavailable" in {
@@ -62,6 +66,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       parsedResponse.accountSummary.amountHmrcOwe               shouldBe 0
+      parsedResponse.accountSummary.taxToPayStatus.toString     shouldBe "OverDue"
+      parsedResponse.accountSummary.nextBill.isEmpty            shouldBe true
       parsedResponse.futureLiability.isEmpty                    shouldBe true
     }
 
@@ -148,6 +154,22 @@ class LiabilitiesControllerISpec extends BaseISpec {
       ).addHttpHeaders(acceptJsonHeader)
       val response = await(request.get())
       response.status shouldBe 401
+    }
+
+    "return 400 when journeyId is not supplied" in {
+      val request: WSRequest = wsUrl(
+        s"/$utr/liabilities"
+      ).addHttpHeaders(acceptJsonHeader)
+      val response: WSResponse = await(request.get)
+      response.status shouldBe 400
+    }
+
+    "return 406 when acceptHeader is missing" in {
+      val request: WSRequest = wsUrl(
+        s"/$utr/liabilities?journeyId=$journeyId"
+      )
+      val response: WSResponse = await(request.get)
+      response.status shouldBe 406
     }
 
     "return 500 when unknown error is returned from CESA" in {

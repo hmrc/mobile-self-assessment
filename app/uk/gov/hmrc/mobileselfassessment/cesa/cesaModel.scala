@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobileselfassessment.cesa
 
 import org.joda.time.{DateTimeFieldType, LocalDate}
 import play.api.libs.json.Json
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, FutureLiability, Liability, SaUtr, TaxYear}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, Liability, SaUtr, TaxYear}
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
 
@@ -98,16 +98,20 @@ case class CesaFutureLiability(
   taxYearEndDate:       LocalDate,
   partnershipReference: Option[Long],
   amount:               CesaAmount,
-  descriptionCode:      String) {
+  descriptionCode:      DescriptionCode) {
 
-  lazy val toSaFutureLiability =
+  private def getPartnershipRefString(partnershipReference: Option[Long]): Option[SaUtr] =
+    partnershipReference match {
+      case None => None
+      case Some(a: Long) if a == 0 => None
+      case Some(value) => Some(SaUtr(value.toString))
+    }
+
+  lazy val toSaFutureLiability: FutureLiability =
     FutureLiability(
       descriptionCode,
-      partnershipReference match {
-        case None => None
-        case Some(a: Long) if a == 0 => None
-        case Some(value) => Some(SaUtr(value.toString))
-      },
+      descriptionCode.text(getPartnershipRefString(partnershipReference)),
+      getPartnershipRefString(partnershipReference),
       statutoryDueDate,
       amount.toSaAmount,
       taxYear = TaxYear.fromEndYear(taxYearEndDate.get(DateTimeFieldType.year))

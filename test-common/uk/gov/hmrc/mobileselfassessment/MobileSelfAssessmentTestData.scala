@@ -157,7 +157,7 @@ trait MobileSelfAssessmentTestData {
        |[
        |    {
        |        "taxYearEndDate": "2015-04-05",
-       |        "descriptionCode": "BCD",
+       |        "descriptionCode": "JEP",
        |        "partnershipReference": 0,
        |        "statutoryDueDate": "2015-01-31",
        |        "relevantDueDate": "2015-01-31",
@@ -181,7 +181,7 @@ trait MobileSelfAssessmentTestData {
        |    },
        |    {
        |        "taxYearEndDate": "2015-04-05",
-       |        "descriptionCode": "IN1",
+       |        "descriptionCode": "PP2",
        |        "partnershipReference": 1097172564,
        |        "statutoryDueDate": "2015-01-31",
        |        "relevantDueDate": "2015-01-31",
@@ -225,7 +225,7 @@ trait MobileSelfAssessmentTestData {
        |  [
        |      {
        |          "taxYearEndDate": "2015-04-05",
-       |          "descriptionCode": "BCD",
+       |          "descriptionCode": "LFI2",
        |          "partnershipReference": 0,
        |          "statutoryDueDate": "2015-01-31",
        |          "relevantDueDate": "2015-01-31",
@@ -249,7 +249,7 @@ trait MobileSelfAssessmentTestData {
        |      },
        |      {
        |          "taxYearEndDate": "2015-04-05",
-       |          "descriptionCode": "IN1",
+       |          "descriptionCode": "LPP1",
        |          "partnershipReference": 1097172564,
        |          "statutoryDueDate": "2015-01-31",
        |          "relevantDueDate": "2015-01-31",
