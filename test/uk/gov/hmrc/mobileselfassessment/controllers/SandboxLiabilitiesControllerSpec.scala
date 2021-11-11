@@ -26,9 +26,7 @@ import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Sh
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 import scala.concurrent.Future
 
-class SandboxLiabilitiesControllerSpec
-  extends BaseSpec {
-
+class SandboxLiabilitiesControllerSpec extends BaseSpec {
 
   private val sut = new SandboxLiabilitiesController(
     mockAuthConnector,
@@ -48,21 +46,23 @@ class SandboxLiabilitiesControllerSpec
       val result: Future[Result] = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 200
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
-      response.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
-      response.accountSummary.totalAmountDueToHmrc.requiresPayment shouldBe true
-      response.accountSummary.amountHmrcOwe shouldBe 0
-      response.accountSummary.nextPayment.map(payment => payment.dueDate) shouldBe Some(LocalDate.parse("2014-01-31"))
-      response.futureLiability.map(_.headOption.map(_.descriptionCode)) shouldBe Some(Some("BCD"))
-      response.futureLiability.map(_.headOption.map(_.dueDate)) shouldBe Some(Some(LocalDate.parse("2015-01-31")))
-      response.futureLiability.map(_.headOption.map(_.amount)) shouldBe Some(Some(503.2))
-      response.futureLiability.map(_.headOption.map(_.taxYear.start)) shouldBe Some(Some(2014))
-      response.futureLiability.map(_.headOption.map(_.taxYear.end)) shouldBe Some(Some(2015))
-      response.futureLiability.map(_.lastOption.map(_.descriptionCode)) shouldBe Some(Some("IN1"))
-      response.futureLiability.map(_.lastOption.map(_.partnershipReference)) shouldBe Some(Some(Some(SaUtr("1097172564"))))
-      response.futureLiability.map(_.lastOption.map(_.dueDate)) shouldBe Some(Some(LocalDate.parse("2015-01-31")))
-      response.futureLiability.map(_.lastOption.map(_.amount)) shouldBe Some(Some(2300))
+      response.accountSummary.totalAmountDueToHmrc.amount                        shouldBe 12345.67
+      response.accountSummary.totalAmountDueToHmrc.requiresPayment               shouldBe true
+      response.accountSummary.amountHmrcOwe                                      shouldBe 0
+      response.accountSummary.nextPayment.map(payment => payment.dueDate)        shouldBe Some(LocalDate.parse("2014-01-31"))
+      response.futureLiability.map(_.headOption.map(_.descriptionCode.toString)) shouldBe Some(Some("BCD"))
+      response.futureLiability.map(_.headOption.map(_.dueDate))                  shouldBe Some(Some(LocalDate.parse("2015-01-31")))
+      response.futureLiability.map(_.headOption.map(_.amount))                   shouldBe Some(Some(503.2))
+      response.futureLiability.map(_.headOption.map(_.taxYear.start))            shouldBe Some(Some(2014))
+      response.futureLiability.map(_.headOption.map(_.taxYear.end))              shouldBe Some(Some(2015))
+      response.futureLiability.map(_.lastOption.map(_.descriptionCode.toString)) shouldBe Some(Some("IN1"))
+      response.futureLiability.map(_.lastOption.map(_.partnershipReference)) shouldBe Some(
+        Some(Some(SaUtr("1097172564")))
+      )
+      response.futureLiability.map(_.lastOption.map(_.dueDate))       shouldBe Some(Some(LocalDate.parse("2015-01-31")))
+      response.futureLiability.map(_.lastOption.map(_.amount))        shouldBe Some(Some(2300))
       response.futureLiability.map(_.lastOption.map(_.taxYear.start)) shouldBe Some(Some(2014))
-      response.futureLiability.map(_.lastOption.map(_.taxYear.end)) shouldBe Some(Some(2015))
+      response.futureLiability.map(_.lastOption.map(_.taxYear.end))   shouldBe Some(Some(2015))
     }
   }
 

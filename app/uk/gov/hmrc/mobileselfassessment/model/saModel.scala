@@ -42,10 +42,11 @@ object AccountSummary {
 }
 
 case class AccountSummary(
+  taxToPayStatus:       TaxToPayStatus = NoTaxToPay,
   totalAmountDueToHmrc: AmountDue,
   nextPayment:          Option[Liability],
-  amountHmrcOwe:        BigDecimal,
-  )
+  nextBill:             Option[Liability] = None,
+  amountHmrcOwe:        BigDecimal)
 
 object TaxYear {
   implicit val formats = Json.format[TaxYear]
@@ -62,7 +63,8 @@ object FutureLiability {
 }
 
 case class FutureLiability(
-  descriptionCode:      String,
+  descriptionCode:      DescriptionCode,
+  descriptionText:      String,
   partnershipReference: Option[SaUtr],
   dueDate:              LocalDate,
   amount:               BigDecimal,

@@ -26,9 +26,14 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
+    "taxToPayStatus": "OverDue",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
+    },
+    "nextBill": {
+      "dueDate": "2015-01-31",
+      "amount": 2803.20
     },
     "nextPayment": {
       "dueDate": "2014-01-31",
@@ -39,6 +44,7 @@ Fetch the GetLiabilities object.
   "futureLiability": [
     {
       "descriptionCode": "BCD",
+      "descriptionText": "Balancing payment for 2015 to 2016",
       "dueDate": "2015-01-31",
       "amount": 503.2,
       "taxYear": {
@@ -48,6 +54,7 @@ Fetch the GetLiabilities object.
     },
     {
       "descriptionCode": "IN1",
+      "descriptionText": "First payment on account for 2015 to 2016",
       "partnershipReference": "1097172564",
       "dueDate": "2015-01-31",
       "amount": 2300,
@@ -72,9 +79,14 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
+    "taxToPayStatus": "OverDue",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
+    },
+    "nextBill": {
+      "dueDate": "2015-01-31",
+      "amount": 2803.20
     },
     "nextPayment": {
       "dueDate": "2014-01-31",
