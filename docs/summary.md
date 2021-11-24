@@ -26,7 +26,7 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
-    "taxToPayStatus": "OverDue",
+    "taxToPayStatus": "Overdue",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
@@ -79,7 +79,7 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
-    "taxToPayStatus": "OverDue",
+    "taxToPayStatus": "Overdue",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
