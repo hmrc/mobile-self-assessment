@@ -125,12 +125,12 @@ class SaServiceSpec
       result.futureLiability.isEmpty                    shouldBe true
     }
 
-    "return TaxToPayStatus as OverDue and nextBill correctly" in {
+    "return TaxToPayStatus as Overdue and nextBill correctly" in {
       mockGetRootLinks(Future successful rootLinks)
       mockGetOptionalCesaAccountSummary(Some(customAccountSummary(1000, 0)))
       mockGetFutureLiabilities(futureLiabilities)
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
-      result.accountSummary.taxToPayStatus.toString       shouldBe "OverDue"
+      result.accountSummary.taxToPayStatus.toString       shouldBe "Overdue"
       result.accountSummary.nextBill.get.amount           shouldBe 2803.20
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2015-01-31"
     }

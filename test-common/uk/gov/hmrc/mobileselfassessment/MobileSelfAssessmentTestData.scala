@@ -210,7 +210,7 @@ trait MobileSelfAssessmentTestData {
     s"""
        |{
        |  "accountSummary": {
-       |    "taxToPayStatus": "OverDue",
+       |    "taxToPayStatus": "Overdue",
        |    "totalAmountDueToHmrc": {
        |      "amount": 12345.67,
        |      "requiresPayment": true

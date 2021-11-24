@@ -34,7 +34,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount        shouldBe 12345.67
       parsedResponse.accountSummary.amountHmrcOwe                      shouldBe 0
-      parsedResponse.accountSummary.taxToPayStatus.toString            shouldBe "OverDue"
+      parsedResponse.accountSummary.taxToPayStatus.toString            shouldBe "Overdue"
       parsedResponse.accountSummary.nextBill.isEmpty                   shouldBe false
       parsedResponse.accountSummary.nextBill.get.amount                shouldBe 2803.20
       parsedResponse.accountSummary.nextBill.get.dueDate.toString      shouldBe "2015-01-31"
@@ -66,7 +66,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       parsedResponse.accountSummary.amountHmrcOwe               shouldBe 0
-      parsedResponse.accountSummary.taxToPayStatus.toString     shouldBe "OverDue"
+      parsedResponse.accountSummary.taxToPayStatus.toString     shouldBe "Overdue"
       parsedResponse.accountSummary.nextBill.isEmpty            shouldBe true
       parsedResponse.futureLiability.isEmpty                    shouldBe true
     }

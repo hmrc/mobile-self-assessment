@@ -23,7 +23,7 @@ import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, Liability, NoTaxToPay, OnlyBill, OnlyCredit, OverDue, SaUtr, TaxToPayStatus}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, Liability, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, SaUtr, TaxToPayStatus}
 import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -108,7 +108,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     nextBill:   Option[BigDecimal]
   ): TaxToPayStatus =
     (amountDue, amountOwed, nextBill) match {
-      case (amountDue, _, _) if amountDue > 0                                          => OverDue
+      case (amountDue, _, _) if amountDue > 0                                          => Overdue
       case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed == nextBill => CreditAndBillSame
       case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed < nextBill  => CreditLessThanBill
       case (_, amountOwed, Some(nextBill)) if amountOwed > 0 && amountOwed > nextBill  => CreditMoreThanBill
