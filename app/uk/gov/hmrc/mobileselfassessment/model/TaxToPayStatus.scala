@@ -19,6 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.model
 import play.api.libs.json.{Format, JsString, JsSuccess, JsValue}
 
 sealed trait TaxToPayStatus
+case object OverdueWithBill extends TaxToPayStatus
 case object Overdue extends TaxToPayStatus
 case object CreditAndBillSame extends TaxToPayStatus
 case object CreditLessThanBill extends TaxToPayStatus
@@ -32,6 +33,7 @@ object TaxToPayStatus extends TaxToPayStatus {
   implicit val taxToPayStatusFormat: Format[TaxToPayStatus] = new Format[TaxToPayStatus] {
 
     override def reads(json: JsValue): JsSuccess[TaxToPayStatus] = json.as[String] match {
+      case "OverdueWithBill"    => JsSuccess(OverdueWithBill)
       case "Overdue"            => JsSuccess(Overdue)
       case "CreditAndBillSame"  => JsSuccess(CreditAndBillSame)
       case "CreditLessThanBill" => JsSuccess(CreditLessThanBill)

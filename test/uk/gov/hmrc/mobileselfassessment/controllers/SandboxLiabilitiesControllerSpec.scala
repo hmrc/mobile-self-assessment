@@ -46,6 +46,7 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       val result: Future[Result] = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 200
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
+      response.accountSummary.taxToPayStatus.toString                            shouldBe "OverdueWithBill"
       response.accountSummary.totalAmountDueToHmrc.amount                        shouldBe 12345.67
       response.accountSummary.totalAmountDueToHmrc.requiresPayment               shouldBe true
       response.accountSummary.amountHmrcOwe                                      shouldBe 0

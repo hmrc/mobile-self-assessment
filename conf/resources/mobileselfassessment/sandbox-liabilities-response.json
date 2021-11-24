@@ -1,6 +1,6 @@
 {
   "accountSummary": {
-    "taxToPayStatus": "Overdue",
+    "taxToPayStatus": "OverdueWithBill",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
