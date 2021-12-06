@@ -21,13 +21,14 @@ import play.api.libs.json.Json
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
 
-object Liability {
-  implicit val formats = Json.format[Liability]
+object NextBill {
+  implicit val formats = Json.format[NextBill]
 }
 
-case class Liability(
-  dueDate: LocalDate,
-  amount:  BigDecimal)
+case class NextBill(
+  dueDate:       LocalDate,
+  amount:        BigDecimal,
+  daysRemaining: Int)
 
 object AmountDue {
   implicit val formats = Json.format[AmountDue]
@@ -42,11 +43,12 @@ object AccountSummary {
 }
 
 case class AccountSummary(
-  taxToPayStatus:       TaxToPayStatus = NoTaxToPay,
-  totalAmountDueToHmrc: AmountDue,
-  nextPayment:          Option[Liability],
-  nextBill:             Option[Liability] = None,
-  amountHmrcOwe:        BigDecimal)
+  taxToPayStatus:               TaxToPayStatus = NoTaxToPay,
+  totalAmountDueToHmrc:         AmountDue,
+  amountHmrcOwe:                BigDecimal,
+  totalFutureLiability:         Option[BigDecimal] = None,
+  nextBill:                     Option[NextBill] = None,
+  remainingAfterCreditDeducted: Option[BigDecimal] = None)
 
 object TaxYear {
   implicit val formats = Json.format[TaxYear]

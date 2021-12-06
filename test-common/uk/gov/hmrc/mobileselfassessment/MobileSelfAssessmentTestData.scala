@@ -210,16 +210,19 @@ trait MobileSelfAssessmentTestData {
     s"""
        |{
        |  "accountSummary": {
-       |    "taxToPayStatus": "Overdue",
+       |    "taxToPayStatus": "OverdueWithBill",
        |    "totalAmountDueToHmrc": {
        |      "amount": 12345.67,
        |      "requiresPayment": true
        |    },
-       |    "nextPayment": {
-       |      "dueDate": "2014-01-31",
-       |      "amount": 12345.67
+       |    "nextBill": {
+       |      "dueDate": "2015-01-31",
+       |      "amount": 2803.20,
+       |      "daysRemaining": -1
        |    },
-       |    "amountHmrcOwe": 0
+       |    "amountHmrcOwe": 0,
+       |    "totalLiability": 2803.20,
+       |    "remainingAfterCreditDeducted": 9542.47
        |  },
        |  "futureLiabilities" :
        |  [
@@ -277,7 +280,9 @@ trait MobileSelfAssessmentTestData {
        |  "viewPaymentHistoryUrl":  "/self-assessment/ind/123123123/account/payments",
        |  "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
-       |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary"
+       |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
+       |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment",
+       |  "viewBreakdownUrl": "/self-assessment/ind/123123123/account"
        |}
        |""".stripMargin
 

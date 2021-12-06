@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.mobileselfassessment.services
 
-import org.joda.time.LocalDate
+import org.joda.time.{Days, LocalDate}
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, Liability, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, NextBill, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
 import uk.gov.hmrc.time.TaxYear
 
+import java.time.Period
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal
 
@@ -68,7 +69,9 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
           futureLiability              = futureLiabilities,
           viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
-          moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account"
+          moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account",
+          claimRefundUrl               = s"/contact/self-assessment/ind/$utr/repayment",
+          viewBreakdownUrl             = s"/self-assessment/ind/$utr/account"
         )
       )
     }
@@ -77,20 +80,27 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     summary:     AccountSummary,
     liabilities: Option[Seq[FutureLiability]]
   ): AccountSummary = {
-    val nextBill = liabilities.flatMap(calculateNextBill)
+    val nextBill: Option[NextBill] = liabilities.flatMap(calculateNextBill)
     summary.copy(
       taxToPayStatus =
         getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill.map(_.amount)),
-      nextBill = nextBill
+      nextBill                     = nextBill,
+      totalFutureLiability         = liabilities.flatMap(calculateTotalLiability),
+      remainingAfterCreditDeducted = calculateRemainingAfterCredit(nextBill, summary.amountHmrcOwe)
     )
   }
 
   private def currentTaxYear: String =
     TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
 
-  private def calculateNextBill(futureLiabilities: Seq[FutureLiability]): Option[Liability] = {
+  private def calculateNextBill(futureLiabilities: Seq[FutureLiability]): Option[NextBill] = {
     val nextBillDate = getNextBillDate(futureLiabilities)
-    nextBillDate.map(date => Liability(date, sumOfLiabilitiesOccuringOnDate(futureLiabilities, date)))
+    nextBillDate.map { date =>
+      val daysRemaining = Days.daysBetween(LocalDate.now(), date).getDays
+      NextBill(date,
+               sumOfLiabilitiesOccuringOnDate(futureLiabilities, date),
+               daysRemaining = if (daysRemaining < 0) -1 else daysRemaining)
+    }
   }
 
   private def getNextBillDate(futureLiabilities: Seq[FutureLiability]): Option[LocalDate] =
@@ -118,4 +128,21 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
       case _                                                                           => NoTaxToPay
     }
 
+  private def calculateTotalLiability(futureLiabilities: Seq[FutureLiability]): Option[BigDecimal] = {
+    val total = futureLiabilities.map(_.amount).sum
+    if (total > 0) Some(total) else None
+  }
+
+  private def calculateRemainingAfterCredit(
+    nextBill: Option[NextBill],
+    credit:   BigDecimal
+  ): Option[BigDecimal] = {
+    val nextBillAmount: BigDecimal = nextBill.map(_.amount).getOrElse(0)
+    if (credit > 0 && nextBill.isDefined && credit != nextBillAmount) {
+      if (credit > nextBillAmount)
+        Some(credit - nextBillAmount)
+      else
+        Some(nextBillAmount - credit)
+    } else None
+  }
 }

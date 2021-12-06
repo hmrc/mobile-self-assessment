@@ -1,9 +1,7 @@
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlEqualTo}
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
-import play.api.test.Helpers.contentAsString
 import utils.BaseISpec
 import stubs.AuthStub._
 import stubs.ShutteringStub._
@@ -38,6 +36,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.accountSummary.nextBill.isEmpty                   shouldBe false
       parsedResponse.accountSummary.nextBill.get.amount                shouldBe 2803.20
       parsedResponse.accountSummary.nextBill.get.dueDate.toString      shouldBe "2015-01-31"
+      parsedResponse.accountSummary.totalFutureLiability.get           shouldBe 2803.20
+      parsedResponse.accountSummary.remainingAfterCreditDeducted       shouldBe None
       parsedResponse.futureLiability.isEmpty                           shouldBe false
       parsedResponse.futureLiability.get.head.amount                   shouldBe 503.20
       parsedResponse.futureLiability.get.head.descriptionCode.toString shouldBe "JEP"
@@ -49,6 +49,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.viewOtherYearsUrl                                 shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
       parsedResponse.moreSelfAssessmentDetailsUrl                      shouldBe s"/self-assessment/ind/$utr/account"
       parsedResponse.payByDebitOrCardPaymentUrl                        shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.claimRefundUrl                                    shouldBe s"/contact/self-assessment/ind/$utr/repayment"
+      parsedResponse.viewBreakdownUrl                                  shouldBe s"/self-assessment/ind/$utr/account"
     }
 
     "return 200 and full account summary in response when future liabilities unavailable" in {

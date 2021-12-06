@@ -50,7 +50,6 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       response.accountSummary.totalAmountDueToHmrc.amount                        shouldBe 12345.67
       response.accountSummary.totalAmountDueToHmrc.requiresPayment               shouldBe true
       response.accountSummary.amountHmrcOwe                                      shouldBe 0
-      response.accountSummary.nextPayment.map(payment => payment.dueDate)        shouldBe Some(LocalDate.parse("2014-01-31"))
       response.futureLiability.map(_.headOption.map(_.descriptionCode.toString)) shouldBe Some(Some("BCD"))
       response.futureLiability.map(_.headOption.map(_.dueDate))                  shouldBe Some(Some(LocalDate.parse("2015-01-31")))
       response.futureLiability.map(_.headOption.map(_.amount))                   shouldBe Some(Some(503.2))

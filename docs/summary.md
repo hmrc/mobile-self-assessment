@@ -33,13 +33,12 @@ Fetch the GetLiabilities object.
     },
     "nextBill": {
       "dueDate": "2015-01-31",
+      "daysRemaining": 25,
       "amount": 2803.20
     },
-    "nextPayment": {
-      "dueDate": "2015-01-31",
-      "amount": 2803.20
-    },
-    "amountHmrcOwe": 0
+    "amountHmrcOwe": 0,
+    "totalLiability": 2803.20,
+    "remainingAfterCreditDeducted": 9542.47
   },
   "futureLiability": [
     {
@@ -69,7 +68,9 @@ Fetch the GetLiabilities object.
   "viewPaymentHistoryUrl": "/",
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
-  "payByDebitOrCardPaymentUrl": "/"
+  "payByDebitOrCardPaymentUrl": "/",
+  "claimRefundUrl": "/",
+  "viewBreakdownUrl": "/"
 }
 ```
 
@@ -83,9 +84,6 @@ Fetch the GetLiabilities object.
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
-    },
-    "nextPayment": {
-      "amount": 0
     },
     "amountHmrcOwe": 0
   }
