@@ -7,13 +7,12 @@
     },
     "nextBill": {
       "dueDate": "2015-01-31",
+      "daysRemaining": 25,
       "amount": 2803.20
     },
-    "nextPayment": {
-      "dueDate": "2014-01-31",
-      "amount": 12345.67
-    },
-    "amountHmrcOwe": 0
+    "amountHmrcOwe": 0,
+    "totalFutureLiability": 2803.20,
+    "remainingAfterCreditDeducted": 9542.47
   },
   "futureLiability": [
     {
@@ -43,5 +42,7 @@
   "viewPaymentHistoryUrl": "/",
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
-  "payByDebitOrCardPaymentUrl": "/"
+  "payByDebitOrCardPaymentUrl": "/",
+  "claimRefundUrl": "/",
+  "viewBreakdownUrl": "/"
 }

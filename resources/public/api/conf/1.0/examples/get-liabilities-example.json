@@ -7,13 +7,12 @@
     },
     "nextBill": {
       "dueDate": "2015-01-31",
+      "daysRemaining": 25,
       "amount": 2803.20
     },
-    "nextPayment": {
-      "dueDate": "2015-01-31",
-      "amount": 2803.20
-    },
-    "amountHmrcOwe": 0
+    "amountHmrcOwe": 0,
+    "totalFutureLiability": 2803.20,
+    "remainingAfterCreditDeducted": 9542.47
   },
   "futureLiability": [
     {
@@ -40,8 +39,10 @@
   ],
   "setUpPaymentPlanUrl": "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
   "updateOrSubmitAReturnUrl": "/personal-account/self-assessment-summary",
-  "viewPaymentHistoryUrl":  "/self-assessment/ind/123123123/account/payments",
+  "viewPaymentHistoryUrl": "/self-assessment/ind/123123123/account/payments",
   "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
-  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
-  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary"
+  "moreSelfAssessmentDetailsUrl": "/self-assessment/ind/123123123/account",
+  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
+  "claimRefundUrl": "/contact/self-assessment/ind/123123123/account",
+  "viewBreakdownUrl": "/self-assessment/ind/123123123/account"
 }

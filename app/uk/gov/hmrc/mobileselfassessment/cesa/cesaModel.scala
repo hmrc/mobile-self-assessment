@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobileselfassessment.cesa
 
 import org.joda.time.{DateTimeFieldType, LocalDate}
 import play.api.libs.json.Json
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, Liability, SaUtr, TaxYear}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, NextBill, SaUtr, TaxYear}
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
 
@@ -63,15 +63,7 @@ object CesaLiability {
 
 case class CesaLiability(
   paymentDueDate: Option[LocalDate],
-  amount:         CesaAmount) {
-
-  lazy val toLiability: Option[Liability] = {
-    paymentDueDate match {
-      case Some(dueDate) => Some(Liability(dueDate, amount.toSaAmount))
-      case _             => None
-    }
-  }
-}
+  amount:         CesaAmount)
 
 object CesaAccountSummary {
   implicit val formats = Json.format[CesaAccountSummary]
@@ -79,12 +71,10 @@ object CesaAccountSummary {
 
 case class CesaAccountSummary(
   totalAmountDueToHmrc: CesaAmount,
-  nextPayment:          CesaLiability,
   amountHmrcOwe:        CesaAmount) {
 
   lazy val toSaAccountSummary: AccountSummary = AccountSummary(
     totalAmountDueToHmrc = totalAmountDueToHmrc.toSaAmountDue,
-    nextPayment          = nextPayment.toLiability,
     amountHmrcOwe        = amountHmrcOwe.toSaAmount
   )
 }

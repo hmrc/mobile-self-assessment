@@ -55,7 +55,6 @@ class SaServiceSpec
     amountOwed: BigDecimal
   ): CesaAccountSummary =
     CesaAccountSummary(totalAmountDueToHmrc = CesaAmount(amountDue, "GBP"),
-                       nextPayment          = CesaLiability(None, CesaAmount(0, "GBP")),
                        amountHmrcOwe        = CesaAmount(amountOwed, "GBP"))
 
   private def customFutureLiabilities(liabilityAmount: BigDecimal): Seq[CesaFutureLiability] =
@@ -91,7 +90,14 @@ class SaServiceSpec
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
-      println(Json.prettyPrint(Json.toJson(result)))
+      result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
+      result.updateOrSubmitAReturnUrl                   shouldBe "/personal-account/self-assessment-summary"
+      result.viewPaymentHistoryUrl                      shouldBe "/self-assessment/ind/123UTR/account/payments"
+      result.viewOtherYearsUrl                          shouldBe "/self-assessment/ind/123UTR/account/taxyear/2122"
+      result.moreSelfAssessmentDetailsUrl               shouldBe "/self-assessment/ind/123UTR/account"
+      result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
+      result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
+      result.viewBreakdownUrl                           shouldBe "/self-assessment/ind/123UTR/account"
     }
 
     "return None if no accountURL is returned in root links" in {
@@ -130,8 +136,8 @@ class SaServiceSpec
       mockGetOptionalCesaAccountSummary(Some(customAccountSummary(1000, 0)))
       mockGetFutureLiabilities(Seq.empty)
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
-      result.accountSummary.taxToPayStatus.toString       shouldBe "Overdue"
-      result.accountSummary.nextBill.isEmpty              shouldBe true
+      result.accountSummary.taxToPayStatus.toString shouldBe "Overdue"
+      result.accountSummary.nextBill.isEmpty        shouldBe true
     }
 
     "return TaxToPayStatus as CreditAndBillSame and nextBill correctly" in {
@@ -142,26 +148,35 @@ class SaServiceSpec
       result.accountSummary.taxToPayStatus.toString       shouldBe "CreditAndBillSame"
       result.accountSummary.nextBill.get.amount           shouldBe 1000
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
+      result.accountSummary.totalFutureLiability          shouldBe Some(6200)
     }
 
-    "return TaxToPayStatus as CreditLessThanBill and nextBill correctly" in {
+    "return TaxToPayStatus as CreditLessThanBill status with nextBill and remainingAfterCreditDeducted calculated correctly" in {
       mockGetRootLinks(Future successful rootLinks)
       mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 500)))
-      mockGetFutureLiabilities(customFutureLiabilities(800))
+      mockGetFutureLiabilities(customFutureLiabilities(650.20))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "CreditLessThanBill"
-      result.accountSummary.nextBill.get.amount           shouldBe 1000
+      result.accountSummary.nextBill.get.amount           shouldBe 850.20
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
+      result.accountSummary.remainingAfterCreditDeducted  shouldBe Some(350.20)
+      result.accountSummary.totalFutureLiability          shouldBe Some(6050.20)
+
     }
 
-    "return TaxToPayStatus as CreditMoreThanBill and nextBill correctly" in {
+    "return TaxToPayStatus as CreditMoreThanBill status with nextBill and remainingAfterCreditDeducted calculated correctly" in {
       mockGetRootLinks(Future successful rootLinks)
       mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 1000)))
-      mockGetFutureLiabilities(customFutureLiabilities(300))
+      mockGetFutureLiabilities(customFutureLiabilities(259.50))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "CreditMoreThanBill"
-      result.accountSummary.nextBill.get.amount           shouldBe 500
+      result.accountSummary.nextBill.get.amount           shouldBe 459.50
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
+      result.accountSummary.remainingAfterCreditDeducted  shouldBe Some(540.50)
+      result.accountSummary.totalFutureLiability          shouldBe Some(5659.50)
     }
 
     "return TaxToPayStatus as OnlyCredit and nextBill correctly" in {
@@ -181,6 +196,8 @@ class SaServiceSpec
       result.accountSummary.taxToPayStatus.toString       shouldBe "OnlyBill"
       result.accountSummary.nextBill.get.amount           shouldBe 500
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
+      result.accountSummary.totalFutureLiability          shouldBe Some(5700)
     }
 
     "return TaxToPayStatus as NoTaxToPay and nextBill correctly" in {
@@ -200,6 +217,29 @@ class SaServiceSpec
       result.accountSummary.taxToPayStatus.toString       shouldBe "OverdueWithBill"
       result.accountSummary.nextBill.get.amount           shouldBe 2803.20
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2015-01-31"
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
+      result.accountSummary.totalFutureLiability          shouldBe Some(2803.20)
+    }
+
+    "calculate daysRemaining till next bill correctly" in {
+      mockGetRootLinks(Future successful rootLinks)
+      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 0)))
+      mockGetFutureLiabilities(
+        Seq(
+          CesaFutureLiability(
+            statutoryDueDate     = LocalDate.now().plusDays(31),
+            taxYearEndDate       = LocalDate.parse("2020-03-31"),
+            partnershipReference = None,
+            amount               = CesaAmount(200, "GBP"),
+            descriptionCode      = IN1
+          )
+        )
+      )
+      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
+      result.accountSummary.taxToPayStatus.toString       shouldBe "OnlyBill"
+      result.accountSummary.nextBill.get.amount           shouldBe 200
+      result.accountSummary.nextBill.get.dueDate.toString shouldBe LocalDate.now().plusDays(31).toString()
+      result.accountSummary.nextBill.get.daysRemaining    shouldBe 31
     }
   }
 }
