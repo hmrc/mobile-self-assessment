@@ -26,7 +26,7 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
-    "taxToPayStatus": "OverdueWithBill",
+    "taxToPayStatus": "CreditLessThanBill",
     "totalAmountDueToHmrc": {
       "amount": 12345.67,
       "requiresPayment": true
@@ -36,9 +36,9 @@ Fetch the GetLiabilities object.
       "daysRemaining": 25,
       "amount": 2803.20
     },
-    "amountHmrcOwe": 0,
-    "totalLiability": 2803.20,
-    "remainingAfterCreditDeducted": 9542.47
+    "amountHmrcOwe": 2000,
+    "totalFutureLiability": 2803.20,
+    "remainingAfterCreditDeducted": 803.20
   },
   "futureLiability": [
     {
@@ -86,7 +86,15 @@ Fetch the GetLiabilities object.
       "requiresPayment": true
     },
     "amountHmrcOwe": 0
-  }
+  },
+  "setUpPaymentPlanUrl": "/",
+  "updateOrSubmitAReturnUrl": "/",
+  "viewPaymentHistoryUrl": "/",
+  "viewOtherYearsUrl": "/",
+  "moreSelfAssessmentDetailsUrl": "/",
+  "payByDebitOrCardPaymentUrl": "/",
+  "claimRefundUrl": "/",
+  "viewBreakdownUrl": "/"
 }
 ```
 
