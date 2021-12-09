@@ -221,59 +221,30 @@ trait MobileSelfAssessmentTestData {
        |      "daysRemaining": -1
        |    },
        |    "amountHmrcOwe": 0,
-       |    "totalLiability": 2803.20,
-       |    "remainingAfterCreditDeducted": 9542.47
+       |    "totalLiability": 2803.20
        |  },
-       |  "futureLiabilities" :
-       |  [
-       |      {
-       |          "taxYearEndDate": "2015-04-05",
-       |          "descriptionCode": "LFI2",
-       |          "partnershipReference": 0,
-       |          "statutoryDueDate": "2015-01-31",
-       |          "relevantDueDate": "2015-01-31",
-       |          "amount": {
-       |              "amount": 503.20,
-       |              "currency": "GBP"
-       |          },
-       |          "taxYear": "1415",
-       |          "transactionId": {
-       |              "tieBreaker": 4828,
-       |              "sequenceNumber": null,
-       |              "creationDate": "2014-04-07"
-       |          },
-       |          "penaltyRegimeChangeDescriptor": null,
-       |          "links": [
-       |              {
-       |                  "rel": "self",
-       |                  "href": "https://digital.ws.ibt.hmrc.gov.uk/self-assessment/individual/1121766916/account/futureliabilities"
-       |              }
-       |          ]
-       |      },
-       |      {
-       |          "taxYearEndDate": "2015-04-05",
-       |          "descriptionCode": "LPP1",
-       |          "partnershipReference": 1097172564,
-       |          "statutoryDueDate": "2015-01-31",
-       |          "relevantDueDate": "2015-01-31",
-       |          "amount": {
-       |              "amount": 2300.00,
-       |              "currency": "GBP"
-       |          },
-       |          "taxYear": "1415",
-       |          "transactionId": {
-       |              "tieBreaker": 4829,
-       |              "sequenceNumber": null,
-       |              "creationDate": "2014-04-07"
-       |          },
-       |          "penaltyRegimeChangeDescriptor": null,
-       |          "links": [
-       |              {
-       |                  "rel": "self",
-       |                  "href": "https://digital.ws.ibt.hmrc.gov.uk/self-assessment/individual/1121766916/account/futureliabilities"
-       |              }
-       |          ]
+       |  "futureLiability": [
+       |    {
+       |      "descriptionCode": "BCD",
+       |      "descriptionText": "Balancing payment for 2015 to 2016",
+       |      "dueDate": "2015-01-31",
+       |      "amount": 503.2,
+       |      "taxYear": {
+       |        "start": 2014,
+       |        "end": 2015
        |      }
+       |    },
+       |    {
+       |      "descriptionCode": "IN1",
+       |      "descriptionText": "First payment on account for 2015 to 2016",
+       |      "partnershipReference": "1097172564",
+       |      "dueDate": "2015-01-31",
+       |      "amount": 2300,
+       |      "taxYear": {
+       |        "start": 2014,
+       |        "end": 2015
+       |      }
+       |    }
        |  ],
        |  "setUpPaymentPlanUrl": "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
        |  "updateOrSubmitAReturnUrl": "/personal-account/self-assessment-summary",
