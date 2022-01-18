@@ -30,27 +30,30 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val response = await(request.get())
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
-      parsedResponse.accountSummary.totalAmountDueToHmrc.amount        shouldBe 12345.67
-      parsedResponse.accountSummary.amountHmrcOwe                      shouldBe 0
-      parsedResponse.accountSummary.taxToPayStatus.toString            shouldBe "OverdueWithBill"
-      parsedResponse.accountSummary.nextBill.isEmpty                   shouldBe false
-      parsedResponse.accountSummary.nextBill.get.amount                shouldBe 2803.20
-      parsedResponse.accountSummary.nextBill.get.dueDate.toString      shouldBe "2015-01-31"
-      parsedResponse.accountSummary.totalFutureLiability.get           shouldBe 2803.20
-      parsedResponse.accountSummary.remainingAfterCreditDeducted       shouldBe None
-      parsedResponse.futureLiability.isEmpty                           shouldBe false
-      parsedResponse.futureLiability.get.head.amount                   shouldBe 503.20
-      parsedResponse.futureLiability.get.head.descriptionCode.toString shouldBe "JEP"
-      parsedResponse.futureLiability.get.head.taxYear.start            shouldBe 2014
-      parsedResponse.futureLiability.get.head.taxYear.end              shouldBe 2015
-      parsedResponse.setUpPaymentPlanUrl                               shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
-      parsedResponse.updateOrSubmitAReturnUrl                          shouldBe "/personal-account/self-assessment-summary"
-      parsedResponse.viewPaymentHistoryUrl                             shouldBe s"/self-assessment/ind/$utr/account/payments"
-      parsedResponse.viewOtherYearsUrl                                 shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
-      parsedResponse.moreSelfAssessmentDetailsUrl                      shouldBe s"/self-assessment/ind/$utr/account"
-      parsedResponse.payByDebitOrCardPaymentUrl                        shouldBe "/personal-account/self-assessment-summary"
-      parsedResponse.claimRefundUrl                                    shouldBe s"/contact/self-assessment/ind/$utr/repayment"
-      parsedResponse.viewBreakdownUrl                                  shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 12345.67
+      parsedResponse.accountSummary.amountHmrcOwe                                             shouldBe 0
+      parsedResponse.accountSummary.taxToPayStatus.toString                                   shouldBe "OverdueWithBill"
+      parsedResponse.accountSummary.nextBill.isEmpty                                          shouldBe false
+      parsedResponse.accountSummary.nextBill.get.amount                                       shouldBe 2803.20
+      parsedResponse.accountSummary.nextBill.get.dueDate.toString                             shouldBe "2015-01-31"
+      parsedResponse.accountSummary.totalFutureLiability.get                                  shouldBe 9703.20
+      parsedResponse.accountSummary.remainingAfterCreditDeducted                              shouldBe None
+      parsedResponse.futureLiability.isEmpty                                                  shouldBe false
+      parsedResponse.futureLiability.get.head.dueDate.toString                                shouldBe "2015-01-31"
+      parsedResponse.futureLiability.get.head.total                                           shouldBe 2803.20
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 503.20
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "JEP"
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
+      parsedResponse.setUpPaymentPlanUrl                                                      shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
+      parsedResponse.updateOrSubmitAReturnUrl                                                 shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.viewPaymentHistoryUrl                                                    shouldBe s"/self-assessment/ind/$utr/account/payments"
+      parsedResponse.viewOtherYearsUrl                                                        shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
+      parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.payByDebitOrCardPaymentUrl                                               shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.claimRefundUrl                                                           shouldBe s"/contact/self-assessment/ind/$utr/repayment"
+      parsedResponse.viewBreakdownUrl                                                         shouldBe s"/self-assessment/ind/$utr/account"
+
     }
 
     "return 200 and full account summary in response when future liabilities unavailable" in {

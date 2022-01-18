@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class GetLiabilitiesResponse(
   accountSummary:               AccountSummary,
-  futureLiability:              Option[Seq[FutureLiability]],
+  futureLiability:              Option[Seq[GroupedFutureLiabilities]],
   setUpPaymentPlanUrl:          String = "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
   updateOrSubmitAReturnUrl:     String = "/personal-account/self-assessment-summary",
   viewPaymentHistoryUrl:        String,
@@ -31,9 +31,6 @@ case class GetLiabilitiesResponse(
   viewBreakdownUrl:             String)
 
 object GetLiabilitiesResponse {
-
-  def toGetLiabilitiesAudit(response: GetLiabilitiesResponse): GetLiabilitiesResponseAudit =
-    GetLiabilitiesResponseAudit(response.accountSummary, response.futureLiability)
 
   implicit val format: OFormat[GetLiabilitiesResponse] = Json.format[GetLiabilitiesResponse]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, NextBill, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, GroupedFutureLiabilities, NextBill, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.Period
@@ -52,6 +52,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     val liabilities: Future[Seq[FutureLiability]] =
       cesaConnector.futureLiabilities(utr).map(_.map(_.toSaFutureLiability))
     liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
+
   }
 
   def getLiabilitiesResponse(
@@ -66,7 +67,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
       accountSummary.map(summary =>
         GetLiabilitiesResponse(
           accountSummary               = buildAccountSummary(summary, futureLiabilities),
-          futureLiability              = futureLiabilities,
+          futureLiability              = futureLiabilities.map(groupFutureLiabilitiesByDate),
           viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
           moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account",
@@ -144,5 +145,12 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
       else
         Some(nextBillAmount - credit)
     } else None
+  }
+
+  private def groupFutureLiabilitiesByDate(liabilities: Seq[FutureLiability]): Seq[GroupedFutureLiabilities] = {
+
+    val groupByDate: Map[LocalDate, Seq[FutureLiability]] = liabilities.groupBy(_.dueDate)
+    groupByDate.map(date => GroupedFutureLiabilities(date._1, date._2, date._2.map(_.amount).sum)).toList
+
   }
 }

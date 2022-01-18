@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,23 +46,21 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       val result: Future[Result] = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 200
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
-      response.accountSummary.taxToPayStatus.toString                            shouldBe "OverdueWithBill"
-      response.accountSummary.totalAmountDueToHmrc.amount                        shouldBe 12345.67
-      response.accountSummary.totalAmountDueToHmrc.requiresPayment               shouldBe true
-      response.accountSummary.amountHmrcOwe                                      shouldBe 0
-      response.futureLiability.map(_.headOption.map(_.descriptionCode.toString)) shouldBe Some(Some("BCD"))
-      response.futureLiability.map(_.headOption.map(_.dueDate))                  shouldBe Some(Some(LocalDate.parse("2015-01-31")))
-      response.futureLiability.map(_.headOption.map(_.amount))                   shouldBe Some(Some(503.2))
-      response.futureLiability.map(_.headOption.map(_.taxYear.start))            shouldBe Some(Some(2014))
-      response.futureLiability.map(_.headOption.map(_.taxYear.end))              shouldBe Some(Some(2015))
-      response.futureLiability.map(_.lastOption.map(_.descriptionCode.toString)) shouldBe Some(Some("IN1"))
-      response.futureLiability.map(_.lastOption.map(_.partnershipReference)) shouldBe Some(
-        Some(Some(SaUtr("1097172564")))
-      )
-      response.futureLiability.map(_.lastOption.map(_.dueDate))       shouldBe Some(Some(LocalDate.parse("2015-01-31")))
-      response.futureLiability.map(_.lastOption.map(_.amount))        shouldBe Some(Some(2300))
-      response.futureLiability.map(_.lastOption.map(_.taxYear.start)) shouldBe Some(Some(2014))
-      response.futureLiability.map(_.lastOption.map(_.taxYear.end))   shouldBe Some(Some(2015))
+      response.accountSummary.taxToPayStatus.toString                                   shouldBe "OverdueWithBill"
+      response.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 12345.67
+      response.accountSummary.totalAmountDueToHmrc.requiresPayment                      shouldBe true
+      response.accountSummary.amountHmrcOwe                                             shouldBe 0
+      response.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "BCD"
+      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe "2015-01-31"
+      response.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 503.2
+      response.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
+      response.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
+      response.futureLiability.get.head.futureLiabilities.last.descriptionCode.toString shouldBe "IN1"
+      response.futureLiability.get.head.futureLiabilities.last.partnershipReference.get shouldBe SaUtr("1097172564")
+      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe "2015-01-31"
+      response.futureLiability.get.head.futureLiabilities.last.amount                   shouldBe 2300
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.start            shouldBe 2014
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.end              shouldBe 2015
     }
   }
 

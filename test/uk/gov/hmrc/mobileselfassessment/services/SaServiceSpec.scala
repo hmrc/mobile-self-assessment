@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,7 +218,7 @@ class SaServiceSpec
       result.accountSummary.nextBill.get.amount           shouldBe 2803.20
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2015-01-31"
       result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
-      result.accountSummary.totalFutureLiability          shouldBe Some(2803.20)
+      result.accountSummary.totalFutureLiability          shouldBe Some(9703.20)
     }
 
     "calculate daysRemaining till next bill correctly" in {
@@ -240,6 +240,29 @@ class SaServiceSpec
       result.accountSummary.nextBill.get.amount           shouldBe 200
       result.accountSummary.nextBill.get.dueDate.toString shouldBe LocalDate.now().plusDays(31).toString()
       result.accountSummary.nextBill.get.daysRemaining    shouldBe 31
+    }
+
+    "group liabilities by date and provide total" in {
+      mockGetRootLinks(Future successful rootLinks)
+      mockGetOptionalCesaAccountSummary(Some(accountSummary))
+      mockGetFutureLiabilities(futureLiabilities)
+      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
+      result.futureLiability.isEmpty                                                  shouldBe false
+      result.futureLiability.get.size                                                 shouldBe 3
+      result.futureLiability.get.head.dueDate.toString                                shouldBe "2015-01-31"
+      result.futureLiability.get.head.total                                           shouldBe 2803.20
+      result.futureLiability.get.head.futureLiabilities.size                          shouldBe 2
+      result.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 503.20
+      result.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "JEP"
+      result.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
+      result.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
+      result.futureLiability.get.last.dueDate.toString                                shouldBe "2016-06-28"
+      result.futureLiability.get.last.total                                           shouldBe 2300
+      result.futureLiability.get.last.futureLiabilities.size                          shouldBe 1
+      result.futureLiability.get.last.futureLiabilities.head.amount                   shouldBe 2300
+      result.futureLiability.get.last.futureLiabilities.head.descriptionCode.toString shouldBe "PP2"
+      result.futureLiability.get.last.futureLiabilities.head.taxYear.start            shouldBe 2014
+      result.futureLiability.get.last.futureLiabilities.head.taxYear.end              shouldBe 2015
     }
   }
 }
