@@ -26,41 +26,54 @@ Fetch the GetLiabilities object.
 ```json
 {
   "accountSummary": {
-    "taxToPayStatus": "CreditLessThanBill",
+    "taxToPayStatus": "OnlyBill",
     "totalAmountDueToHmrc": {
-      "amount": 12345.67,
+      "amount": 0,
       "requiresPayment": true
     },
+    "amountHmrcOwe": 0,
+    "totalFutureLiability": 2000,
     "nextBill": {
-      "dueDate": "2015-01-31",
-      "daysRemaining": 25,
-      "amount": 2803.20
-    },
-    "amountHmrcOwe": 2000,
-    "totalFutureLiability": 2803.20,
-    "remainingAfterCreditDeducted": 803.20
+      "dueDate": "2022-01-31",
+      "amount": 1150,
+      "daysRemaining": 20
+    }
   },
-  "futureLiability": [
-    {
-      "descriptionCode": "BCD",
-      "descriptionText": "Balancing payment for 2015 to 2016",
-      "dueDate": "2015-01-31",
-      "amount": 503.2,
-      "taxYear": {
-        "start": 2014,
-        "end": 2015
-      }
-    },
-    {
+  "futureLiability": [{
+    "dueDate": "2022-01-31",
+    "futureLiabilities": [{
       "descriptionCode": "IN1",
-      "descriptionText": "First payment on account for 2015 to 2016",
-      "partnershipReference": "1097172564",
-      "dueDate": "2015-01-31",
-      "amount": 2300,
+      "descriptionText": "First payment on account for 2021 to 2022",
+      "dueDate": "2022-01-31",
+      "amount": 850,
       "taxYear": {
-        "start": 2014,
-        "end": 2015
+        "start": 2021,
+        "end": 2022
       }
+    }, {
+      "descriptionCode": "BCD",
+      "descriptionText": "Balancing payment for 2021 to 2022",
+      "dueDate": "2022-01-31",
+      "amount": 300,
+      "taxYear": {
+        "start": 2021,
+        "end": 2022
+      }
+    }],
+    "total": 1150
+  }, {
+    "dueDate": "2022-07-31",
+    "futureLiabilities": [{
+      "descriptionCode": "IN2",
+      "descriptionText": "First payment on account for 2021 to 2022",
+      "dueDate": "2022-07-31",
+      "amount": 850,
+      "taxYear": {
+        "start": 2021,
+        "end": 2022
+      }
+    }],
+    "total": 850
     }
   ],
   "setUpPaymentPlanUrl": "/",
