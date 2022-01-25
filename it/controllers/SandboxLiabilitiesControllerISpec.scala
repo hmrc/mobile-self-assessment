@@ -22,9 +22,9 @@ class SandboxLiabilitiesControllerISpec extends BaseISpec {
       val response = await(request.get())
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
-      parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
-      parsedResponse.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "BCD"
-      parsedResponse.futureLiability.get.head.futureLiabilities.head.amount shouldBe 503.2
+      parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 0
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "IN1"
+      parsedResponse.futureLiability.get.head.futureLiabilities.head.amount shouldBe 850
     }
   }
 

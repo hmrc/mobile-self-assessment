@@ -46,21 +46,20 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       val result: Future[Result] = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 200
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
-      response.accountSummary.taxToPayStatus.toString                                   shouldBe "OverdueWithBill"
-      response.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 12345.67
+      response.accountSummary.taxToPayStatus.toString                                   shouldBe "OnlyBill"
+      response.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 0
       response.accountSummary.totalAmountDueToHmrc.requiresPayment                      shouldBe true
       response.accountSummary.amountHmrcOwe                                             shouldBe 0
-      response.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "BCD"
-      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe "2015-01-31"
-      response.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 503.2
-      response.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
-      response.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
-      response.futureLiability.get.head.futureLiabilities.last.descriptionCode.toString shouldBe "IN1"
-      response.futureLiability.get.head.futureLiabilities.last.partnershipReference.get shouldBe SaUtr("1097172564")
-      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe "2015-01-31"
-      response.futureLiability.get.head.futureLiabilities.last.amount                   shouldBe 2300
-      response.futureLiability.get.head.futureLiabilities.last.taxYear.start            shouldBe 2014
-      response.futureLiability.get.head.futureLiabilities.last.taxYear.end              shouldBe 2015
+      response.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "IN1"
+      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe "2022-01-31"
+      response.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 850
+      response.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2021
+      response.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2022
+      response.futureLiability.get.head.futureLiabilities.last.descriptionCode.toString shouldBe "BCD"
+      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe "2022-01-31"
+      response.futureLiability.get.head.futureLiabilities.last.amount                   shouldBe 300
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.start            shouldBe 2021
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.end              shouldBe 2022
     }
   }
 
