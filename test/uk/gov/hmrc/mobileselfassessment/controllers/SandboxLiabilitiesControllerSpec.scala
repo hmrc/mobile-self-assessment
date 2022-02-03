@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.mobileselfassessment.controllers
 
-import org.joda.time.{LocalDate}
 import org.scalamock.handlers.CallHandler
 import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
-import uk.gov.hmrc.auth.core.{ConfidenceLevel, InsufficientConfidenceLevel}
 import play.api.mvc.Result
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
@@ -29,8 +27,6 @@ import scala.concurrent.Future
 class SandboxLiabilitiesControllerSpec extends BaseSpec {
 
   private val sut = new SandboxLiabilitiesController(
-    mockAuthConnector,
-    ConfidenceLevel.L200.level,
     Helpers.stubControllerComponents(),
     mockShutteringConnector
   )
