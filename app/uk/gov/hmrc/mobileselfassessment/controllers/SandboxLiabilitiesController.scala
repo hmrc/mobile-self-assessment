@@ -31,15 +31,14 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton()
-class SandboxLiabilitiesController @Inject()(
-                                              override val authConnector: AuthConnector,
-                                              @Named("controllers.confidenceLevel") override val confLevel: Int,
-                                              cc: ControllerComponents,
-                                              shutteringConnector: ShutteringConnector
-                                            )(implicit override val executionContext: ExecutionContext)
-  extends BackendController(cc)
+class SandboxLiabilitiesController @Inject() (
+  override val authConnector:                                   AuthConnector,
+  @Named("controllers.confidenceLevel") override val confLevel: Int,
+  cc:                                                           ControllerComponents,
+  shutteringConnector:                                          ShutteringConnector
+)(implicit override val executionContext:                       ExecutionContext)
+    extends BackendController(cc)
     with ControllerChecks
     with AccessControl
     with FileResource {
@@ -48,11 +47,14 @@ class SandboxLiabilitiesController @Inject()(
 
   override val logger: Logger = Logger(this.getClass)
 
-  def getLiabilities(utr: SaUtr, journeyId: JourneyId): Action[AnyContent] =
-    validateAcceptWithAuth(acceptHeaderValidationRules).async { implicit request =>
+  def getLiabilities(
+    utr:       SaUtr,
+    journeyId: JourneyId
+  ): Action[AnyContent] =
+    validateAccept(acceptHeaderValidationRules).async { implicit request =>
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
         withShuttering(shuttered) {
-          Future successful Ok(readData(resource= "sandbox-liabilities-response.json"))
+          Future successful Ok(readData(resource = "sandbox-liabilities-response.json"))
         }
       }
     }

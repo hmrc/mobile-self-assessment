@@ -37,7 +37,6 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
 
   "GET /sandbox/liabilities" should {
     "return 200" in {
-      mockAuthorisationGrantAccess(confidenceLevel)
       shutteringDisabled()
 
       val request = FakeRequest("GET", "/sandbox/liabilities")
@@ -64,18 +63,15 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
   }
 
   "GET /sandbox/liabilities" should {
-    "return 401" in {
-      mockAuthorisationFailure(InsufficientConfidenceLevel())
+    "return 406" in {
 
       val request = FakeRequest("GET", "/sandbox/liabilities")
-        .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
       val result = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
-      status(result) shouldBe 401
+      status(result) shouldBe 406
     }
   }
 
   "return 521 when shuttered" in {
-    mockAuthorisationGrantAccess(confidenceLevel)
     shutteringEnabled()
 
     val request = FakeRequest("GET", "/sandbox/liabilities")
