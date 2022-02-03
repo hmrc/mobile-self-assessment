@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.mobileselfassessment.controllers
 
-import org.joda.time.{LocalDate}
 import org.scalamock.handlers.CallHandler
 import play.api.test.Helpers._
 import play.api.test.{FakeRequest, Helpers}
-import uk.gov.hmrc.auth.core.{ConfidenceLevel, InsufficientConfidenceLevel}
 import play.api.mvc.Result
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
@@ -29,15 +27,12 @@ import scala.concurrent.Future
 class SandboxLiabilitiesControllerSpec extends BaseSpec {
 
   private val sut = new SandboxLiabilitiesController(
-    mockAuthConnector,
-    ConfidenceLevel.L200.level,
     Helpers.stubControllerComponents(),
     mockShutteringConnector
   )
 
   "GET /sandbox/liabilities" should {
     "return 200" in {
-      mockAuthorisationGrantAccess(confidenceLevel)
       shutteringDisabled()
 
       val request = FakeRequest("GET", "/sandbox/liabilities")
@@ -64,18 +59,15 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
   }
 
   "GET /sandbox/liabilities" should {
-    "return 401" in {
-      mockAuthorisationFailure(InsufficientConfidenceLevel())
+    "return 406" in {
 
       val request = FakeRequest("GET", "/sandbox/liabilities")
-        .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
       val result = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
-      status(result) shouldBe 401
+      status(result) shouldBe 406
     }
   }
 
   "return 521 when shuttered" in {
-    mockAuthorisationGrantAccess(confidenceLevel)
     shutteringEnabled()
 
     val request = FakeRequest("GET", "/sandbox/liabilities")

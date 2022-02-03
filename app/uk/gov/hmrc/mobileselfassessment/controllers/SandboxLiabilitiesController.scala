@@ -20,39 +20,38 @@ import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
+import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.api.sandbox.FileResource
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
 import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import javax.inject.{Inject, Named, Singleton}
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton()
-class SandboxLiabilitiesController @Inject()(
-                                              override val authConnector: AuthConnector,
-                                              @Named("controllers.confidenceLevel") override val confLevel: Int,
-                                              cc: ControllerComponents,
-                                              shutteringConnector: ShutteringConnector
-                                            )(implicit override val executionContext: ExecutionContext)
-  extends BackendController(cc)
+class SandboxLiabilitiesController @Inject() (
+  cc:                                     ControllerComponents,
+  shutteringConnector:                    ShutteringConnector
+)(implicit override val executionContext: ExecutionContext)
+    extends BackendController(cc)
     with ControllerChecks
-    with AccessControl
+    with HeaderValidator
     with FileResource {
 
   override def parser: BodyParser[AnyContent] = controllerComponents.parsers.anyContent
 
   override val logger: Logger = Logger(this.getClass)
 
-  def getLiabilities(utr: SaUtr, journeyId: JourneyId): Action[AnyContent] =
-    validateAcceptWithAuth(acceptHeaderValidationRules).async { implicit request =>
+  def getLiabilities(
+    utr:       SaUtr,
+    journeyId: JourneyId
+  ): Action[AnyContent] =
+    validateAccept(acceptHeaderValidationRules).async { implicit request =>
       shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
         withShuttering(shuttered) {
-          Future successful Ok(readData(resource= "sandbox-liabilities-response.json"))
+          Future successful Ok(readData(resource = "sandbox-liabilities-response.json"))
         }
       }
     }
