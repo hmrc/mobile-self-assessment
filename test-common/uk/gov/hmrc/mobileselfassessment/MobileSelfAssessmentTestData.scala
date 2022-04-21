@@ -328,8 +328,7 @@ trait MobileSelfAssessmentTestData {
        |  "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
        |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
-       |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment",
-       |  "viewBreakdownUrl": "/self-assessment/ind/123123123/account"
+       |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment"
        |}
        |""".stripMargin
 

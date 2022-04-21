@@ -27,8 +27,7 @@ case class GetLiabilitiesResponse(
   viewOtherYearsUrl:            String,
   moreSelfAssessmentDetailsUrl: String,
   payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
-  claimRefundUrl:               String,
-  viewBreakdownUrl:             String)
+  claimRefundUrl:               String)
 
 object GetLiabilitiesResponse {
 
