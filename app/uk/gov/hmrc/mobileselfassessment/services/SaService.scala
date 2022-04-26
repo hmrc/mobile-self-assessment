@@ -71,8 +71,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
           viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
           moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account",
-          claimRefundUrl               = s"/contact/self-assessment/ind/$utr/repayment",
-          viewBreakdownUrl             = s"/self-assessment/ind/$utr/account"
+          claimRefundUrl               = s"/contact/self-assessment/ind/$utr/repayment"
         )
       )
     }

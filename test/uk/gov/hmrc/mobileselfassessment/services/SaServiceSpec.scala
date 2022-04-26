@@ -93,11 +93,10 @@ class SaServiceSpec
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
       result.updateOrSubmitAReturnUrl                   shouldBe "/personal-account/self-assessment-summary"
       result.viewPaymentHistoryUrl                      shouldBe "/self-assessment/ind/123UTR/account/payments"
-      result.viewOtherYearsUrl                          shouldBe "/self-assessment/ind/123UTR/account/taxyear/2122"
+      result.viewOtherYearsUrl                          shouldBe "/self-assessment/ind/123UTR/account/taxyear/2223"
       result.moreSelfAssessmentDetailsUrl               shouldBe "/self-assessment/ind/123UTR/account"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
-      result.viewBreakdownUrl                           shouldBe "/self-assessment/ind/123UTR/account"
     }
 
     "return None if no accountURL is returned in root links" in {

@@ -52,7 +52,6 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe s"/self-assessment/ind/$utr/account"
       parsedResponse.payByDebitOrCardPaymentUrl                                               shouldBe "/personal-account/self-assessment-summary"
       parsedResponse.claimRefundUrl                                                           shouldBe s"/contact/self-assessment/ind/$utr/repayment"
-      parsedResponse.viewBreakdownUrl                                                         shouldBe s"/self-assessment/ind/$utr/account"
 
     }
 
