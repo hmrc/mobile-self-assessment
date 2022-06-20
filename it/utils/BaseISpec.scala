@@ -22,11 +22,13 @@ import org.scalatestplus.play.WsScalaTestClient
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import eu.timepit.refined.auto._
+
+import scala.concurrent.Future
 
 abstract class BaseISpec
     extends AnyWordSpecLike
@@ -41,6 +43,7 @@ abstract class BaseISpec
   override implicit lazy val app: Application = appBuilder.build()
 
   protected val acceptJsonHeader: (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
   val journeyId:                  JourneyId        = "27085215-69a4-4027-8f72-b04b10ec16b0"
 
   def config: Map[String, Any] =
@@ -50,6 +53,9 @@ abstract class BaseISpec
       "microservice.services.cesa.port"              -> wireMockPort,
       "microservice.services.mobile-shuttering.port" -> wireMockPort
     )
+
+  def getRequestWithAuthHeaders(url: String): Future[WSResponse] =
+    wsUrl(url).addHttpHeaders(acceptJsonHeader, authorisationJsonHeader).get()
 
   protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder().configure(config)
 

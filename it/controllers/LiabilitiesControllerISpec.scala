@@ -24,10 +24,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val currentTaxYear =
         TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 12345.67
@@ -62,10 +60,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetAccountSummary(utr, accountSummaryResponse)
       stubForGetFutureLiabilities(utr, "[]")
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
       parsedResponse.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
@@ -81,10 +77,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryMalformedResponse)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
 
@@ -94,10 +88,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryResponseInvalidCurrency)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
 
@@ -107,10 +99,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryResponseNullValue)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
 
@@ -119,10 +109,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 401)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 401
     }
 
@@ -131,10 +119,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 404)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 404
     }
 
@@ -143,35 +129,27 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinks(utr, getRootLinksAccountSummaryNullResponse)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 404
     }
 
     "return 406 when auth fails" in {
       authorisationRejected()
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request =s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 401
     }
 
     "return 400 when journeyId is not supplied" in {
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response: WSResponse = await(request.get)
+      val request = s"/$utr/liabilities"
+      val response= await(getRequestWithAuthHeaders(request))
       response.status shouldBe 400
     }
 
     "return 406 when acceptHeader is missing" in {
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      )
+      val request: WSRequest = wsUrl(s"/$utr/liabilities?journeyId=$journeyId")
       val response: WSResponse = await(request.get)
       response.status shouldBe 406
     }
@@ -180,10 +158,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess()
       stubForGetRootLinksFailure(utr, 500)
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
 
@@ -191,10 +167,8 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess()
       stubForShutteringEnabled
 
-      val request: WSRequest = wsUrl(
-        s"/$utr/liabilities?journeyId=$journeyId"
-      ).addHttpHeaders(acceptJsonHeader)
-      val response = await(request.get())
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 521
     }
   }
