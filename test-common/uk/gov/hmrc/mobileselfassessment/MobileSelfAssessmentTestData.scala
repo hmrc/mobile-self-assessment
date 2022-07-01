@@ -300,7 +300,6 @@ trait MobileSelfAssessmentTestData {
        |      "dueDate": "2015-01-31",
        |      "futureLiabilities": [ {
        |        "descriptionCode": "BCD",
-       |        "descriptionText": "Balancing payment for 2015 to 2016",
        |        "dueDate": "2015-01-31",
        |        "amount": 503.2,
        |        "taxYear": {
@@ -310,7 +309,6 @@ trait MobileSelfAssessmentTestData {
        |      },
        |      {
        |        "descriptionCode": "IN1",
-       |        "descriptionText": "First payment on account for 2015 to 2016",
        |        "partnershipReference": "1097172564",
        |        "dueDate": "2015-01-31",
        |        "amount": 2300,

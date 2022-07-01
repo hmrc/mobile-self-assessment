@@ -66,7 +66,6 @@ object FutureLiability {
 
 case class FutureLiability(
   descriptionCode:      DescriptionCode,
-  descriptionText:      String,
   partnershipReference: Option[SaUtr],
   dueDate:              LocalDate,
   amount:               BigDecimal,

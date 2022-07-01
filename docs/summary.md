@@ -43,7 +43,6 @@ Fetch the GetLiabilities object.
     "dueDate": "2022-01-31",
     "futureLiabilities": [{
       "descriptionCode": "IN1",
-      "descriptionText": "First payment on account for 2021 to 2022",
       "dueDate": "2022-01-31",
       "amount": 850,
       "taxYear": {
@@ -52,7 +51,6 @@ Fetch the GetLiabilities object.
       }
     }, {
       "descriptionCode": "BCD",
-      "descriptionText": "Balancing payment for 2021 to 2022",
       "dueDate": "2022-01-31",
       "amount": 300,
       "taxYear": {
@@ -65,7 +63,6 @@ Fetch the GetLiabilities object.
     "dueDate": "2022-07-31",
     "futureLiabilities": [{
       "descriptionCode": "IN2",
-      "descriptionText": "First payment on account for 2021 to 2022",
       "dueDate": "2022-07-31",
       "amount": 850,
       "taxYear": {
