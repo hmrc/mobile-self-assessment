@@ -100,7 +100,6 @@ case class CesaFutureLiability(
   lazy val toSaFutureLiability: FutureLiability =
     FutureLiability(
       descriptionCode,
-      descriptionCode.text(getPartnershipRefString(partnershipReference)),
       getPartnershipRefString(partnershipReference),
       statutoryDueDate,
       amount.toSaAmount,

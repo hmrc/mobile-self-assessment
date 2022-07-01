@@ -19,9 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.model
 import play.api.libs.json.{Format, JsResult, JsString, JsSuccess, JsValue}
 import uk.gov.hmrc.time.TaxYear.current
 
-sealed trait DescriptionCode {
-  def text(partnershipRef: Option[SaUtr]): String
-}
+sealed trait DescriptionCode
 
 object DescriptionCode {
 
@@ -98,136 +96,33 @@ object DescriptionCode {
   }
 }
 
-case object ACI extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None): String = "Interest on late payment"
-}
-
-case object ASST extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Revenue assessment"
-}
-
-case object BCD extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Balancing payment for ${current.currentYear} to ${current.finishYear}"
-}
-
-case object DET extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Revenue determination (estimated tax due)"
-}
-
-case object DP1 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Daily penalty"
-}
-
-case object DPP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None): String = s"Partnership daily penalty ${partnershipRef.getOrElse("")}"
-}
-
-case object ETA extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Amendment following an enquiry"
-}
-
-case object IN1 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"First payment on account for ${current.currentYear} to ${current.finishYear}"
-}
-
-case object IN2 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Second payment on account for ${current.currentYear} to ${current.finishYear}"
-}
-
-case object JEP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Amendment following an enquiry"
-}
-
-case object LFI1 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "6 month penalty for late tax return"
-}
-
-case object LFI2 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "12 month penalty for late tax return"
-}
-
-case object LFP1 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = s"6 month penalty for late partnership tax return ${partnershipRef.getOrElse("")}"
-}
-
-case object LFP2 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = s"12 month penalty for late partnership tax return ${partnershipRef.getOrElse("")}"
-}
-
-case object LPP1 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "30 days late payment penalty"
-}
-
-case object LPP2 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "6 months late payment penalty"
-}
-
-case object LPP3 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "12 months late payment penalty"
-}
-
-case object MRMP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Penalty"
-}
-
-case object NUP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Amount no longer included in PAYE tax code"
-}
-
-case object OREP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Over repayment from tax return"
-}
-
-case object PF1 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Penalty for late ${current.currentYear} to ${current.finishYear} tax return"
-}
-
-case object PF2 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Second penalty for late ${current.currentYear} to ${current.finishYear} tax return"
-}
-
-case object PP1 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = s"Penalty for late partnership tax return ${partnershipRef.getOrElse("")}"
-}
-
-case object PP2 extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = s"Second penalty for late partnership tax return ${partnershipRef.getOrElse("")}"
-}
-
-case object RAM extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Tax return amendment"
-}
-
-case object REV extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Amendment following an enquiry"
-}
-
-case object SUP extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = "Amount no longer included in PAYE tax code"
-}
-
-case object SUR1 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Penalty for late payment of ${current.currentYear} to ${current.finishYear} tax bill"
-}
-
-case object SUR2 extends DescriptionCode {
-
-  def text(partnershipRef: Option[SaUtr] = None) =
-    s"Second penalty for late payment of ${current.currentYear} to ${current.finishYear} tax bill"
-}
-
-case object UNKNOWN_CODE extends DescriptionCode {
-  def text(partnershipRef: Option[SaUtr] = None) = s"Tax bill for ${current.currentYear} to ${current.finishYear}"
-}
+case object ACI extends DescriptionCode
+case object ASST extends DescriptionCode
+case object BCD extends DescriptionCode
+case object DET extends DescriptionCode
+case object DP1 extends DescriptionCode
+case object DPP extends DescriptionCode
+case object ETA extends DescriptionCode
+case object IN1 extends DescriptionCode
+case object IN2 extends DescriptionCode
+case object JEP extends DescriptionCode
+case object LFI1 extends DescriptionCode
+case object LFI2 extends DescriptionCode
+case object LFP1 extends DescriptionCode
+case object LFP2 extends DescriptionCode
+case object LPP1 extends DescriptionCode
+case object LPP2 extends DescriptionCode
+case object LPP3 extends DescriptionCode
+case object MRMP extends DescriptionCode
+case object NUP extends DescriptionCode
+case object OREP extends DescriptionCode
+case object PF1 extends DescriptionCode
+case object PF2 extends DescriptionCode
+case object PP1 extends DescriptionCode
+case object PP2 extends DescriptionCode
+case object RAM extends DescriptionCode
+case object REV extends DescriptionCode
+case object SUP extends DescriptionCode
+case object SUR1 extends DescriptionCode
+case object SUR2 extends DescriptionCode
+case object UNKNOWN_CODE extends DescriptionCode
