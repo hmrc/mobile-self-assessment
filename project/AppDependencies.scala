@@ -5,7 +5,7 @@ import sbt._
 
 object AppDependencies {
 
-  private val bootstrapPlay28Version = "5.24.0"
+  private val bootstrapPlay28Version = "7.1.0"
   private val playHmrcApiVersion     = "7.0.0-play-28"
   private val flexmarkAllVersion     = "0.36.8"
   private val jsonJodaVersion        = "2.9.2"
@@ -28,11 +28,6 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "tax-year"                  % taxYearVersion
   )
 
-  val test = Seq(
-    Test,
-    "com.vladsch.flexmark" % "flexmark-all" % flexmarkAllVersion % "test, it"
-  )
-
   trait TestDependencies {
     lazy val scope: String        = "test"
     lazy val test:  Seq[ModuleID] = ???
@@ -44,8 +39,8 @@ object AppDependencies {
       new TestDependencies {
 
         override lazy val test: Seq[ModuleID] = testCommon(scope) ++ Seq(
-            "uk.gov.hmrc"   %% "bootstrap-test-play-28" % bootstrapPlay28Version,
-            "org.scalamock" %% "scalamock"              % scalaMockVersion % scope
+            "uk.gov.hmrc"   %% "bootstrap-test-play-28" % bootstrapPlay28Version % scope,
+            "org.scalamock" %% "scalamock"              % scalaMockVersion       % scope
           )
       }.test
   }
@@ -64,11 +59,11 @@ object AppDependencies {
   }
 
   private def testCommon(scope: String) = Seq(
-    "org.pegdown"            % "pegdown"             % pegdownVersion % scope,
-    "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
-    "org.scalatest"          %% "scalatest"          % scalaTestVersion,
+    "org.pegdown"            % "pegdown"             % pegdownVersion       % scope,
+    "com.typesafe.play"      %% "play-test"          % PlayVersion.current  % scope,
+    "org.scalatest"          %% "scalatest"          % scalaTestVersion     % scope,
     "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusVersion % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"        % flexmarkAllVersion % scope
+    "com.vladsch.flexmark"   % "flexmark-all"        % flexmarkAllVersion   % scope
   )
 
   def apply(): Seq[ModuleID] = compile ++ Test() ++ IntegrationTest()
