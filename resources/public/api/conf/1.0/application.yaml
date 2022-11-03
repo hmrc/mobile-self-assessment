@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  title: Mobile Self Assessment
+  description: >-
+    # Mobile Self Assessment
+
+    ### What is this API for?
+
+    Expose SA data in a pre-agreed format for HMRC Mobile App developers.
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://test-api.service.hmrc.gov.uk/mobile-self-assessment
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk/mobile-self-assessment
+    description: Production
+    variables: {}
+paths:
+  /mobile/self-assessment/{utr}/liabilities:
+    get:
+      tags:
+        - mobile
+      summary: Get the user's current liabilities
+      description: This endpoint retrieves the SA user's liabilities
+      operationId: Gettheuser'scurrentliabilities
+      parameters:
+        - name: utr
+          in: path
+          description: The UTR for the individual.
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: UTR123123
+        - name: journeyId
+          in: query
+          description: ''
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileSelfAssessmentLiabilitiesresponse'
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:native-apps-api-orchestration
+components:
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user-restricted API requests using an OAuth 2.0 Bearer Token in the
+        AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            read:native-apps-api-orchestration: Expose API to retrieve a SA user's liabilities
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+    AccountSummary:
+      title: AccountSummary
+      required:
+        - taxToPayStatus
+        - totalAmountDueToHmrc
+        - amountHmrcOwe
+        - totalFutureLiability
+        - nextBill
+      type: object
+      properties:
+        taxToPayStatus:
+          type: string
+        totalAmountDueToHmrc:
+          $ref: '#/components/schemas/TotalAmountDueToHmrc'
+        amountHmrcOwe:
+          type: integer
+          format: int32
+        totalFutureLiability:
+          type: number
+        nextBill:
+          $ref: '#/components/schemas/NextBill'
+      example:
+        taxToPayStatus: OverdueWithBill
+        totalAmountDueToHmrc:
+          amount: 12345.67
+          requiresPayment: true
+        amountHmrcOwe: 0
+        totalFutureLiability: 9703.2
+        nextBill:
+          dueDate: 2015-01-31
+          amount: 2803.2
+          daysRemaining: -1
+    FutureLiability:
+      title: FutureLiability
+      required:
+        - dueDate
+        - futureLiabilities
+        - total
+      type: object
+      properties:
+        dueDate:
+          type: string
+        futureLiabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FutureLiability1'
+          description: ''
+        total:
+          oneOf:
+            - type: number
+            - type: integer
+              format: int32
+    FutureLiability1:
+      title: FutureLiability1
+      required:
+        - descriptionCode
+        - dueDate
+        - amount
+        - taxYear
+      type: object
+      properties:
+        descriptionCode:
+          type: string
+        dueDate:
+          type: string
+        amount:
+          oneOf:
+            - type: number
+            - type: integer
+              format: int32
+        taxYear:
+          $ref: '#/components/schemas/TaxYear'
+        partnershipReference:
+          type: string
+      example:
+        descriptionCode: JEP
+        dueDate: 2015-01-31
+        amount: 503.2
+        taxYear:
+          start: 2014
+          end: 2015
+    MobileSelfAssessmentLiabilitiesresponse:
+      title: MobileSelfAssessmentLiabilitiesresponse
+      required:
+        - accountSummary
+        - futureLiability
+        - setUpPaymentPlanUrl
+        - updateOrSubmitAReturnUrl
+        - viewPaymentHistoryUrl
+        - viewOtherYearsUrl
+        - moreSelfAssessmentDetailsUrl
+        - payByDebitOrCardPaymentUrl
+        - claimRefundUrl
+      type: object
+      properties:
+        accountSummary:
+          $ref: '#/components/schemas/AccountSummary'
+        futureLiability:
+          type: array
+          items:
+            $ref: '#/components/schemas/FutureLiability'
+          description: ''
+        setUpPaymentPlanUrl:
+          type: string
+        updateOrSubmitAReturnUrl:
+          type: string
+        viewPaymentHistoryUrl:
+          type: string
+        viewOtherYearsUrl:
+          type: string
+        moreSelfAssessmentDetailsUrl:
+          type: string
+        payByDebitOrCardPaymentUrl:
+          type: string
+        claimRefundUrl:
+          type: string
+    NextBill:
+      title: NextBill
+      required:
+        - dueDate
+        - amount
+        - daysRemaining
+      type: object
+      properties:
+        dueDate:
+          type: string
+        amount:
+          type: number
+        daysRemaining:
+          type: integer
+          format: int32
+      example:
+        dueDate: 2015-01-31
+        amount: 2803.2
+        daysRemaining: -1
+    TaxYear:
+      title: TaxYear
+      required:
+        - start
+        - end
+      type: object
+      properties:
+        start:
+          type: integer
+          format: int32
+        end:
+          type: integer
+          format: int32
+      example:
+        start: 2014
+        end: 2015
+    TotalAmountDueToHmrc:
+      title: TotalAmountDueToHmrc
+      required:
+        - amount
+        - requiresPayment
+      type: object
+      properties:
+        amount:
+          type: number
+        requiresPayment:
+          type: boolean
+      example:
+        amount: 12345.67
+        requiresPayment: true
+tags:
+  - name: mobile
+    description: ''
