@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@ package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException, BearerTokenExpired, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException, BearerTokenExpired, ConfidenceLevel, Enrolment, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthorisationMock extends MockFactory {
 
-  type GrantAccess = ConfidenceLevel
+  type GrantAccess = ConfidenceLevel ~ Enrolments
 
   def mockAuthorisationGrantAccess(response: GrantAccess)(implicit authConnector: AuthConnector) =
     (authConnector
