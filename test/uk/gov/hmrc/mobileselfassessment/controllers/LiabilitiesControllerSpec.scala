@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 import scala.concurrent.{ExecutionContext, Future}
 
-class LiabilitiesControllerSpec
-  extends BaseSpec {
+class LiabilitiesControllerSpec extends BaseSpec {
 
   private val fakeRequest = FakeRequest("GET", "/").withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
   private val mockSaService: SaService = mock[SaService]
 
   private val controller = new LiabilitiesController(mockAuthConnector,
-    200,
-    Helpers.stubControllerComponents(),
-    mockSaService,
-    mockShutteringConnector)
+                                                     200,
+                                                     Helpers.stubControllerComponents(),
+                                                     mockSaService,
+                                                     mockShutteringConnector)
   private val liabilitiesResponse = Json.parse(getLiabilitiesResponse).as[GetLiabilitiesResponse]
 
   def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
@@ -51,7 +50,7 @@ class LiabilitiesControllerSpec
 
   "GET /liabilities" should {
     "return 200" in {
-      mockAuthorisationGrantAccess(confidenceLevel)
+      mockAuthorisationGrantAccess(authorisedResponse)
       shutteringDisabled()
       mockGetLiabilities(Future successful Some(liabilitiesResponse))
       val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
@@ -59,7 +58,7 @@ class LiabilitiesControllerSpec
     }
 
     "return NOT FOUND when no account info is found" in {
-      mockAuthorisationGrantAccess(confidenceLevel)
+      mockAuthorisationGrantAccess(authorisedResponse)
       shutteringDisabled()
       mockGetLiabilities(Future successful None)
       val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
@@ -67,7 +66,21 @@ class LiabilitiesControllerSpec
     }
 
     "return UNAUTHORIZED when confidence level is too low" in {
-      mockAuthorisationGrantAccess(ConfidenceLevel.L50)
+      mockAuthorisationGrantAccess(authorisedLowCLResponse)
+      val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+      status(result) shouldBe Status.UNAUTHORIZED
+    }
+
+    "return FORBIDDEN for valid utr for authorised user but for a different utr" in {
+      mockAuthorisationGrantAccess(authorisedResponse)
+
+      val result = controller.getLiabilities(SaUtr("differentUtr"), journeyId)(fakeRequest)
+
+      status(result) shouldBe Status.FORBIDDEN
+    }
+
+    "return UNAUTHORIZED when no UTR is found on account" in {
+      mockAuthorisationGrantAccess(authorisedNoEnrolmentsResponse)
       val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
       status(result) shouldBe Status.UNAUTHORIZED
     }

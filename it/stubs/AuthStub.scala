@@ -16,13 +16,16 @@
 
 package stubs
 
-
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson, post, stubFor, urlEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object AuthStub {
 
-  def grantAccess(confidenceLevel: Int = 200): StubMapping =
+  def grantAccess(
+    confidenceLevel: Int     = 200,
+    saUtr:           String  = "UTR123",
+    activeUtr:       Boolean = true
+  ): StubMapping =
     stubFor(
       post(urlEqualTo("/auth/authorise"))
         .atPriority(0)
@@ -38,7 +41,8 @@ object AuthStub {
                |    }
                |    ],
                |  "retrieve": [
-               |    "confidenceLevel"
+               |    "confidenceLevel",
+               |    "allEnrolments"
                |  ]
                |}
           """.stripMargin,
@@ -51,6 +55,14 @@ object AuthStub {
             .withStatus(200)
             .withBody(s"""
                          |{
+                         |  "allEnrolments": [{
+                         |      "key": "IR-SA",
+                         |      "identifiers": [{
+                         |        "key": "UTR",
+                         |        "value": "$saUtr"
+                         |      }],
+                         |      "state": "${if (activeUtr) "Activated" else "Deactivated"}"
+                         |  }],
                          |  "confidenceLevel": $confidenceLevel
                          |}
           """.stripMargin)
@@ -73,7 +85,8 @@ object AuthStub {
                |    }
                |    ],
                |  "retrieve": [
-               |    "confidenceLevel"
+               |    "confidenceLevel",
+               |    "allEnrolments"
                |  ]
                |}
           """.stripMargin,
