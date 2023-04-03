@@ -22,7 +22,7 @@ case class GetLiabilitiesResponse(
   accountSummary:               AccountSummary,
   futureLiability:              Option[Seq[GroupedFutureLiabilities]],
   setUpPaymentPlanUrl:          String = "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
-  updateOrSubmitAReturnUrl:     String = "/personal-account/self-assessment-summary",
+  updateOrSubmitAReturnUrl:     String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
   viewPaymentHistoryUrl:        String,
   viewOtherYearsUrl:            String,
   moreSelfAssessmentDetailsUrl: String,

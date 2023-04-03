@@ -91,7 +91,7 @@ class SaServiceSpec
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
-      result.updateOrSubmitAReturnUrl                   shouldBe "/personal-account/self-assessment-summary"
+      result.updateOrSubmitAReturnUrl                   shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       result.viewPaymentHistoryUrl                      shouldBe "/self-assessment/ind/123UTR/account/payments"
       result.viewOtherYearsUrl                          shouldBe "/self-assessment/ind/123UTR/account/taxyear/2223"
       result.moreSelfAssessmentDetailsUrl               shouldBe "/self-assessment/ind/123UTR/account"

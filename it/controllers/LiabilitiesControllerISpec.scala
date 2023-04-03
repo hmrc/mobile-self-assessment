@@ -44,7 +44,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
       parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
       parsedResponse.setUpPaymentPlanUrl                                                      shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
-      parsedResponse.updateOrSubmitAReturnUrl                                                 shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.updateOrSubmitAReturnUrl                                                 shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       parsedResponse.viewPaymentHistoryUrl                                                    shouldBe s"/self-assessment/ind/$utr/account/payments"
       parsedResponse.viewOtherYearsUrl                                                        shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
       parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe s"/self-assessment/ind/$utr/account"
