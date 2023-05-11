@@ -114,6 +114,16 @@ class LiabilitiesControllerISpec extends BaseISpec {
       response.status shouldBe 401
     }
 
+    "return 429 when a 429 is returned from CESA" in {
+      grantAccess()
+      stubForShutteringDisabled
+      stubForGetRootLinksFailure(utr, 429)
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 429
+    }
+
     "return 403 for valid utr for authorised user but for a different utr" in {
       grantAccess(saUtr = "differentUtr")
       stubForShutteringDisabled
