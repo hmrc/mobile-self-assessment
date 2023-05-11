@@ -28,6 +28,7 @@ import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaAmount, CesaFutureLiability, CesaLiability, CesaRootLinks}
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
 import uk.gov.hmrc.mobileselfassessment.model.{BCD, GetLiabilitiesResponse, IN1, IN2, SaUtr}
+import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,6 +45,13 @@ class SaServiceSpec
   private val service = new SaService(mockCesaConnector)
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc: HeaderCarrier    = HeaderCarrier()
+
+  def getTaxYear: Int = {
+    val now = java.time.LocalDate.now()
+    val year = now.getYear % 100
+    val offset = if (now.isBefore(java.time.LocalDate.of(now.getYear, 4, 6))) -1 else 0
+    (year + offset) * 100 + (year + offset + 1)
+  }
 
   private val utr               = SaUtr("123UTR")
   private val rootLinks         = CesaRootLinks(Some(s"/self-assessment/individual/$utr/account-summary"))
@@ -93,7 +101,7 @@ class SaServiceSpec
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
       result.updateOrSubmitAReturnUrl                   shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       result.viewPaymentHistoryUrl                      shouldBe "/self-assessment/ind/123UTR/account/payments"
-      result.viewOtherYearsUrl                          shouldBe "/self-assessment/ind/123UTR/account/taxyear/2324"
+      result.viewOtherYearsUrl                          shouldBe s"/self-assessment/ind/123UTR/account/taxyear/$getTaxYear"
       result.moreSelfAssessmentDetailsUrl               shouldBe "/self-assessment/ind/123UTR/account"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
