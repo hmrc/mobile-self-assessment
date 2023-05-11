@@ -41,6 +41,7 @@ class UtrNotFoundOnAccount extends GrantAccessException("Unauthorised! UTR not f
 case object ForbiddenAccess extends ErrorResponse(403, "UNAUTHORIZED", "Access denied!")
 
 case object ErrorUnauthorizedNoUtr extends ErrorResponse(401, "UNAUTHORIZED", "UTR does not exist on account")
+case object ErrorTooManyRequests extends ErrorResponse(429, "TOO_MANY_REQUEST", "Too many requests have been made to mobile-self-assessment please try again later")
 
 trait ErrorHandling {
   self: BackendBaseController =>
@@ -58,6 +59,10 @@ trait ErrorHandling {
       case ex: Upstream4xxResponse if ex.upstreamResponseCode == 401 =>
         log("Upstream service returned 401")
         Status(ErrorUnauthorizedUpstream.httpStatusCode)(toJson(ErrorUnauthorizedUpstream.asInstanceOf[ErrorResponse]))
+
+      case ex: Upstream4xxResponse if ex.upstreamResponseCode == 429 =>
+        log("Upstream service returned 429")
+        Status(ErrorTooManyRequests.httpStatusCode)(toJson(ErrorTooManyRequests.asInstanceOf[ErrorResponse]))
 
       case _: AuthorisationException =>
         log("Unauthorised! Failure to authorise account or grant access")
