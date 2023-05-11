@@ -24,7 +24,7 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.mobileselfassessment.services.SaService
-import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
