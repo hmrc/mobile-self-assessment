@@ -25,7 +25,7 @@ case class GetLiabilitiesResponse(
   updateOrSubmitAReturnUrl:     String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
   viewPaymentHistoryUrl:        String,
   viewOtherYearsUrl:            String,
-  moreSelfAssessmentDetailsUrl: String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
+  moreSelfAssessmentDetailsUrl: String = "/personal-account/self-assessment-summary",
   payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
   claimRefundUrl:               String)
 
