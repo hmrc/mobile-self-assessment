@@ -47,7 +47,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.updateOrSubmitAReturnUrl                                                 shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       parsedResponse.viewPaymentHistoryUrl                                                    shouldBe s"/self-assessment/ind/$utr/account/payments"
       parsedResponse.viewOtherYearsUrl                                                        shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
-      parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe s"/self-assessment/ind/$utr/account"
+      parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       parsedResponse.payByDebitOrCardPaymentUrl                                               shouldBe "/personal-account/self-assessment-summary"
       parsedResponse.claimRefundUrl                                                           shouldBe s"/contact/self-assessment/ind/$utr/repayment"
 

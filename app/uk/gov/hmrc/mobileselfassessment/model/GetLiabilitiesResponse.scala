@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ case class GetLiabilitiesResponse(
   updateOrSubmitAReturnUrl:     String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
   viewPaymentHistoryUrl:        String,
   viewOtherYearsUrl:            String,
-  moreSelfAssessmentDetailsUrl: String,
+  moreSelfAssessmentDetailsUrl: String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
   payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
   claimRefundUrl:               String)
 

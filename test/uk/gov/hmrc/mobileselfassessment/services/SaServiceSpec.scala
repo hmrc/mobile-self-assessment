@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class SaServiceSpec
       result.updateOrSubmitAReturnUrl                   shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       result.viewPaymentHistoryUrl                      shouldBe "/self-assessment/ind/123UTR/account/payments"
       result.viewOtherYearsUrl                          shouldBe s"/self-assessment/ind/123UTR/account/taxyear/$getTaxYear"
-      result.moreSelfAssessmentDetailsUrl               shouldBe "/self-assessment/ind/123UTR/account"
+      result.moreSelfAssessmentDetailsUrl               shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
     }

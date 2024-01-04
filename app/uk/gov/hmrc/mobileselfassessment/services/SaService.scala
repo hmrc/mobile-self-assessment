@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,12 +66,11 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     } yield {
       accountSummary.map(summary =>
         GetLiabilitiesResponse(
-          accountSummary               = buildAccountSummary(summary, futureLiabilities),
-          futureLiability              = futureLiabilities.map(groupFutureLiabilitiesByDate),
-          viewPaymentHistoryUrl        = s"/self-assessment/ind/$utr/account/payments",
-          viewOtherYearsUrl            = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
-          moreSelfAssessmentDetailsUrl = s"/self-assessment/ind/$utr/account",
-          claimRefundUrl               = s"/contact/self-assessment/ind/$utr/repayment"
+          accountSummary        = buildAccountSummary(summary, futureLiabilities),
+          futureLiability       = futureLiabilities.map(groupFutureLiabilitiesByDate),
+          viewPaymentHistoryUrl = s"/self-assessment/ind/$utr/account/payments",
+          viewOtherYearsUrl     = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
+          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment"
         )
       )
     }

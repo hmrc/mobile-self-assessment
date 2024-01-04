@@ -74,7 +74,7 @@
   "updateOrSubmitAReturnUrl" : "/personal-account/self-assessment-summary",
   "viewPaymentHistoryUrl" : "/self-assessment/ind/UTR123/account/payments",
   "viewOtherYearsUrl" : "/self-assessment/ind/UTR123/account/taxyear/2122",
-  "moreSelfAssessmentDetailsUrl" : "/self-assessment/ind/UTR123/account",
+  "moreSelfAssessmentDetailsUrl" : "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
   "payByDebitOrCardPaymentUrl" : "/personal-account/self-assessment-summary",
   "claimRefundUrl" : "/contact/self-assessment/ind/UTR123/repayment"
 }
