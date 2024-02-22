@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.mobileselfassessment.model
 
-import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
+
+import java.time.LocalDate
+
 
 object NextBill {
   implicit val formats = Json.format[NextBill]

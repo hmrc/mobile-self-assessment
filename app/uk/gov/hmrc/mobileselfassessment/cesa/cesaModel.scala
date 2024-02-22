@@ -101,7 +101,7 @@ case class CesaFutureLiability(
     FutureLiability(
       descriptionCode,
       getPartnershipRefString(partnershipReference),
-      statutoryDueDate,
+      java.time.LocalDate.of(statutoryDueDate.getYear, statutoryDueDate.getMonthOfYear, statutoryDueDate.getDayOfMonth),
       amount.toSaAmount,
       taxYear = TaxYear.fromEndYear(taxYearEndDate.get(DateTimeFieldType.year))
     )
