@@ -28,7 +28,6 @@ import uk.gov.hmrc.mobileselfassessment.controllers._
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 trait Authorisation extends Results with AuthorisedFunctions {
@@ -41,7 +40,11 @@ trait Authorisation extends Results with AuthorisedFunctions {
   lazy val utrNotFoundOnAccount = new UtrNotFoundOnAccount
   lazy val failedToMatchUtr     = new FailToMatchTaxIdOnAuth
 
-  def grantAccess(requestedUtr: SaUtr)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def grantAccess(
+    requestedUtr: SaUtr
+  )(implicit hc:  HeaderCarrier,
+    ec:           ExecutionContext
+  ): Future[Boolean] =
     authorised(CredentialStrength("strong") and ConfidenceLevel.L200)
       .retrieve(confidenceLevel and allEnrolments) {
         case foundConfidenceLevel ~ enrolments =>
@@ -53,9 +56,10 @@ trait Authorisation extends Results with AuthorisedFunctions {
       }
 
   def invokeAuthBlock[A](
-    request: Request[A],
-    block:   Request[A] => Future[Result],
-    saUtr:   SaUtr
+    request:     Request[A],
+    block:       Request[A] => Future[Result],
+    saUtr:       SaUtr
+  )(implicit ec: ExecutionContext
   ): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
@@ -97,8 +101,9 @@ trait AccessControl extends HeaderValidator with Authorisation {
   def parser: BodyParser[AnyContent]
 
   def validateAcceptWithAuth(
-    rules: Option[String] => Boolean,
-    saUtr: SaUtr
+    rules:       Option[String] => Boolean,
+    saUtr:       SaUtr
+  )(implicit ec: ExecutionContext
   ): ActionBuilder[Request, AnyContent] =
     new ActionBuilder[Request, AnyContent] {
 
