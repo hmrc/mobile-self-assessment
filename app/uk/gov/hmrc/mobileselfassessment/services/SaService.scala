@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.mobileselfassessment.services
 
-import org.joda.time.{Days, LocalDate}
-
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,7 +24,8 @@ import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
 import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, GroupedFutureLiabilities, NextBill, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
 import uk.gov.hmrc.time.TaxYear
 
-import java.time.Period
+import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, Period}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal
 
@@ -51,7 +50,9 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   ): Future[Option[Seq[FutureLiability]]] = {
     val liabilities: Future[Seq[FutureLiability]] =
       cesaConnector.futureLiabilities(utr).map(_.map(_.toSaFutureLiability))
-    liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
+    liabilities.flatMap(list =>
+      if (list.isEmpty) Future successful None else Future successful Some(list)
+    )
 
   }
 
@@ -95,10 +96,10 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   private def calculateNextBill(futureLiabilities: Seq[FutureLiability]): Option[NextBill] = {
     val nextBillDate = getNextBillDate(futureLiabilities)
     nextBillDate.map { date =>
-      val daysRemaining = Days.daysBetween(LocalDate.now(), date).getDays
+      val daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), date)
       NextBill(date,
                sumOfLiabilitiesOccuringOnDate(futureLiabilities, date),
-               daysRemaining = if (daysRemaining < 0) -1 else daysRemaining)
+               daysRemaining = if (daysRemaining < 0) -1 else daysRemaining.toInt)
     }
   }
 
@@ -148,7 +149,10 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   private def groupFutureLiabilitiesByDate(liabilities: Seq[FutureLiability]): Seq[GroupedFutureLiabilities] = {
 
     val groupByDate: Map[LocalDate, Seq[FutureLiability]] = liabilities.groupBy(_.dueDate)
-    groupByDate.map(date => GroupedFutureLiabilities(date._1, date._2, date._2.map(_.amount).sum)).toList
+    groupByDate
+      .map(date => GroupedFutureLiabilities(date._1, date._2, date._2.map(_.amount).sum))
+      .toList
+      .sortBy(_.dueDate.toEpochDay)
 
   }
 }

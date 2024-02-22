@@ -25,7 +25,7 @@ import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class GuiceModule(
   environment:   Environment,
