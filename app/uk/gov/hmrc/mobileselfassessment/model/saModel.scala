@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.mobileselfassessment.model
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
-
 object NextBill {
-  implicit val formats = Json.format[NextBill]
+  implicit val formats: Format[NextBill] = Json.format[NextBill]
 }
 
 case class NextBill(
@@ -31,7 +30,7 @@ case class NextBill(
   daysRemaining: Int)
 
 object AmountDue {
-  implicit val formats = Json.format[AmountDue]
+  implicit val formats: Format[AmountDue] = Json.format[AmountDue]
 }
 
 case class AmountDue(
@@ -39,7 +38,7 @@ case class AmountDue(
   requiresPayment: Boolean)
 
 object AccountSummary {
-  implicit val formats = Json.format[AccountSummary]
+  implicit val formats: Format[AccountSummary] = Json.format[AccountSummary]
 }
 
 case class AccountSummary(
@@ -51,9 +50,9 @@ case class AccountSummary(
   remainingAfterCreditDeducted: Option[BigDecimal] = None)
 
 object TaxYear {
-  implicit val formats = Json.format[TaxYear]
+  implicit val formats: Format[TaxYear] = Json.format[TaxYear]
 
-  def fromEndYear(taxEndYear: Int) = TaxYear(taxEndYear - 1, taxEndYear)
+  def fromEndYear(taxEndYear: Int): TaxYear = TaxYear(taxEndYear - 1, taxEndYear)
 }
 
 case class TaxYear(
@@ -61,7 +60,7 @@ case class TaxYear(
   end:   Int)
 
 object FutureLiability {
-  implicit val formats = Json.format[FutureLiability]
+  implicit val formats: Format[FutureLiability] = Json.format[FutureLiability]
 }
 
 case class FutureLiability(
@@ -72,7 +71,7 @@ case class FutureLiability(
   taxYear:              TaxYear)
 
 object GroupedFutureLiabilities {
-  implicit val formats = Json.format[GroupedFutureLiabilities]
+  implicit val formats: Format[GroupedFutureLiabilities] = Json.format[GroupedFutureLiabilities]
 }
 
 case class GroupedFutureLiabilities(

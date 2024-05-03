@@ -1,7 +1,6 @@
 package stubs
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor, urlEqualTo}
-import com.github.tomakehurst.wiremock.http.Fault
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 

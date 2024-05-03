@@ -21,7 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.mobileselfassessment.model.Shuttering
 import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 
@@ -43,10 +43,6 @@ class ShutteringConnector @Inject() (
       json =>
         (json).as[Shuttering]
     } recover {
-      case e: Upstream5xxResponse =>
-        logger.warn(s"Internal Server Error received from mobile-shuttering:\n $e \nAssuming unshuttered.")
-        Shuttering.shutteringDisabled
-
       case e =>
         logger.warn(s"Call to mobile-shuttering failed:\n $e \nAssuming unshuttered.")
         Shuttering.shutteringDisabled

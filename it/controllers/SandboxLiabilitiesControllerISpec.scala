@@ -2,14 +2,13 @@ package controllers
 
 import play.api.libs.json.Json
 import play.api.libs.ws.WSRequest
-import stubs.AuthStub._
 import utils.BaseISpec
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
 import stubs.ShutteringStub._
 
 class SandboxLiabilitiesControllerISpec extends BaseISpec {
 
-  val sandboxHeader = "X-MOBILE-USER-ID" -> "208606423740"
+  val sandboxHeader: (String, String) = "X-MOBILE-USER-ID" -> "208606423740"
   private val utr: SaUtr = SaUtr("UTR123")
 
   "when payload valid and sandbox header present it" should {

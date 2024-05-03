@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.connectors
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, JsValidationException, NotFoundException, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, JsValidationException, NotFoundException, UpstreamErrorResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaFutureLiability, CesaInvalidDataException, CesaRootLinks, CesaRootLinksWrapper}
 import uk.gov.hmrc.mobileselfassessment.config.AppConfig
@@ -55,7 +55,7 @@ class CesaIndividualsConnector @Inject() (
 
   def getRootLinks(utr: SaUtr)(implicit hc: HeaderCarrier): Future[CesaRootLinks] =
     http.GET[CesaRootLinksWrapper](url(s"/self-assessment/individual/$utr")).map(_.links).recover {
-      case ex: Upstream4xxResponse if ex.upstreamResponseCode == 404 =>
+      case ex: UpstreamErrorResponse if ex.statusCode == 404 =>
         throw new NotFoundException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
       case e: JsValidationException =>
         throw new CesaInvalidDataException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
