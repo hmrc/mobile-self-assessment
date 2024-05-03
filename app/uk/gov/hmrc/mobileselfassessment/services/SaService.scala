@@ -21,13 +21,12 @@ import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, CreditAndBillSame, CreditLessThanBill, CreditMoreThanBill, FutureLiability, GetLiabilitiesResponse, GroupedFutureLiabilities, NextBill, NoTaxToPay, OnlyBill, OnlyCredit, Overdue, OverdueWithBill, SaUtr, TaxToPayStatus}
+import uk.gov.hmrc.mobileselfassessment.model._
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.temporal.ChronoUnit
-import java.time.{LocalDate, Period}
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
-import scala.math.BigDecimal
 
 @Singleton
 class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logging {
@@ -50,9 +49,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   ): Future[Option[Seq[FutureLiability]]] = {
     val liabilities: Future[Seq[FutureLiability]] =
       cesaConnector.futureLiabilities(utr).map(_.map(_.toSaFutureLiability))
-    liabilities.flatMap(list =>
-      if (list.isEmpty) Future successful None else Future successful Some(list)
-    )
+    liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
 
   }
 

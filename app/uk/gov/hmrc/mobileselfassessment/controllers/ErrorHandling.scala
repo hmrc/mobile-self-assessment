@@ -63,11 +63,11 @@ trait ErrorHandling {
         log("Resource not found!")
         Status(ErrorNotFound.httpStatusCode)(toJson(ErrorNotFound.asInstanceOf[ErrorResponse]))
 
-      case ex: Upstream4xxResponse if ex.upstreamResponseCode == 401 =>
+      case ex: UpstreamErrorResponse if ex.statusCode == 401 =>
         log("Upstream service returned 401")
         Status(ErrorUnauthorizedUpstream.httpStatusCode)(toJson(ErrorUnauthorizedUpstream.asInstanceOf[ErrorResponse]))
 
-      case ex: Upstream4xxResponse if ex.upstreamResponseCode == 429 =>
+      case ex: UpstreamErrorResponse if ex.statusCode == 429 =>
         log("Upstream service returned 429")
         Status(ErrorTooManyRequests.httpStatusCode)(toJson(ErrorTooManyRequests.asInstanceOf[ErrorResponse]))
 

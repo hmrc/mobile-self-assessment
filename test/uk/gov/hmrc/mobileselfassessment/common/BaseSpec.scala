@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobileselfassessment.common
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import eu.timepit.refined.auto._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers

@@ -17,27 +17,25 @@
 package uk.gov.hmrc.mobileselfassessment.cesa
 
 import org.joda.time.{DateTimeFieldType, LocalDate}
-import play.api.libs.json.Json
-import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, NextBill, SaUtr, TaxYear}
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, SaUtr, TaxYear}
 import play.api.libs.json.JodaReads._
 import play.api.libs.json.JodaWrites._
 
-import scala.math.BigDecimal
-
 object CesaRootLinks {
-  implicit val formats = Json.format[CesaRootLinks]
+  implicit val formats: Format[CesaRootLinks] = Json.format[CesaRootLinks]
 }
 
 case class CesaRootLinks(accountSummary: Option[String])
 
 object CesaRootLinksWrapper {
-  implicit val formats = Json.format[CesaRootLinksWrapper]
+  implicit val formats: Format[CesaRootLinksWrapper] = Json.format[CesaRootLinksWrapper]
 }
 
 case class CesaRootLinksWrapper(links: CesaRootLinks)
 
 object CesaAmount {
-  implicit val formats = Json.format[CesaAmount]
+  implicit val formats: Format[CesaAmount] = Json.format[CesaAmount]
 }
 
 case class CesaAmount(
@@ -58,7 +56,7 @@ case class CesaAmount(
 }
 
 object CesaLiability {
-  implicit val formats = Json.format[CesaLiability]
+  implicit val formats: Format[CesaLiability] = Json.format[CesaLiability]
 }
 
 case class CesaLiability(
@@ -66,7 +64,7 @@ case class CesaLiability(
   amount:         CesaAmount)
 
 object CesaAccountSummary {
-  implicit val formats = Json.format[CesaAccountSummary]
+  implicit val formats: Format[CesaAccountSummary] = Json.format[CesaAccountSummary]
 }
 
 case class CesaAccountSummary(
@@ -80,7 +78,7 @@ case class CesaAccountSummary(
 }
 
 object CesaFutureLiability {
-  implicit val formats = Json.format[CesaFutureLiability]
+  implicit val formats: Format[CesaFutureLiability] = Json.format[CesaFutureLiability]
 }
 
 case class CesaFutureLiability(
