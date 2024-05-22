@@ -27,7 +27,11 @@ case class GetLiabilitiesResponse(
   viewOtherYearsUrl:            String,
   moreSelfAssessmentDetailsUrl: String = "/personal-account/self-assessment-summary",
   payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
-  claimRefundUrl:               String)
+  claimRefundUrl:               String,
+  selfAssessmentGeneralEnquiriesUrl: String =
+    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment",
+  selfAssessmentGeneralEnquiriesUrlCy: String =
+    "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines")
 
 object GetLiabilitiesResponse {
 
