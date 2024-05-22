@@ -13,38 +13,45 @@
       "daysRemaining": 20
     }
   },
-  "futureLiability": [{
-    "dueDate": "2022-01-31",
-    "futureLiabilities": [{
-      "descriptionCode": "IN1",
+  "futureLiability": [
+    {
       "dueDate": "2022-01-31",
-      "amount": 850,
-      "taxYear": {
-        "start": 2021,
-        "end": 2022
-      }
-    }, {
-      "descriptionCode": "BCD",
-      "dueDate": "2022-01-31",
-      "amount": 300,
-      "taxYear": {
-        "start": 2021,
-        "end": 2022
-      }
-    }],
-    "total": 1150
-  }, {
-    "dueDate": "2022-07-31",
-    "futureLiabilities": [{
-      "descriptionCode": "IN2",
+      "futureLiabilities": [
+        {
+          "descriptionCode": "IN1",
+          "dueDate": "2022-01-31",
+          "amount": 850,
+          "taxYear": {
+            "start": 2021,
+            "end": 2022
+          }
+        },
+        {
+          "descriptionCode": "BCD",
+          "dueDate": "2022-01-31",
+          "amount": 300,
+          "taxYear": {
+            "start": 2021,
+            "end": 2022
+          }
+        }
+      ],
+      "total": 1150
+    },
+    {
       "dueDate": "2022-07-31",
-      "amount": 850,
-      "taxYear": {
-        "start": 2021,
-        "end": 2022
-      }
-    }],
-    "total": 850
+      "futureLiabilities": [
+        {
+          "descriptionCode": "IN2",
+          "dueDate": "2022-07-31",
+          "amount": 850,
+          "taxYear": {
+            "start": 2021,
+            "end": 2022
+          }
+        }
+      ],
+      "total": 850
     }
   ],
   "setUpPaymentPlanUrl": "/",
@@ -53,5 +60,7 @@
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
-  "claimRefundUrl": "/"
+  "claimRefundUrl": "/",
+  "selfAssessmentGeneralEnquiriesUrl": "/",
+  "selfAssessmentGeneralEnquiriesUrlCy": "/"
 }

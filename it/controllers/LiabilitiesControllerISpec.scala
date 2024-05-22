@@ -178,7 +178,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
 
     "return 406 when acceptHeader is missing" in {
       val request:  WSRequest  = wsUrl(s"/$utr/liabilities?journeyId=$journeyId")
-      val response: WSResponse = await(request.get)
+      val response: WSResponse = await(request.get())
       response.status shouldBe 406
     }
 
