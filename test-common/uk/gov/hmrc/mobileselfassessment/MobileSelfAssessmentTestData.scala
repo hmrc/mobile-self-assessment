@@ -326,9 +326,7 @@ trait MobileSelfAssessmentTestData {
        |  "viewOtherYearsUrl": "/self-assessment/ind/123123123/account/taxyear/2122",
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
        |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
-       |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment",
-       |  "selfAssessmentGeneralEnquiriesUrl": "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment",
-       |  "selfAssessmentGeneralEnquiriesUrlCy": "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/welsh-language-helplines"
+       |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment"
        |}
        |""".stripMargin
 

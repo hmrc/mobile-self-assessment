@@ -60,7 +60,5 @@
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
-  "claimRefundUrl": "/",
-  "selfAssessmentGeneralEnquiriesUrl": "/",
-  "selfAssessmentGeneralEnquiriesUrlCy": "/"
+  "claimRefundUrl": "/"
 }
