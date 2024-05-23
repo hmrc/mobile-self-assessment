@@ -102,9 +102,7 @@ Fetch the GetLiabilities object.
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
-  "claimRefundUrl": "/",
-  "selfAssessmentGeneralEnquiriesUrl": "/",
-  "selfAssessmentGeneralEnquiriesUrlCy": "/"
+  "claimRefundUrl": "/"
 }
 ```
 
