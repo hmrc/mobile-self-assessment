@@ -8,18 +8,18 @@
     "amountHmrcOwe": 0,
     "totalFutureLiability": 2000,
     "nextBill": {
-      "dueDate": "2022-01-31",
+      "dueDate": "<FUTURE_DUE_DATE>",
       "amount": 1150,
       "daysRemaining": 20
     }
   },
   "futureLiability": [
     {
-      "dueDate": "2022-01-31",
+      "dueDate": "<FUTURE_DUE_DATE>",
       "futureLiabilities": [
         {
           "descriptionCode": "IN1",
-          "dueDate": "2022-01-31",
+          "dueDate": "<FUTURE_DUE_DATE>",
           "amount": 850,
           "taxYear": {
             "start": 2021,
@@ -28,7 +28,7 @@
         },
         {
           "descriptionCode": "BCD",
-          "dueDate": "2022-01-31",
+          "dueDate": "<FUTURE_DUE_DATE>",
           "amount": 300,
           "taxYear": {
             "start": 2021,
