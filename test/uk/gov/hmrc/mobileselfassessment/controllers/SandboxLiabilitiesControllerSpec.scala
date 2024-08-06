@@ -22,6 +22,8 @@ import play.api.test.{FakeRequest, Helpers}
 import play.api.mvc.Result
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
+
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class SandboxLiabilitiesControllerSpec extends BaseSpec {
@@ -46,12 +48,12 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       response.accountSummary.totalAmountDueToHmrc.requiresPayment                      shouldBe true
       response.accountSummary.amountHmrcOwe                                             shouldBe 0
       response.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "IN1"
-      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe "2022-01-31"
+      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe LocalDate.now().plusMonths(6).toString
       response.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 850
       response.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2021
       response.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2022
       response.futureLiability.get.head.futureLiabilities.last.descriptionCode.toString shouldBe "BCD"
-      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe "2022-01-31"
+      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe LocalDate.now().plusMonths(6).toString
       response.futureLiability.get.head.futureLiabilities.last.amount                   shouldBe 300
       response.futureLiability.get.head.futureLiabilities.last.taxYear.start            shouldBe 2021
       response.futureLiability.get.head.futureLiabilities.last.taxYear.end              shouldBe 2022
