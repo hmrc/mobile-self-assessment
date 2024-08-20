@@ -24,6 +24,7 @@ import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Sh
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class SandboxLiabilitiesControllerSpec extends BaseSpec {
@@ -43,20 +44,30 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       val result: Future[Result] = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 200
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
-      response.accountSummary.taxToPayStatus.toString                                   shouldBe "OnlyBill"
-      response.accountSummary.totalAmountDueToHmrc.amount                               shouldBe 0
-      response.accountSummary.totalAmountDueToHmrc.requiresPayment                      shouldBe true
-      response.accountSummary.amountHmrcOwe                                             shouldBe 0
+      response.accountSummary.taxToPayStatus.toString              shouldBe "OnlyBill"
+      response.accountSummary.totalAmountDueToHmrc.amount          shouldBe 0
+      response.accountSummary.totalAmountDueToHmrc.requiresPayment shouldBe true
+      response.accountSummary.amountHmrcOwe                        shouldBe 0
+      response.accountSummary.nextBill.get.dueDate.toString        shouldBe LocalDate.now().plusMonths(6).toString
+      response.accountSummary.nextBill.get.daysRemaining.toString shouldBe ChronoUnit.DAYS
+        .between(LocalDate.now(), LocalDate.now().plusMonths(6))
+        .toString
       response.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "IN1"
-      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString         shouldBe LocalDate.now().plusMonths(6).toString
+      response.futureLiability.get.head.futureLiabilities.head.dueDate.toString shouldBe LocalDate
+        .now()
+        .plusMonths(6)
+        .toString
       response.futureLiability.get.head.futureLiabilities.head.amount                   shouldBe 850
       response.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2021
       response.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2022
       response.futureLiability.get.head.futureLiabilities.last.descriptionCode.toString shouldBe "BCD"
-      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString         shouldBe LocalDate.now().plusMonths(6).toString
-      response.futureLiability.get.head.futureLiabilities.last.amount                   shouldBe 300
-      response.futureLiability.get.head.futureLiabilities.last.taxYear.start            shouldBe 2021
-      response.futureLiability.get.head.futureLiabilities.last.taxYear.end              shouldBe 2022
+      response.futureLiability.get.head.futureLiabilities.last.dueDate.toString shouldBe LocalDate
+        .now()
+        .plusMonths(6)
+        .toString
+      response.futureLiability.get.head.futureLiabilities.last.amount        shouldBe 300
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.start shouldBe 2021
+      response.futureLiability.get.head.futureLiabilities.last.taxYear.end   shouldBe 2022
     }
   }
 
@@ -64,7 +75,7 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
     "return 406" in {
 
       val request = FakeRequest("GET", "/sandbox/liabilities")
-      val result = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
+      val result  = sut.getLiabilities(SaUtr("utr"), journeyId)(request)
       status(result) shouldBe 406
     }
   }

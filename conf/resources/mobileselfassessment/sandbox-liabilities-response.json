@@ -10,7 +10,7 @@
     "nextBill": {
       "dueDate": "<FUTURE_DUE_DATE>",
       "amount": 1150,
-      "daysRemaining": 20
+      "daysRemaining": <DAYS_REMAINING>
     }
   },
   "futureLiability": [

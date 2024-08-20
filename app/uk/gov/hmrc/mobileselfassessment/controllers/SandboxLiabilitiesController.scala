@@ -28,6 +28,7 @@ import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -64,6 +65,8 @@ class SandboxLiabilitiesController @Inject() (
           findResource(s"/resources/mobileselfassessment/$resource")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
             .replace("<FUTURE_DUE_DATE>", LocalDate.now().plusMonths(6).toString)
+            .replace("<DAYS_REMAINING>",
+                     ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(6)).toString)
         )
         .as[GetLiabilitiesResponse]
     )
