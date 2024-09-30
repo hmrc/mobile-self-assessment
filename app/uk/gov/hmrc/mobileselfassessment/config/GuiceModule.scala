@@ -25,8 +25,6 @@ import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.jdk.CollectionConverters._
-
 class GuiceModule(
   environment:   Environment,
   configuration: Configuration)
@@ -41,14 +39,7 @@ class GuiceModule(
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
     bind(classOf[CorePost]).to(classOf[WSHttpImpl])
     bindConfigInt("controllers.confidenceLevel")
-    bind(classOf[ApiAccess]).toInstance(
-      ApiAccess(
-        "PRIVATE",
-        configuration.underlying
-          .getStringList("api.access.white-list.applicationIds")
-          .asScala
-      )
-    )
+    bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE"))
     bind(classOf[String])
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
