@@ -119,7 +119,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 429)
 
-      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val request  = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 429
     }

@@ -18,9 +18,9 @@ package uk.gov.hmrc.mobileselfassessment.connectors
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, JsValidationException, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, JsValidationException, NotFoundException, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaFutureLiability, CesaInvalidDataException, CesaRootLinks, CesaRootLinksWrapper}
 import uk.gov.hmrc.mobileselfassessment.config.AppConfig
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
@@ -29,11 +29,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CesaIndividualsConnector @Inject() (
-  override val http: HttpClient,
-  appConfig:         AppConfig
-)(implicit ec:       ExecutionContext)
-    extends PlayAuthConnector
-    with Logging {
+  val http:    HttpClientV2,
+  appConfig:   AppConfig
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   lazy val serviceUrl: String = appConfig.cesaBaseUrl
 
@@ -44,20 +43,32 @@ class CesaIndividualsConnector @Inject() (
     accountSummaryUrl: String
   )(implicit hc:       HeaderCarrier
   ): Future[Option[CesaAccountSummary]] =
-    http.GET[Option[CesaAccountSummary]](url(accountSummaryUrl))
+    http
+      .get(url"${url(accountSummaryUrl)}")
+      .execute[Option[CesaAccountSummary]]
 
   def futureLiabilities(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Seq[CesaFutureLiability]] = {
     val path = s"/self-assessment/individual/$utr/account/futureliabilities"
-    http.GET[Option[Seq[CesaFutureLiability]]](url(path)) map {
-      _.getOrElse(Seq.empty[CesaFutureLiability])
-    }
+    http
+      .get(url"${url(path)}")
+      .execute[Option[Seq[CesaFutureLiability]]]
+      .map {
+        _.getOrElse(Seq.empty[CesaFutureLiability])
+      }
   }
 
-  def getRootLinks(utr: SaUtr)(implicit hc: HeaderCarrier): Future[CesaRootLinks] =
-    http.GET[CesaRootLinksWrapper](url(s"/self-assessment/individual/$utr")).map(_.links).recover {
-      case ex: UpstreamErrorResponse if ex.statusCode == 404 =>
-        throw new NotFoundException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
-      case e: JsValidationException =>
-        throw new CesaInvalidDataException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
-    }
+  def getRootLinks(utr: SaUtr)(implicit hc: HeaderCarrier): Future[CesaRootLinks] = {
+    val path = s"/self-assessment/individual/$utr"
+    http
+      .get(url"${url(path)}")
+      .execute[CesaRootLinksWrapper]
+      .map(_.links)
+      .recover {
+        case ex: UpstreamErrorResponse if ex.statusCode == 404 =>
+          throw new NotFoundException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
+        case e: JsValidationException =>
+          throw new CesaInvalidDataException(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr'")
+      }
+
+  }
 }

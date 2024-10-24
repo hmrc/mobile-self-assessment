@@ -5,11 +5,11 @@ import sbt._
 
 object AppDependencies {
 
-  private val bootstrapPlay28Version = "8.5.0"
+  private val bootstrapPlay28Version = "9.5.0"
   private val playHmrcApiVersion     = "8.0.0"
   private val jsonJodaVersion        = "2.9.2"
-  private val domainVersion          = "9.0.0"
-  private val refinedVersion          = "0.11.1"
+  private val domainVersion          = "10.0.0"
+  private val refinedVersion         = "0.11.1"
   private val taxYearVersion         = "3.0.0"
 
   private val scalaMockVersion = "5.2.0"
@@ -19,7 +19,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "play-hmrc-api-play-30"     % playHmrcApiVersion,
     "com.typesafe.play" %% "play-json-joda"            % jsonJodaVersion,
     "uk.gov.hmrc"       %% "domain-play-30"            % domainVersion,
-    "eu.timepit"        %% "refined"                    % refinedVersion,
+    "eu.timepit"        %% "refined"                   % refinedVersion,
     "uk.gov.hmrc"       %% "tax-year"                  % taxYearVersion
   )
 
