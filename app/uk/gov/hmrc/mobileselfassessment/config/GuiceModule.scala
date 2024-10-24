@@ -20,7 +20,6 @@ import com.google.inject.name.Names.named
 import com.google.inject.AbstractModule
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.CorePost
 import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -37,7 +36,6 @@ class GuiceModule(
   override def configure(): Unit = {
 
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[CorePost]).to(classOf[WSHttpImpl])
     bindConfigInt("controllers.confidenceLevel")
     bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE"))
     bind(classOf[String])

@@ -25,6 +25,7 @@ import play.api.test.DefaultAwaitTimeout
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.mobileselfassessment.mocks.{AuthorisationMock, ShutteringMock}
@@ -48,6 +49,8 @@ trait BaseSpec
   implicit val mockShutteringConnector: ShutteringConnector = mock[ShutteringConnector]
   implicit val mockAuthConnector:       AuthConnector       = mock[AuthConnector]
   val confidenceLevel:                  ConfidenceLevel     = ConfidenceLevel.L200
+  val mockHttpClient:                   HttpClientV2        = mock[HttpClientV2]
+  val mockRequestBuilder:               RequestBuilder      = mock[RequestBuilder]
 
   val enrolments: Set[Enrolment] =
     Set(Enrolment("IR-SA", identifiers = Seq(EnrolmentIdentifier("UTR", "utr")), state = "Activated"))
