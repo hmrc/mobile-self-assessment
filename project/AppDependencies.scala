@@ -7,10 +7,10 @@ object AppDependencies {
 
   private val bootstrapPlay28Version = "9.5.0"
   private val playHmrcApiVersion     = "8.0.0"
-  private val jsonJodaVersion        = "2.9.2"
+  private val jsonJodaVersion        = "2.10.6"
   private val domainVersion          = "10.0.0"
-  private val refinedVersion         = "0.11.1"
-  private val taxYearVersion         = "3.0.0"
+  private val refinedVersion         = "0.11.2"
+  private val taxYearVersion         = "5.0.0"
 
   private val scalaMockVersion = "5.2.0"
 
