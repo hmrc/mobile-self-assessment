@@ -23,7 +23,6 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mobileselfassessment.views.txt
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.mutable
 
 case class ApiAccess(`type`: String)
 
