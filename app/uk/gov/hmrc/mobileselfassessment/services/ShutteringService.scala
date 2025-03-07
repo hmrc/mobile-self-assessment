@@ -25,7 +25,7 @@ import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ShutteringService @Inject()(connector: ShutteringConnector) {
+class ShutteringService @Inject() (connector: ShutteringConnector) {
 
   def getShutteringStatus(
     journeyId:              JourneyId
