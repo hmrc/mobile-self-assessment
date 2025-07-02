@@ -27,9 +27,7 @@ case class GetLiabilitiesResponse(
   viewOtherYearsUrl:            String,
   moreSelfAssessmentDetailsUrl: String = "/personal-account/self-assessment-summary",
   payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
-  claimRefundUrl:               String,
-  spreadCostUrl:                String = "/business-account/sa/spread-the-cost-of-your-self-assessment?origin=false")
-
+  claimRefundUrl:               String)
 object GetLiabilitiesResponse {
 
   implicit val format: OFormat[GetLiabilitiesResponse] = Json.format[GetLiabilitiesResponse]
