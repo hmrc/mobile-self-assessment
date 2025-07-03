@@ -3,10 +3,10 @@ package controllers
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
 import utils.BaseISpec
-import stubs.AuthStub._
-import stubs.ShutteringStub._
-import stubs.CesaStub._
-import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
+import stubs.AuthStub.*
+import stubs.ShutteringStub.*
+import stubs.CesaStub.*
+import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.time.TaxYear
 
 class LiabilitiesControllerISpec extends BaseISpec {

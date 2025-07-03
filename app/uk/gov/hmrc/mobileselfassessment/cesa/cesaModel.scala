@@ -19,8 +19,8 @@ package uk.gov.hmrc.mobileselfassessment.cesa
 import org.joda.time.{DateTimeFieldType, LocalDate}
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.mobileselfassessment.model.{AccountSummary, AmountDue, DescriptionCode, FutureLiability, SaUtr, TaxYear}
-import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads.*
+import play.api.libs.json.JodaWrites.*
 
 object CesaRootLinks {
   implicit val formats: Format[CesaRootLinks] = Json.format[CesaRootLinks]
@@ -38,9 +38,7 @@ object CesaAmount {
   implicit val formats: Format[CesaAmount] = Json.format[CesaAmount]
 }
 
-case class CesaAmount(
-  amount:   BigDecimal,
-  currency: String) {
+case class CesaAmount(amount: BigDecimal, currency: String) {
 
   private val paymentThreshold = BigDecimal(32d)
 
@@ -59,17 +57,13 @@ object CesaLiability {
   implicit val formats: Format[CesaLiability] = Json.format[CesaLiability]
 }
 
-case class CesaLiability(
-  paymentDueDate: Option[LocalDate],
-  amount:         CesaAmount)
+case class CesaLiability(paymentDueDate: Option[LocalDate], amount: CesaAmount)
 
 object CesaAccountSummary {
   implicit val formats: Format[CesaAccountSummary] = Json.format[CesaAccountSummary]
 }
 
-case class CesaAccountSummary(
-  totalAmountDueToHmrc: CesaAmount,
-  amountHmrcOwe:        CesaAmount) {
+case class CesaAccountSummary(totalAmountDueToHmrc: CesaAmount, amountHmrcOwe: CesaAmount) {
 
   lazy val toSaAccountSummary: AccountSummary = AccountSummary(
     totalAmountDueToHmrc = totalAmountDueToHmrc.toSaAmountDue,
@@ -81,18 +75,18 @@ object CesaFutureLiability {
   implicit val formats: Format[CesaFutureLiability] = Json.format[CesaFutureLiability]
 }
 
-case class CesaFutureLiability(
-  statutoryDueDate:     LocalDate,
-  taxYearEndDate:       LocalDate,
-  partnershipReference: Option[Long],
-  amount:               CesaAmount,
-  descriptionCode:      DescriptionCode) {
+case class CesaFutureLiability(statutoryDueDate: LocalDate,
+                               taxYearEndDate: LocalDate,
+                               partnershipReference: Option[Long],
+                               amount: CesaAmount,
+                               descriptionCode: DescriptionCode
+                              ) {
 
   private def getPartnershipRefString(partnershipReference: Option[Long]): Option[SaUtr] =
     partnershipReference match {
-      case None => None
+      case None                    => None
       case Some(a: Long) if a == 0 => None
-      case Some(value) => Some(SaUtr(value.toString))
+      case Some(value)             => Some(SaUtr(value.toString))
     }
 
   lazy val toSaFutureLiability: FutureLiability =

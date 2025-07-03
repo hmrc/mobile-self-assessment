@@ -29,7 +29,7 @@ object Binders {
     ): String = stringBinder.unbind(key, utr.value)
 
     def bind(
-      key:   String,
+      key: String,
       value: String
     ): Either[String, SaUtr] =
       Right(SaUtr(value))

@@ -24,10 +24,7 @@ import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class GuiceModule(
-  environment:   Environment,
-  configuration: Configuration)
-    extends AbstractModule {
+class GuiceModule(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   val servicesConfig = new ServicesConfig(
     configuration

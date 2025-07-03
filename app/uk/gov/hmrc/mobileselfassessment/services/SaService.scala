@@ -21,7 +21,7 @@ import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
-import uk.gov.hmrc.mobileselfassessment.model._
+import uk.gov.hmrc.mobileselfassessment.model.*
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.temporal.ChronoUnit
@@ -32,10 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logging {
 
   def getAccountSummary(
-    utr:         SaUtr
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Option[AccountSummary]] =
+    utr: SaUtr
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AccountSummary]] =
     cesaConnector.getRootLinks(utr).flatMap {
       case CesaRootLinks(Some(accountSummaryUrl)) =>
         cesaConnector.getOptionalCesaAccountSummary(utr, accountSummaryUrl).map(_.map(_.toSaAccountSummary))
@@ -43,10 +41,8 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     }
 
   def getFutureLiabilities(
-    utr:         SaUtr
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Option[Seq[FutureLiability]]] = {
+    utr: SaUtr
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[FutureLiability]]] = {
     val liabilities: Future[Seq[FutureLiability]] =
       cesaConnector.futureLiabilities(utr).map(_.map(_.toSaFutureLiability))
     liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
@@ -54,10 +50,8 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   }
 
   def getLiabilitiesResponse(
-    utr:         SaUtr
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Option[GetLiabilitiesResponse]] =
+    utr: SaUtr
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GetLiabilitiesResponse]] =
     for {
       accountSummary    <- getAccountSummary(utr)
       futureLiabilities <- getFutureLiabilities(utr)
@@ -74,13 +68,12 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     }
 
   private def buildAccountSummary(
-    summary:     AccountSummary,
+    summary: AccountSummary,
     liabilities: Option[Seq[FutureLiability]]
   ): AccountSummary = {
     val nextBill: Option[NextBill] = liabilities.flatMap(calculateNextBill)
     summary.copy(
-      taxToPayStatus =
-        getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill.map(_.amount)),
+      taxToPayStatus               = getTaxToPayStatus(summary.totalAmountDueToHmrc.amount, summary.amountHmrcOwe, nextBill.map(_.amount)),
       nextBill                     = nextBill,
       totalFutureLiability         = liabilities.flatMap(calculateTotalLiability),
       remainingAfterCreditDeducted = calculateRemainingAfterCredit(nextBill, summary.amountHmrcOwe)
@@ -94,9 +87,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     val nextBillDate = getNextBillDate(futureLiabilities)
     nextBillDate.map { date =>
       val daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), date)
-      NextBill(date,
-               sumOfLiabilitiesOccuringOnDate(futureLiabilities, date),
-               daysRemaining = if (daysRemaining < 0) -1 else daysRemaining.toInt)
+      NextBill(date, sumOfLiabilitiesOccuringOnDate(futureLiabilities, date), daysRemaining = if (daysRemaining < 0) -1 else daysRemaining.toInt)
     }
   }
 
@@ -104,15 +95,15 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     futureLiabilities.sortBy(_.dueDate.toString()).headOption.map(_.dueDate)
 
   private def sumOfLiabilitiesOccuringOnDate(
-    liabilities:   Seq[FutureLiability],
+    liabilities: Seq[FutureLiability],
     liabilityDate: LocalDate
   ): BigDecimal =
     liabilities.filter(_.dueDate equals liabilityDate).map(_.amount).sum
 
   private def getTaxToPayStatus(
-    amountDue:  BigDecimal,
+    amountDue: BigDecimal,
     amountOwed: BigDecimal,
-    nextBill:   Option[BigDecimal]
+    nextBill: Option[BigDecimal]
   ): TaxToPayStatus =
     (amountDue, amountOwed, nextBill) match {
       case (amountDue, _, Some(nextBill)) if amountDue > 0 && nextBill > 0             => OverdueWithBill
@@ -132,7 +123,7 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
 
   private def calculateRemainingAfterCredit(
     nextBill: Option[NextBill],
-    credit:   BigDecimal
+    credit: BigDecimal
   ): Option[BigDecimal] = {
     val nextBillAmount: BigDecimal = nextBill.map(_.amount).getOrElse(0)
     if (credit > 0 && nextBill.isDefined && credit != nextBillAmount) {

@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.connectors
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.http.{HeaderCarrier, JsValidationException, NotFoundException, StringContextOps, UpstreamErrorResponse}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaFutureLiability, CesaInvalidDataException, CesaRootLinks, CesaRootLinksWrapper}
 import uk.gov.hmrc.mobileselfassessment.config.AppConfig
@@ -29,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CesaIndividualsConnector @Inject() (
-  val http:    HttpClientV2,
-  appConfig:   AppConfig
+  val http: HttpClientV2,
+  appConfig: AppConfig
 )(implicit ec: ExecutionContext)
     extends Logging {
 
@@ -39,10 +39,9 @@ class CesaIndividualsConnector @Inject() (
   def url(path: String) = s"$serviceUrl$path"
 
   def getOptionalCesaAccountSummary(
-    utr:               SaUtr,
+    utr: SaUtr,
     accountSummaryUrl: String
-  )(implicit hc:       HeaderCarrier
-  ): Future[Option[CesaAccountSummary]] =
+  )(implicit hc: HeaderCarrier): Future[Option[CesaAccountSummary]] =
     http
       .get(url"${url(accountSummaryUrl)}")
       .execute[Option[CesaAccountSummary]]

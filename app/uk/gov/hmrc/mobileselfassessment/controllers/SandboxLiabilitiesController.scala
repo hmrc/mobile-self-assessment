@@ -19,11 +19,11 @@ package uk.gov.hmrc.mobileselfassessment.controllers
 import play.api.Logger
 import play.api.libs.json.Json.toJson
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.api.controllers.HeaderValidator
 import uk.gov.hmrc.api.sandbox.FileResource
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
-import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -34,8 +34,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class SandboxLiabilitiesController @Inject() (
-  cc:                                     ControllerComponents,
-  shutteringConnector:                    ShutteringConnector
+  cc: ControllerComponents,
+  shutteringConnector: ShutteringConnector
 )(implicit override val executionContext: ExecutionContext)
     extends BackendController(cc)
     with ControllerChecks
@@ -47,7 +47,7 @@ class SandboxLiabilitiesController @Inject() (
   override val logger: Logger = Logger(this.getClass)
 
   def getLiabilities(
-    utr:       SaUtr,
+    utr: SaUtr,
     journeyId: JourneyId
   ): Action[AnyContent] =
     validateAccept(acceptHeaderValidationRules).async { implicit request =>
@@ -65,8 +65,7 @@ class SandboxLiabilitiesController @Inject() (
           findResource(s"/resources/mobileselfassessment/$resource")
             .getOrElse(throw new IllegalArgumentException("Resource not found!"))
             .replace("<FUTURE_DUE_DATE>", LocalDate.now().plusMonths(6).toString)
-            .replace("<DAYS_REMAINING>",
-                     ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(6)).toString)
+            .replace("<DAYS_REMAINING>", ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(6)).toString)
         )
         .as[GetLiabilitiesResponse]
     )

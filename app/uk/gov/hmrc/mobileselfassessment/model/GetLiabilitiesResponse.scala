@@ -18,16 +18,16 @@ package uk.gov.hmrc.mobileselfassessment.model
 
 import play.api.libs.json.{Json, OFormat}
 
-case class GetLiabilitiesResponse(
-  accountSummary:               AccountSummary,
-  futureLiability:              Option[Seq[GroupedFutureLiabilities]],
-  setUpPaymentPlanUrl:          String = "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
-  updateOrSubmitAReturnUrl:     String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
-  viewPaymentHistoryUrl:        String,
-  viewOtherYearsUrl:            String,
-  moreSelfAssessmentDetailsUrl: String = "/personal-account/self-assessment-summary",
-  payByDebitOrCardPaymentUrl:   String = "/personal-account/self-assessment-summary",
-  claimRefundUrl:               String)
+case class GetLiabilitiesResponse(accountSummary: AccountSummary,
+                                  futureLiability: Option[Seq[GroupedFutureLiabilities]],
+                                  setUpPaymentPlanUrl: String = "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility",
+                                  updateOrSubmitAReturnUrl: String = "https://www.tax.service.gov.uk/personal-account/self-assessment-summary",
+                                  viewPaymentHistoryUrl: String,
+                                  viewOtherYearsUrl: String,
+                                  moreSelfAssessmentDetailsUrl: String = "/personal-account/self-assessment-summary",
+                                  payByDebitOrCardPaymentUrl: String = "/personal-account/self-assessment-summary",
+                                  claimRefundUrl: String
+                                 )
 object GetLiabilitiesResponse {
 
   implicit val format: OFormat[GetLiabilitiesResponse] = Json.format[GetLiabilitiesResponse]

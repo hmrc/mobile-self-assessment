@@ -17,6 +17,7 @@
 package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisationException, BearerTokenExpired, ConfidenceLevel, Enrolments}
@@ -24,7 +25,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthorisationMock extends MockFactory {
+trait AuthorisationMock extends MockFactory { this: TestSuite =>
 
   type GrantAccess = ConfidenceLevel ~ Enrolments
 
