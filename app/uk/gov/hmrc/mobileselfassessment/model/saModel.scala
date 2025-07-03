@@ -24,30 +24,25 @@ object NextBill {
   implicit val formats: Format[NextBill] = Json.format[NextBill]
 }
 
-case class NextBill(
-  dueDate:       LocalDate,
-  amount:        BigDecimal,
-  daysRemaining: Int)
+case class NextBill(dueDate: LocalDate, amount: BigDecimal, daysRemaining: Int)
 
 object AmountDue {
   implicit val formats: Format[AmountDue] = Json.format[AmountDue]
 }
 
-case class AmountDue(
-  amount:          BigDecimal,
-  requiresPayment: Boolean)
+case class AmountDue(amount: BigDecimal, requiresPayment: Boolean)
 
 object AccountSummary {
   implicit val formats: Format[AccountSummary] = Json.format[AccountSummary]
 }
 
-case class AccountSummary(
-  taxToPayStatus:               TaxToPayStatus = NoTaxToPay,
-  totalAmountDueToHmrc:         AmountDue,
-  amountHmrcOwe:                BigDecimal,
-  totalFutureLiability:         Option[BigDecimal] = None,
-  nextBill:                     Option[NextBill] = None,
-  remainingAfterCreditDeducted: Option[BigDecimal] = None)
+case class AccountSummary(taxToPayStatus: TaxToPayStatus = NoTaxToPay,
+                          totalAmountDueToHmrc: AmountDue,
+                          amountHmrcOwe: BigDecimal,
+                          totalFutureLiability: Option[BigDecimal] = None,
+                          nextBill: Option[NextBill] = None,
+                          remainingAfterCreditDeducted: Option[BigDecimal] = None
+                         )
 
 object TaxYear {
   implicit val formats: Format[TaxYear] = Json.format[TaxYear]
@@ -55,26 +50,21 @@ object TaxYear {
   def fromEndYear(taxEndYear: Int): TaxYear = TaxYear(taxEndYear - 1, taxEndYear)
 }
 
-case class TaxYear(
-  start: Int,
-  end:   Int)
+case class TaxYear(start: Int, end: Int)
 
 object FutureLiability {
   implicit val formats: Format[FutureLiability] = Json.format[FutureLiability]
 }
 
-case class FutureLiability(
-  descriptionCode:      DescriptionCode,
-  partnershipReference: Option[SaUtr],
-  dueDate:              LocalDate,
-  amount:               BigDecimal,
-  taxYear:              TaxYear)
+case class FutureLiability(descriptionCode: DescriptionCode,
+                           partnershipReference: Option[SaUtr],
+                           dueDate: LocalDate,
+                           amount: BigDecimal,
+                           taxYear: TaxYear
+                          )
 
 object GroupedFutureLiabilities {
   implicit val formats: Format[GroupedFutureLiabilities] = Json.format[GroupedFutureLiabilities]
 }
 
-case class GroupedFutureLiabilities(
-  dueDate:           LocalDate,
-  futureLiabilities: Seq[FutureLiability],
-  total:             BigDecimal)
+case class GroupedFutureLiabilities(dueDate: LocalDate, futureLiabilities: Seq[FutureLiability], total: BigDecimal)

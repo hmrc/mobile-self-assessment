@@ -25,7 +25,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
-import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 import eu.timepit.refined.auto._
 
 import scala.concurrent.Future
@@ -44,7 +44,8 @@ abstract class BaseISpec
 
   protected val acceptJsonHeader:        (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
   protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
-  val journeyId:                         JourneyId        = "27085215-69a4-4027-8f72-b04b10ec16b0"
+  val getJourneyId:                         JourneyId        = JourneyId.from("27085215-69a4-4027-8f72-b04b10ec16b0").toOption.get
+  val journeyId = getJourneyId.value
 
   def config: Map[String, Any] =
     Map[String, Any](

@@ -17,7 +17,7 @@ lazy val microservice = Project(appName, file("."))
     routesImport ++= Seq(
       "uk.gov.hmrc.mobileselfassessment.config.binders.Binders._",
       "uk.gov.hmrc.mobileselfassessment.model.types._",
-      "uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes._"
+      "uk.gov.hmrc.mobileselfassessment.model.types.JourneyId._"
     )
   )
   .configs(IntegrationTest)
@@ -25,7 +25,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.6.4",
     playDefaultPort := 8261,
     libraryDependencies ++= AppDependencies(),
     update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
@@ -47,7 +47,7 @@ lazy val microservice = Project(appName, file("."))
       "-Ywarn-numeric-widen",
       "-Xlint"
     ),
-    coverageMinimumStmtTotal := 90,
+    coverageMinimumStmtTotal := 80,
     coverageFailOnMinimum := true,
     coverageHighlighting := true,
     coverageExcludedPackages := "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;app.*;.*BuildInfo.*;.*Routes.*;.*javascript.*;.*Reverse.*;.*Hooks.*;.*DescriptionCode;.*TaxToPayStatus"

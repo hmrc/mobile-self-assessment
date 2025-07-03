@@ -19,14 +19,14 @@ package uk.gov.hmrc.mobileselfassessment.model
 import play.api.libs.json.{Format, JsString, JsSuccess, JsValue}
 
 sealed trait TaxToPayStatus
-case object OverdueWithBill extends TaxToPayStatus
-case object Overdue extends TaxToPayStatus
-case object CreditAndBillSame extends TaxToPayStatus
+case object OverdueWithBill    extends TaxToPayStatus
+case object Overdue            extends TaxToPayStatus
+case object CreditAndBillSame  extends TaxToPayStatus
 case object CreditLessThanBill extends TaxToPayStatus
 case object CreditMoreThanBill extends TaxToPayStatus
-case object OnlyCredit extends TaxToPayStatus
-case object OnlyBill extends TaxToPayStatus
-case object NoTaxToPay extends TaxToPayStatus
+case object OnlyCredit         extends TaxToPayStatus
+case object OnlyBill           extends TaxToPayStatus
+case object NoTaxToPay         extends TaxToPayStatus
 
 object TaxToPayStatus extends TaxToPayStatus {
 

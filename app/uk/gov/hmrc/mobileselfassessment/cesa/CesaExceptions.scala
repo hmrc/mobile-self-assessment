@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobileselfassessment.cesa
 
-import play.api.http.Status._
+import play.api.http.Status.*
 import uk.gov.hmrc.http.HttpException
 
 class CesaDataInconsistencyException(message: String) extends HttpException(message, INTERNAL_SERVER_ERROR)

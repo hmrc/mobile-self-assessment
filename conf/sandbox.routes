@@ -1,1 +1,1 @@
-GET        /:utr/liabilities        uk.gov.hmrc.mobileselfassessment.controllers.SandboxLiabilitiesController.getLiabilities(utr: uk.gov.hmrc.mobileselfassessment.model.SaUtr, journeyId: uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId)
+GET        /:utr/liabilities        uk.gov.hmrc.mobileselfassessment.controllers.SandboxLiabilitiesController.getLiabilities(utr: uk.gov.hmrc.mobileselfassessment.model.SaUtr, journeyId: uk.gov.hmrc.mobileselfassessment.model.types.JourneyId)

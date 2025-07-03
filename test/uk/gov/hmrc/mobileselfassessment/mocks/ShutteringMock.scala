@@ -18,14 +18,15 @@ package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.mobileselfassessment.model.Shuttering
-import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ShutteringMock extends MockFactory {
+trait ShutteringMock extends MockFactory { this: TestSuite =>
 
   protected def mockShutteringResponse(
     response:                     Shuttering

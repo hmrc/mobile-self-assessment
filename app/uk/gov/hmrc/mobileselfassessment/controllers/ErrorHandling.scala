@@ -21,13 +21,12 @@ import play.api.mvc.Result
 import play.api.{Logger, mvc}
 import uk.gov.hmrc.api.controllers.{ErrorInternalServerError, ErrorNotFound, ErrorResponse}
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendBaseController
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case object ErrorUnauthorizedUpstream
-    extends ErrorResponse(401, "UNAUTHORIZED", "Upstream service such as auth returned 401")
+case object ErrorUnauthorizedUpstream extends ErrorResponse(401, "UNAUTHORIZED", "Upstream service such as auth returned 401")
 
 class GrantAccessException(message: String) extends HttpException(message, 401)
 
@@ -42,9 +41,7 @@ case object ForbiddenAccess extends ErrorResponse(403, "UNAUTHORIZED", "Access d
 case object ErrorUnauthorizedNoUtr extends ErrorResponse(401, "UNAUTHORIZED", "UTR does not exist on account")
 
 case object ErrorTooManyRequests
-    extends ErrorResponse(429,
-                          "TOO_MANY_REQUEST",
-                          "Too many requests have been made to mobile-self-assessment please try again later")
+    extends ErrorResponse(429, "TOO_MANY_REQUEST", "Too many requests have been made to mobile-self-assessment please try again later")
 
 trait ErrorHandling {
   self: BackendBaseController =>
@@ -54,10 +51,8 @@ trait ErrorHandling {
   def log(message: String): Unit = logger.info(s"$app $message")
 
   def errorWrapper(
-    func:        => Future[mvc.Result]
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Result] =
+    func: => Future[mvc.Result]
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] =
     func.recover {
       case _: NotFoundException =>
         log("Resource not found!")

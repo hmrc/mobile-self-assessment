@@ -23,7 +23,7 @@ sealed trait DescriptionCode
 
 object DescriptionCode {
 
-  val startYear:  Int = current.currentYear
+  val startYear: Int = current.currentYear
   val finishYear: Int = current.finishYear
 
   implicit val format: Format[DescriptionCode] = new Format[DescriptionCode] {
@@ -96,33 +96,33 @@ object DescriptionCode {
   }
 }
 
-case object ACI extends DescriptionCode
-case object ASST extends DescriptionCode
-case object BCD extends DescriptionCode
-case object DET extends DescriptionCode
-case object DP1 extends DescriptionCode
-case object DPP extends DescriptionCode
-case object ETA extends DescriptionCode
-case object IN1 extends DescriptionCode
-case object IN2 extends DescriptionCode
-case object JEP extends DescriptionCode
-case object LFI1 extends DescriptionCode
-case object LFI2 extends DescriptionCode
-case object LFP1 extends DescriptionCode
-case object LFP2 extends DescriptionCode
-case object LPP1 extends DescriptionCode
-case object LPP2 extends DescriptionCode
-case object LPP3 extends DescriptionCode
-case object MRMP extends DescriptionCode
-case object NUP extends DescriptionCode
-case object OREP extends DescriptionCode
-case object PF1 extends DescriptionCode
-case object PF2 extends DescriptionCode
-case object PP1 extends DescriptionCode
-case object PP2 extends DescriptionCode
-case object RAM extends DescriptionCode
-case object REV extends DescriptionCode
-case object SUP extends DescriptionCode
-case object SUR1 extends DescriptionCode
-case object SUR2 extends DescriptionCode
+case object ACI          extends DescriptionCode
+case object ASST         extends DescriptionCode
+case object BCD          extends DescriptionCode
+case object DET          extends DescriptionCode
+case object DP1          extends DescriptionCode
+case object DPP          extends DescriptionCode
+case object ETA          extends DescriptionCode
+case object IN1          extends DescriptionCode
+case object IN2          extends DescriptionCode
+case object JEP          extends DescriptionCode
+case object LFI1         extends DescriptionCode
+case object LFI2         extends DescriptionCode
+case object LFP1         extends DescriptionCode
+case object LFP2         extends DescriptionCode
+case object LPP1         extends DescriptionCode
+case object LPP2         extends DescriptionCode
+case object LPP3         extends DescriptionCode
+case object MRMP         extends DescriptionCode
+case object NUP          extends DescriptionCode
+case object OREP         extends DescriptionCode
+case object PF1          extends DescriptionCode
+case object PF2          extends DescriptionCode
+case object PP1          extends DescriptionCode
+case object PP2          extends DescriptionCode
+case object RAM          extends DescriptionCode
+case object REV          extends DescriptionCode
+case object SUP          extends DescriptionCode
+case object SUR1         extends DescriptionCode
+case object SUR2         extends DescriptionCode
 case object UNKNOWN_CODE extends DescriptionCode

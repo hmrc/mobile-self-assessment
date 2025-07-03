@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.mobileselfassessment.mocks.{AuthorisationMock, ShutteringMock}
-import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 
 import scala.concurrent.ExecutionContext
 
@@ -45,7 +45,7 @@ trait BaseSpec
   implicit lazy val hc:     HeaderCarrier    = HeaderCarrier()
   implicit lazy val system: ActorSystem      = ActorSystem()
 
-  val journeyId:                        JourneyId           = "13345a9d-0958-4931-ae83-5a36e4ccd979"
+  val journeyId:                        JourneyId           = JourneyId.from("13345a9d-0958-4931-ae83-5a36e4ccd979").toOption.get
   implicit val mockShutteringConnector: ShutteringConnector = mock[ShutteringConnector]
   implicit val mockAuthConnector:       AuthConnector       = mock[AuthConnector]
   val confidenceLevel:                  ConfidenceLevel     = ConfidenceLevel.L200

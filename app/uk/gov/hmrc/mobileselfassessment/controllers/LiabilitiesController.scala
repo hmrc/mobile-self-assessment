@@ -27,7 +27,7 @@ import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 import uk.gov.hmrc.mobileselfassessment.services.SaService
 import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
-import uk.gov.hmrc.mobileselfassessment.model.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 
 import javax.inject.{Inject, Singleton}
@@ -35,26 +35,26 @@ import scala.concurrent.ExecutionContext
 
 @Singleton()
 class LiabilitiesController @Inject() (
-  override val authConnector:                                   AuthConnector,
+  override val authConnector: AuthConnector,
   @Named("controllers.confidenceLevel") override val confLevel: Int,
-  cc:                                                           ControllerComponents,
-  saService:                                                    SaService,
-  shutteringConnector:                                          ShutteringConnector
-)(implicit val executionContext:                                ExecutionContext)
+  cc: ControllerComponents,
+  saService: SaService,
+  shutteringConnector: ShutteringConnector
+)(implicit val executionContext: ExecutionContext)
     extends BackendController(cc)
     with AccessControl
     with ControllerChecks
     with ErrorHandling {
 
   override def parser: BodyParser[AnyContent] = controllerComponents.parsers.anyContent
-  override val app:    String                 = "Liabilities-Controller"
-  override val logger: Logger                 = Logger(this.getClass)
+  override val app: String = "Liabilities-Controller"
+  override val logger: Logger = Logger(this.getClass)
 
   def getLiabilities(
-    utr:       SaUtr,
+    utr: SaUtr,
     journeyId: JourneyId
   ): Action[AnyContent] = validateAcceptWithAuth(acceptHeaderValidationRules, utr).async { implicit request =>
-    implicit val hc: HeaderCarrier = fromRequest(request).withExtraHeaders(HeaderNames.xSessionId -> journeyId.value)
+    implicit val hc: HeaderCarrier = fromRequest(request).withExtraHeaders(HeaderNames.xSessionId -> journeyId.value.toString)
     shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
       withShuttering(shuttered) {
         errorWrapper {
