@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobileselfassessment.mocks
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaFutureLiability, CesaRootLinks}
 import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
@@ -25,7 +26,7 @@ import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 
 import scala.concurrent.Future
 
-trait CesaMock extends MockFactory {
+trait CesaMock extends MockFactory { this: TestSuite =>
 
   protected def mockGetRootLinks(
     response:               Future[CesaRootLinks]

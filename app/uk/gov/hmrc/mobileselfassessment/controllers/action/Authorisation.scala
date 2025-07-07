@@ -18,13 +18,13 @@ package uk.gov.hmrc.mobileselfassessment.controllers.action
 
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc._
-import uk.gov.hmrc.api.controllers._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import play.api.mvc.*
+import uk.gov.hmrc.api.controllers.*
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.*
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, ConfidenceLevel, CredentialStrength, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileselfassessment.controllers._
+import uk.gov.hmrc.mobileselfassessment.controllers.*
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
@@ -35,32 +35,28 @@ trait Authorisation extends Results with AuthorisedFunctions {
   val confLevel: Int
   val logger: Logger = Logger(this.getClass)
 
-  lazy val requiresAuth         = true
-  lazy val lowConfidenceLevel   = new AccountWithLowCL
+  lazy val requiresAuth = true
+  lazy val lowConfidenceLevel = new AccountWithLowCL
   lazy val utrNotFoundOnAccount = new UtrNotFoundOnAccount
-  lazy val failedToMatchUtr     = new FailToMatchTaxIdOnAuth
+  lazy val failedToMatchUtr = new FailToMatchTaxIdOnAuth
 
   def grantAccess(
     requestedUtr: SaUtr
-  )(implicit hc:  HeaderCarrier,
-    ec:           ExecutionContext
-  ): Future[Boolean] =
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     authorised(CredentialStrength("strong") and ConfidenceLevel.L200)
-      .retrieve(confidenceLevel and allEnrolments) {
-        case foundConfidenceLevel ~ enrolments =>
-          val activatedUtr = getActivatedSaUtr(enrolments)
-          if (activatedUtr.isEmpty) throw utrNotFoundOnAccount
-          if (!activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) throw failedToMatchUtr
-          if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
-          else Future successful true
+      .retrieve(confidenceLevel and allEnrolments) { case foundConfidenceLevel ~ enrolments =>
+        val activatedUtr = getActivatedSaUtr(enrolments)
+        if (activatedUtr.isEmpty) throw utrNotFoundOnAccount
+        if (!activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) throw failedToMatchUtr
+        if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
+        else Future successful true
       }
 
   def invokeAuthBlock[A](
-    request:     Request[A],
-    block:       Request[A] => Future[Result],
-    saUtr:       SaUtr
-  )(implicit ec: ExecutionContext
-  ): Future[Result] = {
+    request: Request[A],
+    block: Request[A] => Future[Result],
+    saUtr: SaUtr
+  )(implicit ec: ExecutionContext): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
     grantAccess(saUtr)
@@ -101,18 +97,17 @@ trait AccessControl extends HeaderValidator with Authorisation {
   def parser: BodyParser[AnyContent]
 
   def validateAcceptWithAuth(
-    rules:       Option[String] => Boolean,
-    saUtr:       SaUtr
-  )(implicit ec: ExecutionContext
-  ): ActionBuilder[Request, AnyContent] =
+    rules: Option[String] => Boolean,
+    saUtr: SaUtr
+  )(implicit ec: ExecutionContext): ActionBuilder[Request, AnyContent] =
     new ActionBuilder[Request, AnyContent] {
 
-      override def parser:                     BodyParser[AnyContent] = outer.parser
-      override protected def executionContext: ExecutionContext       = outer.executionContext
+      override def parser: BodyParser[AnyContent] = outer.parser
+      override protected def executionContext: ExecutionContext = outer.executionContext
 
       def invokeBlock[A](
         request: Request[A],
-        block:   Request[A] => Future[Result]
+        block: Request[A] => Future[Result]
       ): Future[Result] =
         if (rules(request.headers.get("Accept"))) {
           if (requiresAuth) invokeAuthBlock(request, block, saUtr)
