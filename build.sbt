@@ -1,13 +1,11 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
 
-
 val appName = "mobile-self-assessment"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     Seq(
       play.sbt.PlayScala,
-      SbtAutoBuildPlugin,
       SbtDistributablesPlugin,
       ScoverageSbtPlugin
     ): _*
@@ -22,7 +20,6 @@ lazy val microservice = Project(appName, file("."))
   )
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     majorVersion := 0,
     scalaVersion := "3.6.4",
@@ -30,9 +27,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies(),
     update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base =>
-      Seq(base / "it", base / "test-common")
-    ).value,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it", base / "test-common")).value,
     Test / unmanagedSourceDirectories := (Test / baseDirectory)(base => Seq(base / "test", base / "test-common")).value,
     IntegrationTest / parallelExecution := false,
     scalacOptions ++= Seq(
