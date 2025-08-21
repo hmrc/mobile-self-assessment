@@ -5,14 +5,14 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapPlay28Version = "9.16.0"
-  private val playHmrcApiVersion = "8.2.0"
+  private val bootstrapPlay28Version = "10.1.0"
+  private val playHmrcApiVersion = "8.3.0"
   private val jsonJodaVersion = "2.10.7"
   private val domainVersion = "12.1.0"
   private val refinedVersion = "0.11.3"
   private val taxYearVersion = "6.0.0"
 
-  private val scalaMockVersion = "7.3.3"
+  private val scalaMockVersion = "7.4.1"
 
   val compile = Seq(
     "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapPlay28Version,
