@@ -12,7 +12,7 @@ object AppDependencies {
   private val refinedVersion = "0.11.3"
   private val taxYearVersion = "6.0.0"
 
-  private val scalaMockVersion = "7.4.1"
+  private val scalaMockVersion = "7.5.0"
 
   val compile = Seq(
     "uk.gov.hmrc"       %% "bootstrap-backend-play-30" % bootstrapPlay28Version,
