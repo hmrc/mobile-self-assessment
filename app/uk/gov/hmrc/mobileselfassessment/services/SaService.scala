@@ -50,7 +50,8 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
   }
 
   def getLiabilitiesResponse(
-    utr: SaUtr
+    utr: SaUtr,
+    spreadCostUrl: String = ""
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GetLiabilitiesResponse]] =
     for {
       accountSummary    <- getAccountSummary(utr)
@@ -62,7 +63,8 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
           futureLiability       = futureLiabilities.map(groupFutureLiabilitiesByDate),
           viewPaymentHistoryUrl = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl     = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
-          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment"
+          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment",
+          spreadCostUrl         = spreadCostUrl
         )
       )
     }

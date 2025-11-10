@@ -43,7 +43,8 @@ class SaServiceSpec
   implicit val mockCesaConnector: CesaIndividualsConnector = mock[CesaIndividualsConnector]
   private val service = new SaService(mockCesaConnector)
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit lazy val hc: HeaderCarrier    = HeaderCarrier()
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  val spreadCostUrl = "http://spread-cost-url"
 
   def getTaxYear: Int = {
     val now = java.time.LocalDate.now()
@@ -52,17 +53,16 @@ class SaServiceSpec
     (year + offset) * 100 + (year + offset + 1)
   }
 
-  private val utr               = SaUtr("123UTR")
-  private val rootLinks         = CesaRootLinks(Some(s"/self-assessment/individual/$utr/account-summary"))
-  private val accountSummary    = Json.parse(accountSummaryResponse).as[CesaAccountSummary]
+  private val utr = SaUtr("123UTR")
+  private val rootLinks = CesaRootLinks(Some(s"/self-assessment/individual/$utr/account-summary"))
+  private val accountSummary = Json.parse(accountSummaryResponse).as[CesaAccountSummary]
   private val futureLiabilities = Json.parse(futureLiabilitiesResponse).as[Seq[CesaFutureLiability]]
 
   private def customAccountSummary(
-    amountDue:  BigDecimal,
+    amountDue: BigDecimal,
     amountOwed: BigDecimal
   ): CesaAccountSummary =
-    CesaAccountSummary(totalAmountDueToHmrc = CesaAmount(amountDue, "GBP"),
-                       amountHmrcOwe        = CesaAmount(amountOwed, "GBP"))
+    CesaAccountSummary(totalAmountDueToHmrc = CesaAmount(amountDue, "GBP"), amountHmrcOwe = CesaAmount(amountOwed, "GBP"))
 
   private def customFutureLiabilities(liabilityAmount: BigDecimal): Seq[CesaFutureLiability] =
     Seq(
@@ -94,7 +94,7 @@ class SaServiceSpec
       mockGetRootLinks(Future successful rootLinks)
       mockGetOptionalCesaAccountSummary(Some(accountSummary))
       mockGetFutureLiabilities(futureLiabilities)
-      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
+      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr, spreadCostUrl)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
@@ -104,6 +104,7 @@ class SaServiceSpec
       result.moreSelfAssessmentDetailsUrl               shouldBe "/personal-account/self-assessment-summary"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
+      result.spreadCostUrl                              shouldBe spreadCostUrl
     }
 
     "return None if no accountURL is returned in root links" in {

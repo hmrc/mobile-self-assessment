@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileselfassessment.controllers
 import org.scalamock.handlers.CallHandler
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
 import uk.gov.hmrc.mobileselfassessment.services.SaService
@@ -35,15 +35,17 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   private val controller = new LiabilitiesController(mockAuthConnector,
                                                      200,
+                                                     "http:///spread-cost-url",
                                                      Helpers.stubControllerComponents(),
                                                      mockSaService,
-                                                     mockShutteringConnector)
+                                                     mockShutteringConnector
+                                                    )
   private val liabilitiesResponse = Json.parse(getLiabilitiesResponse).as[GetLiabilitiesResponse]
 
   def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
     (mockSaService
-      .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *)
+      .getLiabilitiesResponse(_: SaUtr, _: String)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
       .returning(f)
 
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))

@@ -79,7 +79,8 @@ Fetch the GetLiabilities object.
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
-  "claimRefundUrl": "/"
+  "claimRefundUrl": "/",
+  "spreadCostUrl": "/"
 }
 ```
 
@@ -102,7 +103,8 @@ Fetch the GetLiabilities object.
   "viewOtherYearsUrl": "/",
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
-  "claimRefundUrl": "/"
+  "claimRefundUrl": "/",
+  "spreadCostUrl": "/"
 }
 ```
 
