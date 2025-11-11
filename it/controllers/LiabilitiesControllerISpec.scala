@@ -24,7 +24,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       val currentTaxYear =
         TaxYear.current.currentYear.toString.substring(2).concat(TaxYear.current.finishYear.toString.substring(2))
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
@@ -43,13 +43,14 @@ class LiabilitiesControllerISpec extends BaseISpec {
       parsedResponse.futureLiability.get.head.futureLiabilities.head.descriptionCode.toString shouldBe "JEP"
       parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.start            shouldBe 2014
       parsedResponse.futureLiability.get.head.futureLiabilities.head.taxYear.end              shouldBe 2015
-      parsedResponse.setUpPaymentPlanUrl                                                      shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
-      parsedResponse.updateOrSubmitAReturnUrl                                                 shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
-      parsedResponse.viewPaymentHistoryUrl                                                    shouldBe s"/self-assessment/ind/$utr/account/payments"
-      parsedResponse.viewOtherYearsUrl                                                        shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
-      parsedResponse.moreSelfAssessmentDetailsUrl                                             shouldBe "/personal-account/self-assessment-summary"
-      parsedResponse.payByDebitOrCardPaymentUrl                                               shouldBe "/personal-account/self-assessment-summary"
-      parsedResponse.claimRefundUrl                                                           shouldBe s"/contact/self-assessment/ind/$utr/repayment"
+      parsedResponse.setUpPaymentPlanUrl          shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
+      parsedResponse.updateOrSubmitAReturnUrl     shouldBe "https://www.tax.service.gov.uk/personal-account/self-assessment-summary"
+      parsedResponse.viewPaymentHistoryUrl        shouldBe s"/self-assessment/ind/$utr/account/payments"
+      parsedResponse.viewOtherYearsUrl            shouldBe s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear"
+      parsedResponse.moreSelfAssessmentDetailsUrl shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.payByDebitOrCardPaymentUrl   shouldBe "/personal-account/self-assessment-summary"
+      parsedResponse.claimRefundUrl               shouldBe s"/contact/self-assessment/ind/$utr/repayment"
+      parsedResponse.spreadCostUrl                shouldBe s"http://spread-the-cost"
 
     }
 
@@ -60,7 +61,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetAccountSummary(utr, accountSummaryResponse)
       stubForGetFutureLiabilities(utr, "[]")
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 200
       val parsedResponse = Json.parse(response.body).as[GetLiabilitiesResponse]
@@ -77,7 +78,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryMalformedResponse)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
@@ -88,7 +89,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryResponseInvalidCurrency)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
@@ -99,7 +100,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForGetRootLinks(utr, getRootLinksResponse(utr))
       stubForGetAccountSummary(utr, accountSummaryResponseNullValue)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
@@ -109,7 +110,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 401)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 401
     }
@@ -119,7 +120,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 429)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 429
     }
@@ -128,7 +129,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess(saUtr = "differentUtr")
       stubForShutteringDisabled
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 403
     }
@@ -137,7 +138,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess(activeUtr = false)
       stubForShutteringDisabled
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 401
     }
@@ -147,7 +148,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinksFailure(utr, 404)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 404
     }
@@ -157,7 +158,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       stubForShutteringDisabled
       stubForGetRootLinks(utr, getRootLinksAccountSummaryNullResponse)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 404
     }
@@ -165,19 +166,19 @@ class LiabilitiesControllerISpec extends BaseISpec {
     "return 406 when auth fails" in {
       authorisationRejected()
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 401
     }
 
     "return 400 when journeyId is not supplied" in {
-      val request  = s"/$utr/liabilities"
+      val request = s"/$utr/liabilities"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 400
     }
 
     "return 406 when acceptHeader is missing" in {
-      val request:  WSRequest  = wsUrl(s"/$utr/liabilities?journeyId=$journeyId")
+      val request: WSRequest = wsUrl(s"/$utr/liabilities?journeyId=$journeyId")
       val response: WSResponse = await(request.get())
       response.status shouldBe 406
     }
@@ -186,7 +187,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess()
       stubForGetRootLinksFailure(utr, 500)
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 500
     }
@@ -195,7 +196,7 @@ class LiabilitiesControllerISpec extends BaseISpec {
       grantAccess()
       stubForShutteringEnabled
 
-      val request  = s"/$utr/liabilities?journeyId=$journeyId"
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 521
     }

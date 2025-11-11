@@ -26,7 +26,7 @@ import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
-import eu.timepit.refined.auto._
+import eu.timepit.refined.auto.*
 
 import scala.concurrent.Future
 
@@ -42,9 +42,9 @@ abstract class BaseISpec
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  protected val acceptJsonHeader:        (String, String) = "Accept" -> "application/vnd.hmrc.1.0+json"
+  protected val acceptJsonHeader: (String, String) = "Accept"               -> "application/vnd.hmrc.1.0+json"
   protected val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
-  val getJourneyId:                         JourneyId        = JourneyId.from("27085215-69a4-4027-8f72-b04b10ec16b0").toOption.get
+  val getJourneyId: JourneyId = JourneyId.from("27085215-69a4-4027-8f72-b04b10ec16b0").toOption.get
   val journeyId = getJourneyId.value
 
   def config: Map[String, Any] =
@@ -52,7 +52,8 @@ abstract class BaseISpec
       "auditing.enabled"                             -> false,
       "microservice.services.auth.port"              -> wireMockPort,
       "microservice.services.cesa.port"              -> wireMockPort,
-      "microservice.services.mobile-shuttering.port" -> wireMockPort
+      "microservice.services.mobile-shuttering.port" -> wireMockPort,
+      "spreadCostUrl"                                -> "http://spread-the-cost"
     )
 
   def getRequestWithAuthHeaders(url: String): Future[WSResponse] =
