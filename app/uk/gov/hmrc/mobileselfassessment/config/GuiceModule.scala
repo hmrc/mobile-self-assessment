@@ -31,7 +31,7 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
   )
 
   override def configure(): Unit = {
-
+    bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
     bindConfigInt("controllers.confidenceLevel")
     bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE"))

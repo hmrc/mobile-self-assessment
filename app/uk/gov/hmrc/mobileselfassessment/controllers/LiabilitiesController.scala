@@ -66,4 +66,21 @@ class LiabilitiesController @Inject() (
       }
     }
   }
+
+  def getLiabilitiesNew(
+    utr: SaUtr,
+    journeyId: JourneyId
+  ): Action[AnyContent] = validateAcceptWithAuth(acceptHeaderValidationRules, utr).async { implicit request =>
+    implicit val hc: HeaderCarrier = fromRequest(request).withExtraHeaders(HeaderNames.xSessionId -> journeyId.value.toString)
+    shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
+      withShuttering(shuttered) {
+        errorWrapper {
+          saService.getLiabilitiesResponseNew(utr, spreadCostUrl).map {
+            case None           => NotFound
+            case Some(response) => Ok(Json.toJson(response))
+          }
+        }
+      }
+    }
+  }
 }

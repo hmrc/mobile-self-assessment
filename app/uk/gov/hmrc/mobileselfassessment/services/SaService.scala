@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.mobileselfassessment.services
 
+import eu.timepit.refined.auto.autoUnwrap
+
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
+import play.api.libs.json.{JsString, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
-import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
+import uk.gov.hmrc.mobileselfassessment.connectors.{CesaIndividualsConnector, HipConnector}
 import uk.gov.hmrc.mobileselfassessment.model.*
+import uk.gov.hmrc.mobileselfassessment.model
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.temporal.ChronoUnit
@@ -29,7 +33,7 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logging {
+class SaService @Inject() (cesaConnector: CesaIndividualsConnector, hipConnector: HipConnector) extends Logging {
 
   def getAccountSummary(
     utr: SaUtr
@@ -48,6 +52,39 @@ class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logg
     liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
 
   }
+
+  private def toAccountSummary(hipResponse: HipResponse): Option[AccountSummary] = {
+    if (hipResponse.balanceDetails.totalBalance > 0 || hipResponse.balanceDetails.totalCreditAvailable > 0)
+      Some(
+        AccountSummary(
+          totalAmountDueToHmrc = hipResponse.toSaAmountDue,
+          amountHmrcOwe        = hipResponse.balanceDetails.totalCreditAvailable
+        )
+      )
+    else None
+  }
+
+  def getLiabilitiesResponseNew(
+    utr: SaUtr,
+    spreadCostUrl: String = ""
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GetLiabilitiesResponse]] =
+    for {
+      futureLiabilitiesHip <- hipConnector.getSelfAssessmentLiabilitiesData(utr)
+    } yield {
+      val accountSummary: Option[AccountSummary] = futureLiabilitiesHip.toSaAccountSummary
+      val futureLiabilitiesInt: Seq[FutureLiability] = ChargeDetails.toFutureLIabilities(futureLiabilitiesHip.chargeDetails)
+      val futureLiabilities: Option[Seq[FutureLiability]] = if (futureLiabilitiesInt.size > 0) Some(futureLiabilitiesInt) else None
+      accountSummary.map(summary =>
+        GetLiabilitiesResponse(
+          accountSummary        = buildAccountSummary(summary, futureLiabilities),
+          futureLiability       = futureLiabilities.map(groupFutureLiabilitiesByDate),
+          viewPaymentHistoryUrl = s"/self-assessment/ind/$utr/account/payments",
+          viewOtherYearsUrl     = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
+          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment",
+          spreadCostUrl         = spreadCostUrl
+        )
+      )
+    }
 
   def getLiabilitiesResponse(
     utr: SaUtr

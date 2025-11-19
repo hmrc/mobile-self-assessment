@@ -23,4 +23,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 @Singleton
 class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {
   val cesaBaseUrl: String = servicesConfig.baseUrl("cesa")
+  val hipUrl = servicesConfig.baseUrl("hip")
+  val hipClientId: String = config.get[String]("microservice.services.hip.clientId")
+  val hipClientSecret: String = config.get[String]("microservice.services.hip.clientSecret")
 }

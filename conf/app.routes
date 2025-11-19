@@ -1,3 +1,5 @@
 # microservice specific routes
 
 GET        /:utr/liabilities             uk.gov.hmrc.mobileselfassessment.controllers.LiabilitiesController.getLiabilities(utr: uk.gov.hmrc.mobileselfassessment.model.SaUtr, journeyId: JourneyId)
+
+GET        /:utr/liabilities1             uk.gov.hmrc.mobileselfassessment.controllers.LiabilitiesController.getLiabilitiesNew(utr: uk.gov.hmrc.mobileselfassessment.model.SaUtr, journeyId: JourneyId)
