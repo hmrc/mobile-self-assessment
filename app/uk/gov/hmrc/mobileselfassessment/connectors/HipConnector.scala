@@ -59,11 +59,11 @@ class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(impl
     val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
 
     val queryParameters = Seq(
-      "dateFrom" -> currentDate.toString,
-      "dateTo"   -> currentDate.minusYears(7).toString
+      "dateFrom" -> currentDate.minusYears(7).toString,
+      "dateTo"   -> currentDate.toString
     )
 
-    val path = s"self-assessment/account/$utr/liability-details"
+    val path = s"/self-assessment/account/$utr/liability-details"
     http
       .get(url"${url(path)}")
       .transform(_.withQueryStringParameters(queryParameters*))
@@ -79,7 +79,7 @@ class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(impl
               )
               Future.failed(HipExceptions(s"Unable to retrieve data: SA (Individual) root data for UTR '$utr' via HIP"))
           }
-        case response if response.status == 422 =>
+        case response if (response.status == 422 || response.status == 404) =>
           Future.failed(HipExceptions(s"SA (Individual) root data for UTR '$utr' not found via HIP"))
         case response if response.status == (503 | 500) =>
           Future.failed(HipExceptions(s"****** HIP service not available ******"))

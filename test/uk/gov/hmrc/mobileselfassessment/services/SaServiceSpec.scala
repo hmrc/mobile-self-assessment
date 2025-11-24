@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaAmount, CesaFutureLiability, CesaRootLinks}
-import uk.gov.hmrc.mobileselfassessment.connectors.CesaIndividualsConnector
+import uk.gov.hmrc.mobileselfassessment.connectors.{CesaIndividualsConnector, HipConnector}
 import uk.gov.hmrc.mobileselfassessment.model.{BCD, GetLiabilitiesResponse, IN1, IN2, SaUtr}
 
 import scala.concurrent.{ExecutionContext, Future}

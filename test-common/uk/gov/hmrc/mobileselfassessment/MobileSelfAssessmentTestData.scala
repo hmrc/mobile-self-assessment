@@ -16,9 +16,20 @@
 
 package uk.gov.hmrc.mobileselfassessment
 
-import uk.gov.hmrc.mobileselfassessment.model.SaUtr
+import uk.gov.hmrc.mobileselfassessment.model.{BalanceDetails, ChargeDetails, HipResponse, SaUtr}
+
+import java.time.LocalDate
 
 trait MobileSelfAssessmentTestData {
+
+  val hipResponse = HipResponse(
+    balanceDetails = BalanceDetails(1156.37, 0),
+    chargeDetails = List(
+      ChargeDetails("ACI", 15962.3, "2018-2019", LocalDate.of(2023, 10, 12)),
+      ChargeDetails("ACI", 31167.10, "2018-2019", LocalDate.of(2024, 11, 12)),
+      ChargeDetails("ACI", 15723.01, "2017-2018", LocalDate.of(2025, 1, 1))
+    )
+  )
 
   def getRootLinksResponse(utr: SaUtr): String =
     s"""

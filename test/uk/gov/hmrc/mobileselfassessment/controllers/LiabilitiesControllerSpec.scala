@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.*
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
-import uk.gov.hmrc.mobileselfassessment.services.SaService
+import uk.gov.hmrc.mobileselfassessment.services.{SaHipService, SaService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 
@@ -32,28 +32,32 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   private val fakeRequest = FakeRequest("GET", "/").withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
   private val mockSaService: SaService = mock[SaService]
+  private val mockSaHipService: SaHipService = mock[SaHipService]
 
   private val controller = new LiabilitiesController(mockAuthConnector,
                                                      200,
+                                                     "http:///spread-cost-url",
+                                                     true,
                                                      Helpers.stubControllerComponents(),
                                                      mockSaService,
+                                                     mockSaHipService,
                                                      mockShutteringConnector
                                                     )
   private val liabilitiesResponse = Json.parse(getLiabilitiesResponse).as[GetLiabilitiesResponse]
 
-  def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
-    (mockSaService
+  def mockGetHipLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
+    (mockSaHipService
       .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *)
+      .expects(*, *, *, *)
       .returning(f)
 
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))
-
+//
   "GET /liabilities" should {
     "return 200" in {
       mockAuthorisationGrantAccess(authorisedResponse)
       shutteringDisabled()
-      mockGetLiabilities(Future successful Some(liabilitiesResponse))
+      mockGetHipLiabilities(Future successful Some(liabilitiesResponse))
       val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
       status(result) shouldBe Status.OK
     }
@@ -61,7 +65,7 @@ class LiabilitiesControllerSpec extends BaseSpec {
     "return NOT FOUND when no account info is found" in {
       mockAuthorisationGrantAccess(authorisedResponse)
       shutteringDisabled()
-      mockGetLiabilities(Future successful None)
+      mockGetHipLiabilities(Future successful None)
       val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
       status(result) shouldBe Status.NOT_FOUND
     }

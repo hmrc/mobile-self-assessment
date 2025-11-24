@@ -17,12 +17,12 @@
 package uk.gov.hmrc.mobileselfassessment.common
 
 import org.apache.pekko.actor.ActorSystem
-import eu.timepit.refined.auto._
+import eu.timepit.refined.auto.*
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.DefaultAwaitTimeout
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
@@ -41,21 +41,22 @@ trait BaseSpec
     with AuthorisationMock
     with ShutteringMock
     with MobileSelfAssessmentTestData {
-  implicit lazy val ec:     ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit lazy val hc:     HeaderCarrier    = HeaderCarrier()
-  implicit lazy val system: ActorSystem      = ActorSystem()
+  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val system: ActorSystem = ActorSystem()
 
-  val journeyId:                        JourneyId           = JourneyId.from("13345a9d-0958-4931-ae83-5a36e4ccd979").toOption.get
+  val journeyId: JourneyId = JourneyId.from("13345a9d-0958-4931-ae83-5a36e4ccd979").toOption.get
   implicit val mockShutteringConnector: ShutteringConnector = mock[ShutteringConnector]
-  implicit val mockAuthConnector:       AuthConnector       = mock[AuthConnector]
-  val confidenceLevel:                  ConfidenceLevel     = ConfidenceLevel.L200
-  val mockHttpClient:                   HttpClientV2        = mock[HttpClientV2]
-  val mockRequestBuilder:               RequestBuilder      = mock[RequestBuilder]
+  implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val confidenceLevel: ConfidenceLevel = ConfidenceLevel.L200
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+
 
   val enrolments: Set[Enrolment] =
     Set(Enrolment("IR-SA", identifiers = Seq(EnrolmentIdentifier("UTR", "utr")), state = "Activated"))
 
-  val authorisedResponse:             GrantAccess = ConfidenceLevel.L200 and Enrolments(enrolments)
-  val authorisedLowCLResponse:        GrantAccess = ConfidenceLevel.L50 and Enrolments(enrolments)
+  val authorisedResponse: GrantAccess = ConfidenceLevel.L200 and Enrolments(enrolments)
+  val authorisedLowCLResponse: GrantAccess = ConfidenceLevel.L50 and Enrolments(enrolments)
   val authorisedNoEnrolmentsResponse: GrantAccess = ConfidenceLevel.L200 and Enrolments(Set.empty)
 }
