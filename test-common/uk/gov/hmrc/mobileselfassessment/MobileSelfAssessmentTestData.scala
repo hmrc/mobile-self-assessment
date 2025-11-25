@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileselfassessment
 
+import play.api.libs.json.Json
+import uk.gov.hmrc.mobileselfassessment.hip.{HipError, HipErrorDetails, HipResponseError}
 import uk.gov.hmrc.mobileselfassessment.model.{BalanceDetails, ChargeDetails, HipResponse, SaUtr}
 
 import java.time.LocalDate
@@ -288,6 +290,64 @@ trait MobileSelfAssessmentTestData {
        |    }
        |]
        |""".stripMargin
+
+  val hipResponseJsonMalformed =
+    """
+      |{
+      |  "balanceDetails": {
+      |    "totalBalance": 12345.67,
+      |    "totalCreditAvailable": 0
+      |  }}
+      |""".stripMargin
+  val hip404Error = Json
+    .toJson(HipResponseError("hip", None, HipErrorDetails(List(HipError("Not Found", "badMessage")))))
+    .toString
+  val hipResponseJson1: String =
+    """
+         {
+        |  "balanceDetails": {
+        |    "totalBalance": 12345.67,
+        |    "totalCreditAvailable": 0
+        |  },
+        |  "chargeDetails": [
+        |    {
+        |      "chargeType": "JEP",
+        |      "outstandingAmount": 503.20,
+        |      "taxYear": "2014",
+        |      "dueDate": "2015-01-31"
+        |    },
+        |    {
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2015-01-31"
+        |    },
+        |    {
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2016-01-31"
+        |    },
+        |{
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2016-06-28"
+        |    }
+        |  ]
+        |}
+        |""".stripMargin
+
+  val hipResponseJsonNoFutureLiability: String =
+    """
+           {
+      |  "balanceDetails": {
+      |    "totalBalance": 12345.67,
+      |    "totalCreditAvailable": 0
+      |  },
+      |  "chargeDetails": []
+      |}
+      |""".stripMargin
 
   val getLiabilitiesResponse: String =
     s"""
