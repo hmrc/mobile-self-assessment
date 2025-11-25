@@ -82,10 +82,12 @@ class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(impl
         case response if response.status == 422 || response.status == 404 =>
           Future.failed(NotFoundException(s"SA (Individual) root data for UTR '$utr' not found via HIP"))
 
-        case response if response.status == 401 || response.status == 429 =>
+        case response if response.status == 401 =>
           Future.failed(NotFoundException(s"SA (Individual) root data for UTR '$utr' not found via HIP"))
         case response if response.status == (503 | 500) =>
-          Future.failed(HipExceptions(s"****** HIP service not available ******"))
+          Future.failed(HipExceptions(s"HIP service not available"))
+        case response if response.status == 429 =>
+          Future.failed(UpstreamErrorResponse(message = s"Too many requests to HIP service.", statusCode = 429))
         case response =>
           response.json.validate[HipResponseError] match {
             case JsSuccess(hipErrorResponse: HipResponseError, _) =>

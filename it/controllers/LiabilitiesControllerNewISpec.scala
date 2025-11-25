@@ -78,15 +78,82 @@ class LiabilitiesControllerNewISpec extends BaseNewISpec {
       response.status shouldBe 500
     }
 
-    "return 401 when a 404 is returned from ITSA" in {
+    "return 404 when a 404 is returned from ITSA" in {
       grantAccess()
       stubForShutteringDisabled
-      stubForGetFutureLiabilitiesViaHip(utr, hip404Error, 404)
+      stubForGetFutureLiabilitiesViaHipError(utr, 404)
 
       val request = s"/$utr/liabilities?journeyId=$journeyId"
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 404
     }
+
+    "return 429 when a 429 is returned from CESA" in {
+      grantAccess()
+      stubForShutteringDisabled
+      stubForGetFutureLiabilitiesViaHipError(utr, 429)
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 429
+    }
+
+    "return 403 for valid utr for authorised user but for a different utr" in {
+      grantAccess(saUtr = "differentUtr")
+      stubForShutteringDisabled
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 403
+    }
+
+    "return 401 when no active UTR is found on account" in {
+      grantAccess(activeUtr = false)
+      stubForShutteringDisabled
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 401
+    }
+
+    "return 401 when auth fails" in {
+      authorisationRejected()
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 401
+    }
+
+    "return 400 when journeyId is not supplied" in {
+      val request = s"/$utr/liabilities"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 400
+    }
+
+    "return 406 when acceptHeader is missing" in {
+      val request: WSRequest = wsUrl(s"/$utr/liabilities?journeyId=$journeyId")
+      val response: WSResponse = await(request.get())
+      response.status shouldBe 406
+    }
+
+    "return 500 when unknown error is returned from ITSA" in {
+      grantAccess()
+      stubForGetFutureLiabilitiesViaHipError(utr, 500)
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 500
+    }
+
+    "return 521 when shuttered" in {
+      grantAccess()
+      stubForShutteringEnabled
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 521
+    }
+    
   }
 
 }
