@@ -54,7 +54,6 @@ abstract class BaseNewISpec
       "microservice.services.cesa.port"              -> wireMockPort,
       "microservice.services.hip.port"               -> wireMockPort,
       "microservice.services.mobile-shuttering.port" -> wireMockPort,
-      "spreadCostUrl"                                -> "http://spread-the-cost",
       "enableITSA"                                   -> true
     )
 

@@ -36,7 +36,6 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   def createController(enableITSA: Boolean) = new LiabilitiesController(mockAuthConnector,
                                                                         200,
-                                                                        "http:///spread-cost-url",
                                                                         enableITSA,
                                                                         Helpers.stubControllerComponents(),
                                                                         mockSaService,
@@ -48,13 +47,13 @@ class LiabilitiesControllerSpec extends BaseSpec {
   def mockGetHipLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
     (mockSaHipService
       .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
+      .expects(*, *, *)
       .returning(f)
 
   def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
     (mockSaService
-      .getLiabilitiesResponse(_: SaUtr, _: String)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
+      .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *)
       .returning(f)
 
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))

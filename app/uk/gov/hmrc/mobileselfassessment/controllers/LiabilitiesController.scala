@@ -62,9 +62,9 @@ class LiabilitiesController @Inject() (
         errorWrapper {
           val result: Future[Option[GetLiabilitiesResponse]] =
             if (enableITSA)
-              saHipService.getLiabilitiesResponse(utr, spreadCostUrl)
+              saHipService.getLiabilitiesResponse(utr)
             else
-              saService.getLiabilitiesResponse(utr, spreadCostUrl)
+              saService.getLiabilitiesResponse(utr)
           result.map {
             case None           => NotFound
             case Some(response) => Ok(Json.toJson(response))

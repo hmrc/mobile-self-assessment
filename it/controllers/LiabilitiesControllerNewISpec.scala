@@ -48,7 +48,7 @@ class LiabilitiesControllerNewISpec extends BaseNewISpec {
       parsedResponse.moreSelfAssessmentDetailsUrl shouldBe "/personal-account/self-assessment-summary"
       parsedResponse.payByDebitOrCardPaymentUrl   shouldBe "/personal-account/self-assessment-summary"
       parsedResponse.claimRefundUrl               shouldBe s"/contact/self-assessment/ind/$utr/repayment"
-      parsedResponse.spreadCostUrl                shouldBe s"http://spread-the-cost"
+      parsedResponse.spreadCostUrl                shouldBe s"/personal-account/sa/spread-the-cost-of-your-self-assessment"
 
     }
 
@@ -153,7 +153,7 @@ class LiabilitiesControllerNewISpec extends BaseNewISpec {
       val response = await(getRequestWithAuthHeaders(request))
       response.status shouldBe 521
     }
-    
+
   }
 
 }

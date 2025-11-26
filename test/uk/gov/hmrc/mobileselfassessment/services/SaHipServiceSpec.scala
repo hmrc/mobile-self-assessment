@@ -40,7 +40,6 @@ class SaHipServiceSpec
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val spreadCostUrl = "http://spread-cost-url"
 
   private val mockHipConnector: HipConnector = mock[HipConnector]
   private val service = new SaHipService(mockHipConnector)
@@ -65,7 +64,7 @@ class SaHipServiceSpec
   "getLiabilitiesResponse" should {
     "return a full liabilities response" in {
       mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2))
-      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr, spreadCostUrl)).get
+      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
@@ -75,7 +74,7 @@ class SaHipServiceSpec
       result.moreSelfAssessmentDetailsUrl               shouldBe "/personal-account/self-assessment-summary"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
-      result.spreadCostUrl                              shouldBe spreadCostUrl
+      result.spreadCostUrl                              shouldBe "/personal-account/sa/spread-the-cost-of-your-self-assessment"
 
     }
 

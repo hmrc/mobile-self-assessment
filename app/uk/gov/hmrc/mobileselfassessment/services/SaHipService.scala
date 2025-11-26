@@ -33,8 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SaHipService @Inject() (hipConnector: HipConnector) extends Logging {
 
   def getLiabilitiesResponse(
-    utr: SaUtr,
-    spreadCostUrl: String = ""
+    utr: SaUtr
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GetLiabilitiesResponse]] =
     for {
       futureLiabilitiesHip <- hipConnector.getSelfAssessmentLiabilitiesData(utr)
@@ -48,8 +47,7 @@ class SaHipService @Inject() (hipConnector: HipConnector) extends Logging {
           futureLiability       = futureLiabilities.map(groupFutureLiabilitiesByDate),
           viewPaymentHistoryUrl = s"/self-assessment/ind/$utr/account/payments",
           viewOtherYearsUrl     = s"/self-assessment/ind/$utr/account/taxyear/$currentTaxYear",
-          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment",
-          spreadCostUrl         = spreadCostUrl
+          claimRefundUrl        = s"/contact/self-assessment/ind/$utr/repayment"
         )
       )
     }
