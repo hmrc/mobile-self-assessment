@@ -44,7 +44,6 @@ class SaServiceSpec
   private val service = new SaService(mockCesaConnector)
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  val spreadCostUrl = "http://spread-cost-url"
 
   def getTaxYear: Int = {
     val now = java.time.LocalDate.now()
@@ -94,7 +93,7 @@ class SaServiceSpec
       mockGetRootLinks(Future successful rootLinks)
       mockGetOptionalCesaAccountSummary(Some(accountSummary))
       mockGetFutureLiabilities(futureLiabilities)
-      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr, spreadCostUrl)).get
+      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
       result.setUpPaymentPlanUrl                        shouldBe "/pay-what-you-owe-in-instalments/arrangement/determine-eligibility"
@@ -104,7 +103,7 @@ class SaServiceSpec
       result.moreSelfAssessmentDetailsUrl               shouldBe "/personal-account/self-assessment-summary"
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
-      result.spreadCostUrl                              shouldBe spreadCostUrl
+      result.spreadCostUrl                              shouldBe "/personal-account/sa/spread-the-cost-of-your-self-assessment"
     }
 
     "return None if no accountURL is returned in root links" in {

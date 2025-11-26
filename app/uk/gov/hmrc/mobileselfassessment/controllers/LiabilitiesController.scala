@@ -37,7 +37,6 @@ import scala.concurrent.ExecutionContext
 class LiabilitiesController @Inject() (
   override val authConnector: AuthConnector,
   @Named("controllers.confidenceLevel") override val confLevel: Int,
-  @Named("spreadCostUrl") val spreadCostUrl: String,
   cc: ControllerComponents,
   saService: SaService,
   shutteringConnector: ShutteringConnector
@@ -59,7 +58,7 @@ class LiabilitiesController @Inject() (
     shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
       withShuttering(shuttered) {
         errorWrapper {
-          saService.getLiabilitiesResponse(utr, spreadCostUrl).map {
+          saService.getLiabilitiesResponse(utr).map {
             case None           => NotFound
             case Some(response) => Ok(Json.toJson(response))
           }

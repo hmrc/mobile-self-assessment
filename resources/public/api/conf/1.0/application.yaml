@@ -169,7 +169,6 @@ components:
         - moreSelfAssessmentDetailsUrl
         - payByDebitOrCardPaymentUrl
         - claimRefundUrl
-        - spreadCostUrl
       type: object
       properties:
         accountSummary:
@@ -192,8 +191,6 @@ components:
         payByDebitOrCardPaymentUrl:
           type: string
         claimRefundUrl:
-          type: string
-        spreadCostUrl:
           type: string
     NextBill:
       title: NextBill

@@ -35,7 +35,6 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   private val controller = new LiabilitiesController(mockAuthConnector,
                                                      200,
-                                                     "http:///spread-cost-url",
                                                      Helpers.stubControllerComponents(),
                                                      mockSaService,
                                                      mockShutteringConnector
@@ -44,8 +43,8 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
     (mockSaService
-      .getLiabilitiesResponse(_: SaUtr, _: String)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
+      .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *)
       .returning(f)
 
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))

@@ -327,7 +327,7 @@ trait MobileSelfAssessmentTestData {
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
        |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
        |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment",
-       |  "spreadCostUrl": "https://account-np.hmrc.gov.uk/debt/test/bpp?calledFrom=MDTP"
+       |  "spreadCostUrl": "/personal-account/sa/spread-the-cost-of-your-self-assessment"
        |}
        |""".stripMargin
 
