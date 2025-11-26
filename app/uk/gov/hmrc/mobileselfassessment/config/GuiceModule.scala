@@ -38,7 +38,6 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
     bind(classOf[String])
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
-    bindConfigString("spreadCostUrl", "spreadCostUrl")
   }
 
   private def bindConfigInt(path: String): Unit =
@@ -46,9 +45,4 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
       .annotatedWith(named(path))
       .to(configuration.underlying.getInt(path))
 
-  private def bindConfigString(
-    name: String,
-    path: String
-  ): Unit =
-    bindConstant().annotatedWith(named(name)).to(configuration.underlying.getString(path))
 }

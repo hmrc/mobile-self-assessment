@@ -52,8 +52,7 @@ abstract class BaseISpec
       "auditing.enabled"                             -> false,
       "microservice.services.auth.port"              -> wireMockPort,
       "microservice.services.cesa.port"              -> wireMockPort,
-      "microservice.services.mobile-shuttering.port" -> wireMockPort,
-      "spreadCostUrl"                                -> "http://spread-the-cost"
+      "microservice.services.mobile-shuttering.port" -> wireMockPort
     )
 
   def getRequestWithAuthHeaders(url: String): Future[WSResponse] =
