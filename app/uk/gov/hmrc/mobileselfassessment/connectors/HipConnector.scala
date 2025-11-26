@@ -54,7 +54,7 @@ class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(impl
   def getSelfAssessmentLiabilitiesData(utr: SaUtr)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ) = {
+  ): Future[HipResponse] = {
 
     val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
 

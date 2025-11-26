@@ -40,7 +40,7 @@ class SaHipService @Inject() (hipConnector: HipConnector) extends Logging {
       futureLiabilitiesHip <- hipConnector.getSelfAssessmentLiabilitiesData(utr)
     } yield {
       val accountSummary: Option[AccountSummary] = futureLiabilitiesHip.toSaAccountSummary
-      val futureLiabilitiesInt: Seq[FutureLiability] = ChargeDetails.toFutureLIabilities(futureLiabilitiesHip.chargeDetails)
+      val futureLiabilitiesInt: Seq[FutureLiability] = ChargeDetails.toFutureLiabilities(futureLiabilitiesHip.chargeDetails)
       val futureLiabilities: Option[Seq[FutureLiability]] = if (futureLiabilitiesInt.size > 0) Some(futureLiabilitiesInt) else None
       accountSummary.map(summary =>
         GetLiabilitiesResponse(

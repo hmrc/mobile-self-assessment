@@ -33,6 +33,25 @@ trait MobileSelfAssessmentTestData {
     )
   )
 
+  val hipResponse2: HipResponse = HipResponse(
+    balanceDetails = BalanceDetails(12345.67, 0),
+    chargeDetails = List(
+      ChargeDetails("JEP", 503.20, "2014", LocalDate.of(2015, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2015, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2016, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2016, 6, 28))
+    )
+  )
+
+  def hipResponse3(amount: BigDecimal, amountDue: BigDecimal = 0.0, amountHMRCOwe: BigDecimal = 0.0): HipResponse = HipResponse(
+    balanceDetails = BalanceDetails(amountDue, amountHMRCOwe),
+    chargeDetails = List(
+      ChargeDetails("IN1", 200, "2014", LocalDate.of(2020, 1, 31)),
+      ChargeDetails("IN2", 5200.00, "2014", LocalDate.of(2020, 2, 28)),
+      ChargeDetails("BCD", amount, "2014", LocalDate.of(2020, 1, 31))
+    )
+  )
+
   def getRootLinksResponse(utr: SaUtr): String =
     s"""
        |{

@@ -32,7 +32,7 @@ case class ChargeDetails(
 object ChargeDetails {
   implicit val format: OFormat[ChargeDetails] = Json.format[ChargeDetails]
 
-  def toFutureLIabilities(chargeDetails: List[ChargeDetails]) = {
+  def toFutureLiabilities(chargeDetails: List[ChargeDetails]) = {
     chargeDetails.map { chargeDetail =>
       FutureLiability(
         descriptionCode      = DescriptionCode.fromString(chargeDetail.chargeType),

@@ -39,7 +39,13 @@ case class HipResponse(
           amountHmrcOwe        = balanceDetails.totalCreditAvailable
         )
       )
-    else None
+    else
+      Some(
+        AccountSummary(
+          totalAmountDueToHmrc = AmountDue(0, false),
+          amountHmrcOwe        = 0
+        )
+      )
   }
 }
 
