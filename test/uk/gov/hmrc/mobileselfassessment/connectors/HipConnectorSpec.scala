@@ -163,27 +163,32 @@ class HipConnectorSpec extends AnyWordSpec with MockitoSugar with ScalaFutures w
         result.failed.futureValue shouldBe (HipExceptions(s"Error from downstream systems"))
       }
 
-//      "return expected error if 404 response is received" in {
-//
-//        when(mockHttp.get(any[URL])(any[HeaderCarrier])).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.transform(any())).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.execute[HttpResponse](using any, any))
-//          .thenReturn(Future.successful(HttpResponse(404, hipError)))
-//        val result: Future[HipResponse] = connector.getSelfAssessmentLiabilitiesData(utr)
-//        result.failed.futureValue shouldBe (NotFoundException(s"SA (Individual) root data for UTR '$utr' not found via HIP"))
-//      }
-//
-//      "return expected error if 422 response is received" in {
-//
-//        when(mockHttp.get(any[URL])(any[HeaderCarrier])).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.transform(any())).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
-//        when(mockRequestBuilder.execute[HttpResponse](using any, any))
-//          .thenReturn(Future.successful(HttpResponse(422, hipError)))
-//        val result: Future[HipResponse] = connector.getSelfAssessmentLiabilitiesData(utr)
-//        result.failed.futureValue shouldBe (NotFoundException(s"SA (Individual) root data for UTR '$utr' not found via HIP"))
-//      }
+      "return expected error if 404 response is received" in {
+
+        when(mockHttp.get(any[URL])(any[HeaderCarrier])).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.transform(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](using any, any))
+          .thenReturn(Future.successful(HttpResponse(404, hipError)))
+        val result: Future[HipResponse] = connector.getSelfAssessmentLiabilitiesData(utr)
+
+        intercept[NotFoundException] {
+          await(result)
+        }
+      }
+
+      "return expected error if 422 response is received" in {
+
+        when(mockHttp.get(any[URL])(any[HeaderCarrier])).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.transform(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.setHeader(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](using any, any))
+          .thenReturn(Future.successful(HttpResponse(422, hipError)))
+        val result: Future[HipResponse] = connector.getSelfAssessmentLiabilitiesData(utr)
+        intercept[NotFoundException] {
+          await(result)
+        }
+      }
 
       "return expected error if 500 response is received" in {
 

@@ -57,7 +57,7 @@ class LiabilitiesControllerSpec extends BaseSpec {
       .returning(f)
 
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))
-//
+
   "GET /liabilities" should {
     "return 200" when {
       "ITSA is enabled" in {
