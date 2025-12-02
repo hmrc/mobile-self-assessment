@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.*
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr, Shuttering}
-import uk.gov.hmrc.mobileselfassessment.services.SaService
+import uk.gov.hmrc.mobileselfassessment.services.{SaHipService, SaService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileselfassessment.common.BaseSpec
 
@@ -32,14 +32,23 @@ class LiabilitiesControllerSpec extends BaseSpec {
 
   private val fakeRequest = FakeRequest("GET", "/").withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
   private val mockSaService: SaService = mock[SaService]
+  private val mockSaHipService: SaHipService = mock[SaHipService]
 
-  private val controller = new LiabilitiesController(mockAuthConnector,
-                                                     200,
-                                                     Helpers.stubControllerComponents(),
-                                                     mockSaService,
-                                                     mockShutteringConnector
-                                                    )
+  def createController(enableITSA: Boolean) = new LiabilitiesController(mockAuthConnector,
+                                                                        200,
+                                                                        enableITSA,
+                                                                        Helpers.stubControllerComponents(),
+                                                                        mockSaService,
+                                                                        mockSaHipService,
+                                                                        mockShutteringConnector
+                                                                       )
   private val liabilitiesResponse = Json.parse(getLiabilitiesResponse).as[GetLiabilitiesResponse]
+
+  def mockGetHipLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
+    (mockSaHipService
+      .getLiabilitiesResponse(_: SaUtr)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *)
+      .returning(f)
 
   def mockGetLiabilities(f: Future[Option[GetLiabilitiesResponse]]) =
     (mockSaService
@@ -50,39 +59,62 @@ class LiabilitiesControllerSpec extends BaseSpec {
   def shutteringDisabled(): CallHandler[Future[Shuttering]] = mockShutteringResponse(Shuttering(shuttered = false))
 
   "GET /liabilities" should {
-    "return 200" in {
-      mockAuthorisationGrantAccess(authorisedResponse)
-      shutteringDisabled()
-      mockGetLiabilities(Future successful Some(liabilitiesResponse))
-      val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
-      status(result) shouldBe Status.OK
+    "return 200" when {
+      "ITSA is enabled" in {
+        mockAuthorisationGrantAccess(authorisedResponse)
+        shutteringDisabled()
+        mockGetHipLiabilities(Future successful Some(liabilitiesResponse))
+        val result = createController(true).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+        status(result) shouldBe Status.OK
+      }
+
+      "ITSA not enabled" in {
+        mockAuthorisationGrantAccess(authorisedResponse)
+        shutteringDisabled()
+        mockGetLiabilities(Future successful Some(liabilitiesResponse))
+        val result = createController(false).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+        status(result) shouldBe Status.OK
+      }
+
     }
 
-    "return NOT FOUND when no account info is found" in {
-      mockAuthorisationGrantAccess(authorisedResponse)
-      shutteringDisabled()
-      mockGetLiabilities(Future successful None)
-      val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
-      status(result) shouldBe Status.NOT_FOUND
+    "return NOT FOUND when no account info is found" when {
+
+      "ITSA is enabled" in {
+        mockAuthorisationGrantAccess(authorisedResponse)
+        shutteringDisabled()
+        mockGetHipLiabilities(Future successful None)
+        val result = createController(true).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+        status(result) shouldBe Status.NOT_FOUND
+      }
+
+      "ITSA is not enabled" in {
+        mockAuthorisationGrantAccess(authorisedResponse)
+        shutteringDisabled()
+        mockGetLiabilities(Future successful None)
+        val result = createController(false).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+        status(result) shouldBe Status.NOT_FOUND
+      }
+
     }
 
     "return UNAUTHORIZED when confidence level is too low" in {
       mockAuthorisationGrantAccess(authorisedLowCLResponse)
-      val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+      val result = createController(true).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
       status(result) shouldBe Status.UNAUTHORIZED
     }
 
     "return FORBIDDEN for valid utr for authorised user but for a different utr" in {
       mockAuthorisationGrantAccess(authorisedResponse)
 
-      val result = controller.getLiabilities(SaUtr("differentUtr"), journeyId)(fakeRequest)
+      val result = createController(true).getLiabilities(SaUtr("differentUtr"), journeyId)(fakeRequest)
 
       status(result) shouldBe Status.FORBIDDEN
     }
 
     "return UNAUTHORIZED when no UTR is found on account" in {
       mockAuthorisationGrantAccess(authorisedNoEnrolmentsResponse)
-      val result = controller.getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
+      val result = createController(true).getLiabilities(SaUtr("utr"), journeyId)(fakeRequest)
       status(result) shouldBe Status.UNAUTHORIZED
     }
 

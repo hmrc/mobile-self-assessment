@@ -4,10 +4,12 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, get, stubFor,
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 
+import java.time.{LocalDate, ZoneId}
+
 object CesaStub {
 
   def stubForGetRootLinks(
-    utr:      SaUtr,
+    utr: SaUtr,
     response: String
   ): StubMapping =
     stubFor(
@@ -23,7 +25,7 @@ object CesaStub {
     )
 
   def stubForGetRootLinksFailure(
-    utr:    SaUtr,
+    utr: SaUtr,
     status: Int
   ): StubMapping =
     stubFor(
@@ -38,7 +40,7 @@ object CesaStub {
     )
 
   def stubForGetAccountSummary(
-    utr:      SaUtr,
+    utr: SaUtr,
     response: String
   ): StubMapping =
     stubFor(
@@ -54,7 +56,7 @@ object CesaStub {
     )
 
   def stubForGetFutureLiabilities(
-    utr:      SaUtr,
+    utr: SaUtr,
     response: String
   ): StubMapping =
     stubFor(
@@ -68,5 +70,42 @@ object CesaStub {
           .withBody(response)
       )
     )
+
+  def stubForGetFutureLiabilitiesViaHip(
+    utr: SaUtr,
+    response: String,
+    status: Int = 200
+  ): StubMapping = {
+    val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
+    stubFor(
+      get(
+        urlEqualTo(
+          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(7).toString}&dateTo=${currentDate.toString}"
+        )
+      ).willReturn(
+        aResponse()
+          .withStatus(status)
+          .withBody(response)
+      )
+    )
+  }
+
+  def stubForGetFutureLiabilitiesViaHipError(
+                                         utr: SaUtr,
+                                         status: Int
+                                       ): StubMapping = {
+    val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
+    stubFor(
+      get(
+        urlEqualTo(
+          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(7).toString}&dateTo=${currentDate.toString}"
+        )
+      ).willReturn(
+        aResponse()
+          .withStatus(status)
+          
+      )
+    )
+  }
 
 }

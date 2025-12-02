@@ -15,53 +15,44 @@
  */
 
 package uk.gov.hmrc.mobileselfassessment.services
-
-import org.joda.time.LocalDate
-import org.scalamock.handlers.{CallHandler2, CallHandler3}
-import org.scalamock.scalatest.MockFactory
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.Json
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
-import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaAmount, CesaFutureLiability, CesaRootLinks}
-import uk.gov.hmrc.mobileselfassessment.connectors.{CesaIndividualsConnector, HipConnector}
-import uk.gov.hmrc.mobileselfassessment.model.{BCD, GetLiabilitiesResponse, IN1, IN2, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.connectors.HipConnector
+import uk.gov.hmrc.mobileselfassessment.model.{BCD, ChargeDetails, GetLiabilitiesResponse, HipResponse, IN1, IN2, SaUtr}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with Matchers with MockFactory with FutureAwaits with DefaultAwaitTimeout {
+class SaHipServiceSpec
+    extends AnyWordSpec
+    with MockitoSugar
+    with MobileSelfAssessmentTestData
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout {
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  implicit val mockCesaConnector: CesaIndividualsConnector = mock[CesaIndividualsConnector]
-  private val service = new SaService(mockCesaConnector)
+  private val mockHipConnector: HipConnector = mock[HipConnector]
+  private val service = new SaHipService(mockHipConnector)
 
-  def mockGetRootLinks(
-    response: Future[CesaRootLinks]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler2[SaUtr, HeaderCarrier, Future[CesaRootLinks]] =
-    (cesaConnector
-      .getRootLinks(_: SaUtr)(_: HeaderCarrier))
-      .expects(*, *)
-      .returning(response)
+  private val utr = SaUtr("123UTR")
 
-  def mockGetOptionalCesaAccountSummary(
-    response: Option[CesaAccountSummary]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler3[SaUtr, String, HeaderCarrier, Future[Option[CesaAccountSummary]]] =
-    (cesaConnector
-      .getOptionalCesaAccountSummary(_: SaUtr, _: String)(_: HeaderCarrier))
-      .expects(*, *, *)
-      .returning(Future successful response)
-
-  def mockGetFutureLiabilities(
-    response: Seq[CesaFutureLiability]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler2[SaUtr, HeaderCarrier, Future[Seq[CesaFutureLiability]]] =
-    (cesaConnector
-      .futureLiabilities(_: SaUtr)(_: HeaderCarrier))
-      .expects(*, *)
-      .returning(Future successful response)
+  def mockSelfAssessmentLiabilitiesData(response: Future[HipResponse]) = {
+    when(
+      mockHipConnector
+        .getSelfAssessmentLiabilitiesData(any())(any(), any())
+    )
+      .thenReturn(response)
+  }
 
   def getTaxYear: Int = {
     val now = java.time.LocalDate.now()
@@ -70,47 +61,9 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
     (year + offset) * 100 + (year + offset + 1)
   }
 
-  private val utr = SaUtr("123UTR")
-  private val rootLinks = CesaRootLinks(Some(s"/self-assessment/individual/$utr/account-summary"))
-  private val accountSummary = Json.parse(accountSummaryResponse).as[CesaAccountSummary]
-  private val futureLiabilities = Json.parse(futureLiabilitiesResponse).as[Seq[CesaFutureLiability]]
-
-  private def customAccountSummary(
-    amountDue: BigDecimal,
-    amountOwed: BigDecimal
-  ): CesaAccountSummary =
-    CesaAccountSummary(totalAmountDueToHmrc = CesaAmount(amountDue, "GBP"), amountHmrcOwe = CesaAmount(amountOwed, "GBP"))
-
-  private def customFutureLiabilities(liabilityAmount: BigDecimal): Seq[CesaFutureLiability] =
-    Seq(
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-01-31"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(200, "GBP"),
-        descriptionCode      = IN1
-      ),
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-02-28"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(5200, "GBP"),
-        descriptionCode      = IN2
-      ),
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-01-31"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(liabilityAmount, "GBP"),
-        descriptionCode      = BCD
-      )
-    )
-
   "getLiabilitiesResponse" should {
     "return a full liabilities response" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(accountSummary))
-      mockGetFutureLiabilities(futureLiabilities)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe false
@@ -122,64 +75,33 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
       result.payByDebitOrCardPaymentUrl                 shouldBe "/personal-account/self-assessment-summary"
       result.claimRefundUrl                             shouldBe "/contact/self-assessment/ind/123UTR/repayment"
       result.spreadCostUrl                              shouldBe "/personal-account/sa/spread-the-cost-of-your-self-assessment"
+
     }
 
-    "return None if no accountURL is returned in root links" in {
-      mockGetRootLinks(Future successful CesaRootLinks(None))
-      mockGetFutureLiabilities(futureLiabilities)
-      val result = await(service.getLiabilitiesResponse(utr))
-      result shouldBe None
-    }
-
-    "Throw NotFoundException if returned from Cesa" in {
-      mockGetRootLinks(Future failed new NotFoundException("Account not found"))
+    "Throw NotFoundException if returned from ITSA" in {
+      mockSelfAssessmentLiabilitiesData(Future failed new NotFoundException("Account not found"))
       intercept[NotFoundException] {
         await(service.getLiabilitiesResponse(utr))
       }
     }
 
-    "return None if no accountSummary is returned from Cesa" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(None)
-      mockGetFutureLiabilities(futureLiabilities)
-      val result = await(service.getLiabilitiesResponse(utr))
-      result shouldBe None
-    }
+    "return accountSummary with no futureLiabilities if no futureLiabilities are returned from ITSA" in {
 
-    "return accountSummary with no futureLiabilities if no futureLiabilities are returned from Cesa" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(accountSummary))
-      mockGetFutureLiabilities(Seq.empty)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2.copy(chargeDetails = List.empty)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.totalAmountDueToHmrc.amount shouldBe 12345.67
       result.futureLiability.isEmpty                    shouldBe true
     }
 
     "return TaxToPayStatus as Overdue and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(1000, 0)))
-      mockGetFutureLiabilities(Seq.empty)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2.copy(chargeDetails = List.empty)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString shouldBe "Overdue"
       result.accountSummary.nextBill.isEmpty        shouldBe true
     }
 
-    "return TaxToPayStatus as CreditAndBillSame and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 1000)))
-      mockGetFutureLiabilities(customFutureLiabilities(800))
-      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
-      result.accountSummary.taxToPayStatus.toString       shouldBe "CreditAndBillSame"
-      result.accountSummary.nextBill.get.amount           shouldBe 1000
-      result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
-      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
-      result.accountSummary.totalFutureLiability          shouldBe Some(6200)
-    }
-
     "return TaxToPayStatus as CreditLessThanBill status with nextBill and remainingAfterCreditDeducted calculated correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 500)))
-      mockGetFutureLiabilities(customFutureLiabilities(650.20))
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse3(650.20, 0, 500)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "CreditLessThanBill"
       result.accountSummary.nextBill.get.amount           shouldBe 850.20
@@ -191,9 +113,7 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
     }
 
     "return TaxToPayStatus as CreditMoreThanBill status with nextBill and remainingAfterCreditDeducted calculated correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 1000)))
-      mockGetFutureLiabilities(customFutureLiabilities(259.50))
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse3(259.50, 0, 1000)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "CreditMoreThanBill"
       result.accountSummary.nextBill.get.amount           shouldBe 459.50
@@ -204,61 +124,41 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
     }
 
     "return TaxToPayStatus as OnlyCredit and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 500)))
-      mockGetFutureLiabilities(Seq.empty)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse3(1, 0, 500).copy(chargeDetails = List.empty)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString shouldBe "OnlyCredit"
       result.accountSummary.nextBill.isEmpty        shouldBe true
     }
 
-    "return TaxToPayStatus as OnlyBill and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 0)))
-      mockGetFutureLiabilities(customFutureLiabilities(300))
-      val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
-      result.accountSummary.taxToPayStatus.toString       shouldBe "OnlyBill"
-      result.accountSummary.nextBill.get.amount           shouldBe 500
-      result.accountSummary.nextBill.get.dueDate.toString shouldBe "2020-01-31"
-      result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
-      result.accountSummary.totalFutureLiability          shouldBe Some(5700)
-    }
-
     "return TaxToPayStatus as NoTaxToPay and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 0)))
-      mockGetFutureLiabilities(Seq.empty)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse3(0, 0, 0).copy(chargeDetails = List.empty)))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString shouldBe "NoTaxToPay"
       result.accountSummary.nextBill.isEmpty        shouldBe true
     }
 
     "return TaxToPayStatus as OverdueWithBill and nextBill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(1000, 0)))
-      mockGetFutureLiabilities(futureLiabilities)
+
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "OverdueWithBill"
       result.accountSummary.nextBill.get.amount           shouldBe 2803.20
       result.accountSummary.nextBill.get.dueDate.toString shouldBe "2015-01-31"
       result.accountSummary.nextBill.get.daysRemaining    shouldBe -1
-      result.accountSummary.totalFutureLiability          shouldBe Some(9703.20)
+      result.accountSummary.totalFutureLiability          shouldBe Some(7403.20)
     }
 
     "calculate daysRemaining till next bill correctly" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(customAccountSummary(0, 0)))
-      mockGetFutureLiabilities(
-        Seq(
-          CesaFutureLiability(
-            statutoryDueDate     = LocalDate.now().plusDays(31),
-            taxYearEndDate       = LocalDate.parse("2020-03-31"),
-            partnershipReference = None,
-            amount               = CesaAmount(200, "GBP"),
-            descriptionCode      = IN1
+      mockSelfAssessmentLiabilitiesData(
+        Future.successful(
+          hipResponse3(0, 0, 0).copy(chargeDetails =
+            List(
+              ChargeDetails("IN1", 200, "2020", LocalDate.now().plusDays(31))
+            )
           )
         )
       )
+
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.accountSummary.taxToPayStatus.toString       shouldBe "OnlyBill"
       result.accountSummary.nextBill.get.amount           shouldBe 200
@@ -267,9 +167,7 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
     }
 
     "group liabilities by date and provide total" in {
-      mockGetRootLinks(Future successful rootLinks)
-      mockGetOptionalCesaAccountSummary(Some(accountSummary))
-      mockGetFutureLiabilities(futureLiabilities)
+      mockSelfAssessmentLiabilitiesData(Future.successful(hipResponse2))
       val result: GetLiabilitiesResponse = await(service.getLiabilitiesResponse(utr)).get
       result.futureLiability.isEmpty                                                  shouldBe false
       result.futureLiability.get.size                                                 shouldBe 3
@@ -289,4 +187,5 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
       result.futureLiability.get.last.futureLiabilities.head.taxYear.end              shouldBe 2015
     }
   }
+
 }

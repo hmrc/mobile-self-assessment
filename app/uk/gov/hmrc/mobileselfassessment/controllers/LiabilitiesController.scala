@@ -24,21 +24,23 @@ import play.api.mvc.{Action, AnyContent, BodyParser, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
-import uk.gov.hmrc.mobileselfassessment.model.SaUtr
-import uk.gov.hmrc.mobileselfassessment.services.SaService
+import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.services.{SaHipService, SaService}
 import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
 import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
 import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class LiabilitiesController @Inject() (
   override val authConnector: AuthConnector,
   @Named("controllers.confidenceLevel") override val confLevel: Int,
+  @Named("enableITSA") val enableITSA: Boolean,
   cc: ControllerComponents,
   saService: SaService,
+  saHipService: SaHipService,
   shutteringConnector: ShutteringConnector
 )(implicit val executionContext: ExecutionContext)
     extends BackendController(cc)
@@ -58,7 +60,12 @@ class LiabilitiesController @Inject() (
     shutteringConnector.getShutteringStatus(journeyId).flatMap { shuttered =>
       withShuttering(shuttered) {
         errorWrapper {
-          saService.getLiabilitiesResponse(utr).map {
+          val result: Future[Option[GetLiabilitiesResponse]] =
+            if (enableITSA)
+              saHipService.getLiabilitiesResponse(utr)
+            else
+              saService.getLiabilitiesResponse(utr)
+          result.map {
             case None           => NotFound
             case Some(response) => Ok(Json.toJson(response))
           }
@@ -66,4 +73,5 @@ class LiabilitiesController @Inject() (
       }
     }
   }
+
 }

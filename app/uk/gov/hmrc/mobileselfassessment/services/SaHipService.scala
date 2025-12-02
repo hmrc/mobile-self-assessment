@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package uk.gov.hmrc.mobileselfassessment.services
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import play.api.libs.json.{JsString, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileselfassessment.cesa.CesaRootLinks
-import uk.gov.hmrc.mobileselfassessment.connectors.{CesaIndividualsConnector, HipConnector}
+
+import uk.gov.hmrc.mobileselfassessment.connectors.HipConnector
 import uk.gov.hmrc.mobileselfassessment.model.*
 import uk.gov.hmrc.mobileselfassessment.model
 import uk.gov.hmrc.time.TaxYear
@@ -31,33 +30,17 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SaService @Inject() (cesaConnector: CesaIndividualsConnector) extends Logging {
-
-  def getAccountSummary(
-    utr: SaUtr
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AccountSummary]] =
-    cesaConnector.getRootLinks(utr).flatMap {
-      case CesaRootLinks(Some(accountSummaryUrl)) =>
-        cesaConnector.getOptionalCesaAccountSummary(utr, accountSummaryUrl).map(_.map(_.toSaAccountSummary))
-      case _ => Future successful None
-    }
-
-  def getFutureLiabilities(
-    utr: SaUtr
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[FutureLiability]]] = {
-    val liabilities: Future[Seq[FutureLiability]] =
-      cesaConnector.futureLiabilities(utr).map(_.map(_.toSaFutureLiability))
-    liabilities.flatMap(list => if (list.isEmpty) Future successful None else Future successful Some(list))
-
-  }
+class SaHipService @Inject() (hipConnector: HipConnector) extends Logging {
 
   def getLiabilitiesResponse(
     utr: SaUtr
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GetLiabilitiesResponse]] =
     for {
-      accountSummary    <- getAccountSummary(utr)
-      futureLiabilities <- getFutureLiabilities(utr)
+      futureLiabilitiesHip <- hipConnector.getSelfAssessmentLiabilitiesData(utr)
     } yield {
+      val accountSummary: Option[AccountSummary] = futureLiabilitiesHip.toSaAccountSummary
+      val futureLiabilitiesInt: Seq[FutureLiability] = ChargeDetails.toFutureLiabilities(futureLiabilitiesHip.chargeDetails)
+      val futureLiabilities: Option[Seq[FutureLiability]] = if (futureLiabilitiesInt.size > 0) Some(futureLiabilitiesInt) else None
       accountSummary.map(summary =>
         GetLiabilitiesResponse(
           accountSummary        = buildAccountSummary(summary, futureLiabilities),

@@ -94,6 +94,8 @@ object DescriptionCode {
       case _      => JsSuccess(UNKNOWN_CODE)
     }
   }
+
+  def fromString(code: String): DescriptionCode = DescriptionCode.format.reads(JsString(code)).get
 }
 
 case object ACI          extends DescriptionCode

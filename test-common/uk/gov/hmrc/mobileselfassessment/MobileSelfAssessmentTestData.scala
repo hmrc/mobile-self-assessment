@@ -16,9 +16,41 @@
 
 package uk.gov.hmrc.mobileselfassessment
 
-import uk.gov.hmrc.mobileselfassessment.model.SaUtr
+import play.api.libs.json.Json
+import uk.gov.hmrc.mobileselfassessment.hip.{HipError, HipErrorDetails, HipResponseError}
+import uk.gov.hmrc.mobileselfassessment.model.{BalanceDetails, ChargeDetails, HipResponse, SaUtr}
+
+import java.time.LocalDate
 
 trait MobileSelfAssessmentTestData {
+
+  val hipResponse = HipResponse(
+    balanceDetails = BalanceDetails(1156.37, 0),
+    chargeDetails = List(
+      ChargeDetails("ACI", 15962.3, "2018-2019", LocalDate.of(2023, 10, 12)),
+      ChargeDetails("ACI", 31167.10, "2018-2019", LocalDate.of(2024, 11, 12)),
+      ChargeDetails("ACI", 15723.01, "2017-2018", LocalDate.of(2025, 1, 1))
+    )
+  )
+
+  val hipResponse2: HipResponse = HipResponse(
+    balanceDetails = BalanceDetails(12345.67, 0),
+    chargeDetails = List(
+      ChargeDetails("JEP", 503.20, "2014", LocalDate.of(2015, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2015, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2016, 1, 31)),
+      ChargeDetails("PP2", 2300.00, "2014", LocalDate.of(2016, 6, 28))
+    )
+  )
+
+  def hipResponse3(amount: BigDecimal, amountDue: BigDecimal = 0.0, amountHMRCOwe: BigDecimal = 0.0): HipResponse = HipResponse(
+    balanceDetails = BalanceDetails(amountDue, amountHMRCOwe),
+    chargeDetails = List(
+      ChargeDetails("IN1", 200, "2014", LocalDate.of(2020, 1, 31)),
+      ChargeDetails("IN2", 5200.00, "2014", LocalDate.of(2020, 2, 28)),
+      ChargeDetails("BCD", amount, "2014", LocalDate.of(2020, 1, 31))
+    )
+  )
 
   def getRootLinksResponse(utr: SaUtr): String =
     s"""
@@ -277,6 +309,64 @@ trait MobileSelfAssessmentTestData {
        |    }
        |]
        |""".stripMargin
+
+  val hipResponseJsonMalformed =
+    """
+      |{
+      |  "balanceDetails": {
+      |    "totalBalance": 12345.67,
+      |    "totalCreditAvailable": 0
+      |  }}
+      |""".stripMargin
+  val hip404Error = Json
+    .toJson(HipResponseError("hip", None, HipErrorDetails(List(HipError("Not Found", "badMessage")))))
+    .toString
+  val hipResponseJson1: String =
+    """
+         {
+        |  "balanceDetails": {
+        |    "totalBalance": 12345.67,
+        |    "totalCreditAvailable": 0
+        |  },
+        |  "chargeDetails": [
+        |    {
+        |      "chargeType": "JEP",
+        |      "outstandingAmount": 503.20,
+        |      "taxYear": "2014",
+        |      "dueDate": "2015-01-31"
+        |    },
+        |    {
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2015-01-31"
+        |    },
+        |    {
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2016-01-31"
+        |    },
+        |{
+        |      "chargeType": "PP2",
+        |      "outstandingAmount": 2300.00,
+        |      "taxYear": "2014",
+        |      "dueDate": "2016-06-28"
+        |    }
+        |  ]
+        |}
+        |""".stripMargin
+
+  val hipResponseJsonNoFutureLiability: String =
+    """
+           {
+      |  "balanceDetails": {
+      |    "totalBalance": 12345.67,
+      |    "totalCreditAvailable": 0
+      |  },
+      |  "chargeDetails": []
+      |}
+      |""".stripMargin
 
   val getLiabilitiesResponse: String =
     s"""
