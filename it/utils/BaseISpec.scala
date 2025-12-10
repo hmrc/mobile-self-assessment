@@ -53,7 +53,8 @@ abstract class BaseISpec
       "microservice.services.auth.port"              -> wireMockPort,
       "microservice.services.cesa.port"              -> wireMockPort,
       "microservice.services.mobile-shuttering.port" -> wireMockPort,
-      "enableITSA"                                   -> false
+      "enableITSA"                                   -> false,
+      "selfAssessmentCessationUrl"                   -> "/cessation-mobile"
     )
 
   def getRequestWithAuthHeaders(url: String): Future[WSResponse] =

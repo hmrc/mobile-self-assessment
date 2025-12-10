@@ -417,7 +417,9 @@ trait MobileSelfAssessmentTestData {
        |  "moreSelfAssessmentDetailsUrl":  "/self-assessment/ind/123123123/account",
        |  "payByDebitOrCardPaymentUrl": "/personal-account/self-assessment-summary",
        |  "claimRefundUrl": "/contact/self-assessment/ind/123123123/repayment",
-       |  "spreadCostUrl": "/personal-account/sa/spread-the-cost-of-your-self-assessment"
+       |  "spreadCostUrl": "/personal-account/sa/spread-the-cost-of-your-self-assessment",
+       |  "selfAssessmentCessationUrl": "/cessation-mobile"
+       |  
        |}
        |""".stripMargin
 

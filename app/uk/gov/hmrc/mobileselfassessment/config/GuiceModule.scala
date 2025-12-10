@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mobileselfassessment.config
 
 import com.google.inject.name.Names.named
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, TypeLiteral}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
@@ -39,6 +39,7 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
     bindConfigBoolean("enableITSA")
+    bindConfigString("selfAssessmentCessationUrl", "selfAssessmentCessationUrl")
   }
 
   private def bindConfigInt(path: String): Unit =
@@ -50,4 +51,10 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
     bindConstant()
       .annotatedWith(named(path))
       .to(configuration.underlying.getBoolean(path))
+
+  private def bindConfigString(
+                                name: String,
+                                path: String
+                              ): Unit =
+    bindConstant().annotatedWith(named(name)).to(configuration.underlying.getString(path))
 }

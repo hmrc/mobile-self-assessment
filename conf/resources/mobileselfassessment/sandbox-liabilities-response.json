@@ -61,5 +61,6 @@
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
   "claimRefundUrl": "/",
-  "spreadCostUrl": "/"
+  "spreadCostUrl": "/",
+  "selfAssessmentCessationUrl": "/"
 }
