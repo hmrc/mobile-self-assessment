@@ -38,6 +38,7 @@ class LiabilitiesController @Inject() (
   override val authConnector: AuthConnector,
   @Named("controllers.confidenceLevel") override val confLevel: Int,
   @Named("enableITSA") val enableITSA: Boolean,
+  @Named("selfAssessmentCessationUrl") val selfAssessmentCessationUrl: String,
   cc: ControllerComponents,
   saService: SaService,
   saHipService: SaHipService,
@@ -62,9 +63,9 @@ class LiabilitiesController @Inject() (
         errorWrapper {
           val result: Future[Option[GetLiabilitiesResponse]] =
             if (enableITSA)
-              saHipService.getLiabilitiesResponse(utr)
+              saHipService.getLiabilitiesResponse(utr, selfAssessmentCessationUrl)
             else
-              saService.getLiabilitiesResponse(utr)
+              saService.getLiabilitiesResponse(utr, selfAssessmentCessationUrl)
           result.map {
             case None           => NotFound
             case Some(response) => Ok(Json.toJson(response))

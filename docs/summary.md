@@ -80,7 +80,8 @@ Fetch the GetLiabilities object.
   "moreSelfAssessmentDetailsUrl": "/",
   "payByDebitOrCardPaymentUrl": "/",
   "claimRefundUrl": "/",
-  "spreadCostUrl": "/"
+  "spreadCostUrl": "/",
+  "selfAssessmentCessationUrl": "/"
 }
 ```
 
