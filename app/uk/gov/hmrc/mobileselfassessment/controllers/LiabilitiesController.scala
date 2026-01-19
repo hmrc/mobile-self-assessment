@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import play.api.mvc.{Action, AnyContent, BodyParser, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
-import uk.gov.hmrc.mobileselfassessment.connectors.ShutteringConnector
+import uk.gov.hmrc.mobileselfassessment.connectors.{CitizenDetailsConnector, ShutteringConnector}
 import uk.gov.hmrc.mobileselfassessment.model.{GetLiabilitiesResponse, SaUtr}
 import uk.gov.hmrc.mobileselfassessment.services.{SaHipService, SaService}
 import uk.gov.hmrc.mobileselfassessment.controllers.action.AccessControl
@@ -36,8 +36,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton()
 class LiabilitiesController @Inject() (
   override val authConnector: AuthConnector,
+  override val cdConnector: CitizenDetailsConnector,
   @Named("controllers.confidenceLevel") override val confLevel: Int,
-  @Named("enableITSA") val enableITSA: Boolean,
+  @Named("enableITSA") override val enableITSA: Boolean,
   @Named("selfAssessmentCessationUrl") val selfAssessmentCessationUrl: String,
   cc: ControllerComponents,
   saService: SaService,

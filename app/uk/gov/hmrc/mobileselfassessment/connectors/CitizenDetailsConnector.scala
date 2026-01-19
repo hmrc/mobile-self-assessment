@@ -36,9 +36,9 @@ class CitizenDetailsConnector @Inject() (
 
   lazy val serviceUrl: String = appConfig.cdurl
 
-  private def getUtrByNino(nino: String)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
+  def getUtrByNino(nino: String)(implicit hc: HeaderCarrier): Future[Option[SaUtr]] = {
     http
-      .get(url"$serviceUrl/nino/$nino")
+      .get(url"$serviceUrl/citizen-details/nino/$nino")
       .execute[CidPerson]
       .map(_.ids.saUtr)
       .recover {
