@@ -147,8 +147,26 @@ class LiabilitiesControllerNewISpec extends BaseNewISpec {
       response.status shouldBe 403
     }
 
+    "return 403 for valid utr for authorised user but for a different utr in case of MTD only enrolment" in {
+      grantAccessMTDOnlyEnrolments()
+      stubForGetUTRViaNino("AA000003D", utr.utr)
+      stubForShutteringDisabled
+
+      val request = s"/diffutr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 403
+    }
     "return 401 when no active UTR is found on account" in {
       grantAccess(activeUtr = false)
+      stubForShutteringDisabled
+
+      val request = s"/$utr/liabilities?journeyId=$journeyId"
+      val response = await(getRequestWithAuthHeaders(request))
+      response.status shouldBe 401
+    }
+    "return 401 when no active UTR is found on account for MTD only enrolment" in {
+      grantAccessMTDOnlyEnrolments()
+      stubForNoUTR("AA000003D")
       stubForShutteringDisabled
 
       val request = s"/$utr/liabilities?journeyId=$journeyId"

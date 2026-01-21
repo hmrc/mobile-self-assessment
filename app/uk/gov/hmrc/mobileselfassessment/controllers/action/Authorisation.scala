@@ -48,7 +48,6 @@ trait Authorisation extends Results with AuthorisedFunctions {
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     authorised(CredentialStrength("strong") and ConfidenceLevel.L200)
       .retrieve(nino and confidenceLevel and allEnrolments) { case foundNino ~ foundConfidenceLevel ~ enrolments =>
-        println(s" inside this case :: $foundNino and $foundConfidenceLevel and $enrolments")
         if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
         else {
           val activatedUtr = getActivatedSaUtr(enrolments)

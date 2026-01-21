@@ -24,4 +24,22 @@ object CitizenDetailsStub {
                      """.stripMargin)
       )
     )
+
+  def stubForNoUTR(nino: String): StubMapping =
+    stubFor(
+      get(
+        urlEqualTo(
+          s"/citizen-details/nino/$nino"
+        )
+      ).willReturn(
+        aResponse()
+          .withStatus(200)
+          .withBody(s"""
+                         |{
+                         |  "ids": {}
+                         |}
+                       """.stripMargin)
+      )
+    )
+
 }
