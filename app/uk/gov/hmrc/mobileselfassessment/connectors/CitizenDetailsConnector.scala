@@ -54,8 +54,8 @@ class CitizenDetailsConnector @Inject() (
         case e: UpstreamErrorResponse =>
           logger.info(s"Call to CID failed $e")
           None
-        case _ =>
-          logger.info(s"Call to CID failed")
+        case ex =>
+          logger.info(s"Call to CID failed $ex")
           None
       }
   }

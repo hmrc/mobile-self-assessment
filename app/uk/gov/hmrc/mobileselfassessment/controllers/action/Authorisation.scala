@@ -48,20 +48,23 @@ trait Authorisation extends Results with AuthorisedFunctions {
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     authorised(CredentialStrength("strong") and ConfidenceLevel.L200)
       .retrieve(nino and confidenceLevel and allEnrolments) { case foundNino ~ foundConfidenceLevel ~ enrolments =>
-        val activatedUtr = getActivatedSaUtr(enrolments)
-        val isMTDEnrolmentPresent = if (enableITSA) checkMtdEnrolent(enrolments) else None
-        if (activatedUtr.isEmpty) {
-          if (isMTDEnrolmentPresent.contains(true)) {
-            cdConnector.getUtrByNino(foundNino.getOrElse("")).map {
-              case Some(utr) => if (utr.utr.equals(requestedUtr.utr)) true else throw failedToMatchUtr
-              case _         => false
-            }
-          } else throw utrNotFoundOnAccount
-        } else {
-          if (activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) Future successful true else throw failedToMatchUtr
-        }
+        println(s" inside this case :: $foundNino and $foundConfidenceLevel and $enrolments")
         if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
-        else Future successful true
+        else {
+          val activatedUtr = getActivatedSaUtr(enrolments)
+          val isMTDEnrolmentPresent = if (enableITSA) checkMtdEnrolent(enrolments) else None
+          if (activatedUtr.isEmpty) {
+            if (isMTDEnrolmentPresent.contains(true)) {
+              cdConnector.getUtrByNino(foundNino.getOrElse("")).map {
+                case Some(utr) if utr.utr.equals(requestedUtr.utr)  => true
+                case Some(utr) if !utr.utr.equals(requestedUtr.utr) => throw failedToMatchUtr
+                case _                                              => throw utrNotFoundOnAccount
+              }
+            } else throw utrNotFoundOnAccount
+          } else {
+            if (activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) Future successful true else throw failedToMatchUtr
+          }
+        }
       }
 
   def invokeAuthBlock[A](

@@ -52,11 +52,16 @@ trait BaseSpec
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
   val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
 
+  val saEnrolment = Enrolment("IR-SA", identifiers = Seq(EnrolmentIdentifier("UTR", "utr")), state = "Activated")
+  val mtdEnrolment = Enrolment("HMRC-MTD-ID", identifiers = Seq(EnrolmentIdentifier("MTDITID", "mtditid")), state = "Activated")
+  val saOnlyEnrolments: Set[Enrolment] = Set(saEnrolment)
+  val allEnrolments = Set(saEnrolment, mtdEnrolment)
+  val mtdOnlyEnrolment = Set(mtdEnrolment)
+  val nino = "AA000003D"
 
-  val enrolments: Set[Enrolment] =
-    Set(Enrolment("IR-SA", identifiers = Seq(EnrolmentIdentifier("UTR", "utr")), state = "Activated"))
-
-  val authorisedResponse: GrantAccess = ConfidenceLevel.L200 and Enrolments(enrolments)
-  val authorisedLowCLResponse: GrantAccess = ConfidenceLevel.L50 and Enrolments(enrolments)
-  val authorisedNoEnrolmentsResponse: GrantAccess = ConfidenceLevel.L200 and Enrolments(Set.empty)
+  val authorisedSaOnlyResponse: GrantAccess = Some(nino) and ConfidenceLevel.L200 and Enrolments(saOnlyEnrolments)
+  val authorisedMTDOnlyResponse: GrantAccess = Some(nino) and ConfidenceLevel.L200 and Enrolments(mtdOnlyEnrolment)
+  val authorisedAllResponse: GrantAccess = Some(nino) and ConfidenceLevel.L200 and Enrolments(allEnrolments)
+  val authorisedLowCLResponse: GrantAccess = Some(nino) and ConfidenceLevel.L50 and Enrolments(saOnlyEnrolments)
+  val authorisedNoEnrolmentsResponse: GrantAccess = Some(nino) and ConfidenceLevel.L200 and Enrolments(Set.empty)
 }

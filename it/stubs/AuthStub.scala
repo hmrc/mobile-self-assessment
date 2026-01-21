@@ -22,9 +22,9 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 object AuthStub {
 
   def grantAccess(
-    confidenceLevel: Int     = 200,
-    saUtr:           String  = "UTR123",
-    activeUtr:       Boolean = true
+    confidenceLevel: Int = 200,
+    saUtr: String = "UTR123",
+    activeUtr: Boolean = true
   ): StubMapping =
     stubFor(
       post(urlEqualTo("/auth/authorise"))
@@ -41,6 +41,7 @@ object AuthStub {
                |    }
                |    ],
                |  "retrieve": [
+               |    "nino",
                |    "confidenceLevel",
                |    "allEnrolments"
                |  ]
@@ -63,9 +64,118 @@ object AuthStub {
                          |      }],
                          |      "state": "${if (activeUtr) "Activated" else "Deactivated"}"
                          |  }],
-                         |  "confidenceLevel": $confidenceLevel
+                         |  "confidenceLevel": $confidenceLevel,
+                         |  "nino":"AA000003D"
                          |}
           """.stripMargin)
+        )
+    )
+
+  def grantAccessAllEnrolments(
+    confidenceLevel: Int = 200,
+    saUtr: String = "UTR123",
+    activeUtr: Boolean = true
+  ): StubMapping =
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .atPriority(0)
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "authorise": [
+               |  {
+               |      "credentialStrength": "strong"
+               |      }, {
+               |      "confidenceLevel": $confidenceLevel
+               |    }
+               |    ],
+               |  "retrieve": [
+               |    "nino",
+               |    "confidenceLevel",
+               |    "allEnrolments"
+               |  ]
+               |}
+             """.stripMargin,
+            true,
+            false
+          )
+        )
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""
+                 |{
+                 |  "allEnrolments": [{
+                 |      "key": "IR-SA",
+                 |      "identifiers": [{
+                 |        "key": "UTR",
+                 |        "value": "$saUtr"
+                 |      }],
+                 |      "state": "${if (activeUtr) "Activated" else "Deactivated"}"
+                 |  },
+                 |  {
+                 |      "key": "HMRC-MTD-ID",
+                 |      "identifiers": [{
+                 |        "key": "MTDITID",
+                 |        "value": "12345654321"
+                 |      }],
+                 |      "state": "${if (activeUtr) "Activated" else "Deactivated"}"
+                 |  }],
+                 |  "confidenceLevel": $confidenceLevel,
+                 |  "nino":"AA000003D"
+                 |}
+
+               """.stripMargin)
+        )
+    )
+
+  def grantAccessMTDOnlyEnrolments(
+    confidenceLevel: Int = 200,
+    activeUtr: Boolean = true
+  ): StubMapping =
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .atPriority(0)
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "authorise": [
+               |  {
+               |      "credentialStrength": "strong"
+               |      }, {
+               |      "confidenceLevel": $confidenceLevel
+               |    }
+               |    ],
+               |  "retrieve": [
+               |    "nino",
+               |    "confidenceLevel",
+               |    "allEnrolments"
+               |  ]
+               |}
+             """.stripMargin,
+            true,
+            false
+          )
+        )
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""
+                 |{
+                 |  "allEnrolments": [
+                 |  {"key": "HMRC-MTD-ID",
+                 |      "identifiers": [{
+                 |        "key": "MTDITID",
+                 |        "value": "12345654321"
+                 |      }],
+                 |      "state": "${if (activeUtr) "Activated" else "Deactivated"}"
+                 |  }],
+                 |  "confidenceLevel": $confidenceLevel,
+                 |  "nino":"AA000003D"
+                 |}
+                 |""".stripMargin)
         )
     )
 
