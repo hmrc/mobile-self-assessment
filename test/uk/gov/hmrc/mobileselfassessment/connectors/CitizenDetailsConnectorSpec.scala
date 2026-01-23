@@ -95,7 +95,7 @@ class CitizenDetailsConnectorSpec extends AnyWordSpec with MockitoSugar with Sca
       }
 
     }
-    "throw Not exception, if citizen details api throw nit found exception" in {
+    "throw Not exception, if citizen details api throw not found exception" in {
       when(mockHttp.get(any[URL])(any[HeaderCarrier])).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.execute[CidPerson](using any, any)).thenReturn(Future.failed(NotFoundException("UTR not found")))
       val result = connector.getUtrByNino(nino)
