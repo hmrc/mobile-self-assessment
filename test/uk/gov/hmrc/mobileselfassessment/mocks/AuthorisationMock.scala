@@ -27,13 +27,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthorisationMock extends MockFactory { this: TestSuite =>
 
-  type GrantAccess = ConfidenceLevel ~ Enrolments
+  type GrantAccess = Option[String] ~ ConfidenceLevel ~ Enrolments
 
   def mockAuthorisationGrantAccess(response: GrantAccess)(implicit authConnector: AuthConnector) =
     (authConnector
       .authorise(_: Predicate, _: Retrieval[GrantAccess])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *)
       .returning(Future successful response)
+  
 
   def mockAuthorisationWithNoActiveSessionException()(implicit authConnector: AuthConnector) =
     (authConnector

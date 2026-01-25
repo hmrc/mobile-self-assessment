@@ -40,7 +40,6 @@ import play.api.test.Helpers.defaultAwaitTimeout
 import uk.gov.hmrc.mobileselfassessment.hip.{HipError, HipErrorDetails, HipExceptions, HipResponseError}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 class HipConnectorSpec extends AnyWordSpec with MockitoSugar with ScalaFutures with GuiceOneAppPerSuite with MobileSelfAssessmentTestData {
 
@@ -48,6 +47,8 @@ class HipConnectorSpec extends AnyWordSpec with MockitoSugar with ScalaFutures w
     ConfigFactory.parseString(s"""
          |microservice.services.hip.host=localhostHip
          |microservice.services.hip.port=9718
+         |microservice.services.citizen-details.host=localhost
+         |microservice.services.citizen-details.port=9337
          |microservice.services.hip.clientId=clientId
          |microservice.services.hip.clientSecret=clientSecret
          |microservice.services.cesa.host=localhostCesa

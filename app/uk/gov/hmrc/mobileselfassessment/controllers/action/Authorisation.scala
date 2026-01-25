@@ -24,6 +24,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.*
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, ConfidenceLevel, CredentialStrength, Enrolments}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mobileselfassessment.connectors.CitizenDetailsConnector
 import uk.gov.hmrc.mobileselfassessment.controllers.*
 import uk.gov.hmrc.mobileselfassessment.model.SaUtr
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -32,6 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait Authorisation extends Results with AuthorisedFunctions {
 
+  val cdConnector: CitizenDetailsConnector
+  val enableITSA: Boolean
   val confLevel: Int
   val logger: Logger = Logger(this.getClass)
 
@@ -44,12 +47,23 @@ trait Authorisation extends Results with AuthorisedFunctions {
     requestedUtr: SaUtr
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
     authorised(CredentialStrength("strong") and ConfidenceLevel.L200)
-      .retrieve(confidenceLevel and allEnrolments) { case foundConfidenceLevel ~ enrolments =>
-        val activatedUtr = getActivatedSaUtr(enrolments)
-        if (activatedUtr.isEmpty) throw utrNotFoundOnAccount
-        if (!activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) throw failedToMatchUtr
+      .retrieve(nino and confidenceLevel and allEnrolments) { case foundNino ~ foundConfidenceLevel ~ enrolments =>
         if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
-        else Future successful true
+        else {
+          val activatedUtr = getActivatedSaUtr(enrolments)
+          val isMTDEnrolmentPresent = if (enableITSA) checkMtdEnrolent(enrolments) else None
+          if (activatedUtr.isEmpty) {
+            if (isMTDEnrolmentPresent.contains(true)) {
+              cdConnector.getUtrByNino(foundNino.getOrElse("")).map {
+                case Some(utr) if utr.utr.equals(requestedUtr.utr)  => true
+                case Some(utr) if !utr.utr.equals(requestedUtr.utr) => throw failedToMatchUtr
+                case _                                              => throw utrNotFoundOnAccount
+              }
+            } else throw utrNotFoundOnAccount
+          } else {
+            if (activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) Future successful true else throw failedToMatchUtr
+          }
+        }
       }
 
   def invokeAuthBlock[A](
@@ -58,7 +72,6 @@ trait Authorisation extends Results with AuthorisedFunctions {
     saUtr: SaUtr
   )(implicit ec: ExecutionContext): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
-
     grantAccess(saUtr)
       .flatMap { _ =>
         block(request)
@@ -89,6 +102,15 @@ trait Authorisation extends Results with AuthorisedFunctions {
         enrolment.identifiers
           .find(id => id.key == "UTR" && enrolment.state == "Activated")
           .map(key => SaUtr(key.value))
+      }
+
+  private def checkMtdEnrolent(enrolments: Enrolments): Option[Boolean] =
+    enrolments.enrolments
+      .find(_.key == "HMRC-MTD-ID")
+      .flatMap { enrolment =>
+        enrolment.identifiers
+          .find(id => id.key.toUpperCase == "MTDITID" && enrolment.state == "Activated")
+          .map(key => true)
       }
 }
 

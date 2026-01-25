@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 object ShutteringStub {
 
-  def stubForShutteringDisabled: StubMapping =
+  def stubForShutteringDisabled: StubMapping = {
     stubFor(
       get(
         urlEqualTo(
@@ -23,6 +23,7 @@ object ShutteringStub {
           """.stripMargin)
         )
     )
+  }
 
   def stubForShutteringEnabled: StubMapping =
     stubFor(

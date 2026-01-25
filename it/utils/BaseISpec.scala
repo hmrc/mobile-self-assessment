@@ -52,6 +52,7 @@ abstract class BaseISpec
       "auditing.enabled"                             -> false,
       "microservice.services.auth.port"              -> wireMockPort,
       "microservice.services.cesa.port"              -> wireMockPort,
+      "microservice.services.citizen-details.port"   -> wireMockPort,
       "microservice.services.mobile-shuttering.port" -> wireMockPort,
       "enableITSA"                                   -> false,
       "selfAssessmentCessationUrl"                   -> "/cessation-mobile"
