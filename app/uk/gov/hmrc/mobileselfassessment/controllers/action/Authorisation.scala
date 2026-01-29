@@ -51,7 +51,8 @@ trait Authorisation extends Results with AuthorisedFunctions {
         if (confLevel > foundConfidenceLevel.level) throw lowConfidenceLevel
         else {
           val activatedUtr = getActivatedSaUtr(enrolments)
-          val isMTDEnrolmentPresent = if (enableITSA) checkMtdEnrolent(enrolments) else None
+          val isMTDEnrolmentPresent = checkMtdEnrolent(enrolments)
+          logger.info(s"isMTDEnrolmentPresent:: $isMTDEnrolmentPresent")
           if (activatedUtr.isEmpty) {
             if (isMTDEnrolmentPresent.contains(true)) {
               cdConnector.getUtrByNino(foundNino.getOrElse("")).map {
@@ -59,7 +60,10 @@ trait Authorisation extends Results with AuthorisedFunctions {
                 case Some(utr) if !utr.utr.equals(requestedUtr.utr) => throw failedToMatchUtr
                 case _                                              => throw utrNotFoundOnAccount
               }
-            } else throw utrNotFoundOnAccount
+            } else {
+              logger.info(s"MTD enrolment not present")
+              throw utrNotFoundOnAccount
+            }
           } else {
             if (activatedUtr.getOrElse(SaUtr("")).utr.equals(requestedUtr.utr)) Future successful true else throw failedToMatchUtr
           }
