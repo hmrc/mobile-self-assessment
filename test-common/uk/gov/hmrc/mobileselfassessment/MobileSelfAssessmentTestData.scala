@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.mobileselfassessment
 
+import net.bytebuddy.asm.Advice.AssignReturned.ExceptionHandler.Factory.Enabled
 import play.api.libs.json.Json
+import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAmount, CesaFutureLiability}
 import uk.gov.hmrc.mobileselfassessment.hip.{HipError, HipErrorDetails, HipResponseError}
-import uk.gov.hmrc.mobileselfassessment.model.{BalanceDetails, ChargeDetails, HipResponse, SaUtr}
+import uk.gov.hmrc.mobileselfassessment.model.*
 
 import java.time.LocalDate
 
@@ -52,14 +54,51 @@ trait MobileSelfAssessmentTestData {
     )
   )
 
-  def getRootLinksResponse(utr: SaUtr): String =
-    s"""
-       |{
-       |"links": {
-       |  "accountSummary": "/self-assessment/individual/$utr/account-summary"
-       |  }
-       |}
-       |""".stripMargin
+  def customFutureLiabilities(liabilityAmount: BigDecimal): Seq[CesaFutureLiability] =
+    Seq(
+      CesaFutureLiability(
+        statutoryDueDate     = org.joda.time.LocalDate.parse("2020-01-31"),
+        taxYearEndDate       = org.joda.time.LocalDate.parse("2020-03-31"),
+        partnershipReference = None,
+        amount               = CesaAmount(200, "GBP"),
+        descriptionCode      = IN1
+      ),
+      CesaFutureLiability(
+        statutoryDueDate     = org.joda.time.LocalDate.parse("2020-02-28"),
+        taxYearEndDate       = org.joda.time.LocalDate.parse("2020-03-31"),
+        partnershipReference = None,
+        amount               = CesaAmount(5200, "GBP"),
+        descriptionCode      = IN2
+      ),
+      CesaFutureLiability(
+        statutoryDueDate     = org.joda.time.LocalDate.parse("2020-01-31"),
+        taxYearEndDate       = org.joda.time.LocalDate.parse("2020-03-31"),
+        partnershipReference = None,
+        amount               = CesaAmount(liabilityAmount, "GBP"),
+        descriptionCode      = BCD
+      )
+    )
+
+  def getRootLinksResponse(utr: SaUtr, enabledDWIT: Boolean = false): String = {
+    if (enabledDWIT) {
+      s"""
+         |{
+         |"links": {
+         |  "accountSummary": "/ods-sa/v1/self-assessment/individual/$utr/account-summary"
+         |  }
+         |}
+         |""".stripMargin
+    } else {
+      s"""
+         |{
+         |"links": {
+         |  "accountSummary": "/self-assessment/individual/$utr/account-summary"
+         |  }
+         |}
+         |""".stripMargin
+    }
+
+  }
 
   def getRootLinksNoAccountSummaryResponse(utr: SaUtr): String =
     s"""

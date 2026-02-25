@@ -17,51 +17,62 @@
 package uk.gov.hmrc.mobileselfassessment.services
 
 import org.joda.time.LocalDate
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalamock.handlers.{CallHandler2, CallHandler3}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.cesa.{CesaAccountSummary, CesaAmount, CesaFutureLiability, CesaRootLinks}
 import uk.gov.hmrc.mobileselfassessment.connectors.{CesaIndividualsConnector, HipConnector}
+import uk.gov.hmrc.mobileselfassessment.mocks.BaseMock
 import uk.gov.hmrc.mobileselfassessment.model.{BCD, GetLiabilitiesResponse, IN1, IN2, SaUtr}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with Matchers with MockFactory with FutureAwaits with DefaultAwaitTimeout {
-
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+class SaServiceSpec
+    extends AnyWordSpec
+    with MobileSelfAssessmentTestData
+    with Matchers
+    with MockitoSugar
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with BaseMock {
 
   implicit val mockCesaConnector: CesaIndividualsConnector = mock[CesaIndividualsConnector]
   private val service = new SaService(mockCesaConnector)
 
   def mockGetRootLinks(
     response: Future[CesaRootLinks]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler2[SaUtr, HeaderCarrier, Future[CesaRootLinks]] =
-    (cesaConnector
-      .getRootLinks(_: SaUtr)(_: HeaderCarrier))
-      .expects(*, *)
-      .returning(response)
+  )(implicit cesaConnector: CesaIndividualsConnector) =
+    when(
+      cesaConnector
+        .getRootLinks(any())(any())
+    )
+      .thenReturn(response)
 
   def mockGetOptionalCesaAccountSummary(
     response: Option[CesaAccountSummary]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler3[SaUtr, String, HeaderCarrier, Future[Option[CesaAccountSummary]]] =
-    (cesaConnector
-      .getOptionalCesaAccountSummary(_: SaUtr, _: String)(_: HeaderCarrier))
-      .expects(*, *, *)
-      .returning(Future successful response)
+  )(implicit cesaConnector: CesaIndividualsConnector) =
+    when(
+      cesaConnector
+        .getOptionalCesaAccountSummary(any(), any())(any())
+    )
+      .thenReturn(Future successful response)
 
   def mockGetFutureLiabilities(
     response: Seq[CesaFutureLiability]
-  )(implicit cesaConnector: CesaIndividualsConnector): CallHandler2[SaUtr, HeaderCarrier, Future[Seq[CesaFutureLiability]]] =
-    (cesaConnector
-      .futureLiabilities(_: SaUtr)(_: HeaderCarrier))
-      .expects(*, *)
-      .returning(Future successful response)
+  )(implicit cesaConnector: CesaIndividualsConnector) =
+    when(
+      cesaConnector
+        .futureLiabilities(any())(any())
+    )
+      .thenReturn(Future successful response)
 
   def getTaxYear: Int = {
     val now = java.time.LocalDate.now()
@@ -80,31 +91,7 @@ class SaServiceSpec extends AnyWordSpec with MobileSelfAssessmentTestData with M
     amountOwed: BigDecimal
   ): CesaAccountSummary =
     CesaAccountSummary(totalAmountDueToHmrc = CesaAmount(amountDue, "GBP"), amountHmrcOwe = CesaAmount(amountOwed, "GBP"))
-
-  private def customFutureLiabilities(liabilityAmount: BigDecimal): Seq[CesaFutureLiability] =
-    Seq(
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-01-31"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(200, "GBP"),
-        descriptionCode      = IN1
-      ),
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-02-28"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(5200, "GBP"),
-        descriptionCode      = IN2
-      ),
-      CesaFutureLiability(
-        statutoryDueDate     = LocalDate.parse("2020-01-31"),
-        taxYearEndDate       = LocalDate.parse("2020-03-31"),
-        partnershipReference = None,
-        amount               = CesaAmount(liabilityAmount, "GBP"),
-        descriptionCode      = BCD
-      )
-    )
+  
 
   "getLiabilitiesResponse" should {
     "return a full liabilities response" in {

@@ -39,6 +39,7 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
     bindConfigBoolean("enableITSA")
+    bindConfigBoolean("enableDWIT")
     bindConfigString("selfAssessmentCessationUrl", "selfAssessmentCessationUrl")
   }
 
@@ -53,8 +54,8 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
       .to(configuration.underlying.getBoolean(path))
 
   private def bindConfigString(
-                                name: String,
-                                path: String
-                              ): Unit =
+    name: String,
+    path: String
+  ): Unit =
     bindConstant().annotatedWith(named(name)).to(configuration.underlying.getString(path))
 }
