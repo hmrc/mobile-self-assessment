@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.mobileselfassessment.connectors
 
-import com.typesafe.config.ConfigFactory
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Configuration
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
 import uk.gov.hmrc.mobileselfassessment.model.HipResponse
@@ -38,27 +36,19 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import play.api.test.Helpers.await
 import play.api.test.Helpers.defaultAwaitTimeout
 import uk.gov.hmrc.mobileselfassessment.hip.{HipError, HipErrorDetails, HipExceptions, HipResponseError}
+import uk.gov.hmrc.mobileselfassessment.mocks.BaseMock
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class HipConnectorSpec extends AnyWordSpec with MockitoSugar with ScalaFutures with GuiceOneAppPerSuite with MobileSelfAssessmentTestData {
-
-  val config = Configuration(
-    ConfigFactory.parseString(s"""
-         |microservice.services.hip.host=localhostHip
-         |microservice.services.hip.port=9718
-         |microservice.services.citizen-details.host=localhost
-         |microservice.services.citizen-details.port=9337
-         |microservice.services.hip.clientId=clientId
-         |microservice.services.hip.clientSecret=clientSecret
-         |microservice.services.cesa.host=localhostCesa
-         |microservice.services.cesa.port=9719
-         |""".stripMargin)
-  )
+class HipConnectorSpec
+    extends AnyWordSpec
+    with MockitoSugar
+    with ScalaFutures
+    with GuiceOneAppPerSuite
+    with MobileSelfAssessmentTestData
+    with BaseMock {
 
   val appConfig = new AppConfig(config, new ServicesConfig(config))
-  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val mockHttp: HttpClientV2 = mock[HttpClientV2]
   val mockRequestBuilder = mock[RequestBuilder]

@@ -34,28 +34,21 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.test.Helpers.defaultAwaitTimeout
 import uk.gov.hmrc.domain.{Nino, SaUtr, TaxIds}
+import uk.gov.hmrc.mobileselfassessment.mocks.BaseMock
 import uk.gov.hmrc.mobileselfassessment.model.CidPerson
 
 import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
-class CitizenDetailsConnectorSpec extends AnyWordSpec with MockitoSugar with ScalaFutures with GuiceOneAppPerSuite with MobileSelfAssessmentTestData {
+class CitizenDetailsConnectorSpec
+    extends AnyWordSpec
+    with MockitoSugar
+    with ScalaFutures
+    with GuiceOneAppPerSuite
+    with MobileSelfAssessmentTestData
+    with BaseMock {
 
-  val config = Configuration(
-    ConfigFactory.parseString(s"""
-         |microservice.services.hip.host=localhost
-         |microservice.services.hip.port=9718
-         |microservice.services.citizen-details.host=localhost
-         |microservice.services.citizen-details.port=9337
-         |microservice.services.hip.clientId=clientId
-         |microservice.services.hip.clientSecret=clientSecret
-         |microservice.services.cesa.host=localhostCesa
-         |microservice.services.cesa.port=9719
-         |""".stripMargin)
-  )
   val appConfig = new AppConfig(config, new ServicesConfig(config))
-  implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val mockHttp: HttpClientV2 = mock[HttpClientV2]
   val mockRequestBuilder = mock[RequestBuilder]
   val connector = new CitizenDetailsConnector(mockHttp, appConfig)

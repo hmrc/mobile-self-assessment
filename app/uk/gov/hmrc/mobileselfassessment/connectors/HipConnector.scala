@@ -34,6 +34,7 @@ import java.time.{LocalDate, ZoneId}
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(implicit ec: ExecutionContext) extends Logging {
 
   lazy val serviceUrl: String = s"${appConfig.hipUrl}/as"

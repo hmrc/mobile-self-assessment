@@ -24,6 +24,7 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.connectors.HipConnector
+import uk.gov.hmrc.mobileselfassessment.mocks.BaseMock
 import uk.gov.hmrc.mobileselfassessment.model.{BCD, ChargeDetails, GetLiabilitiesResponse, HipResponse, IN1, IN2, SaUtr}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -36,10 +37,8 @@ class SaHipServiceSpec
     with MobileSelfAssessmentTestData
     with Matchers
     with FutureAwaits
-    with DefaultAwaitTimeout {
-
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+    with DefaultAwaitTimeout
+    with BaseMock {
 
   private val mockHipConnector: HipConnector = mock[HipConnector]
   private val service = new SaHipService(mockHipConnector)

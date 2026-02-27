@@ -16,6 +16,7 @@
 
 package utils
 
+import eu.timepit.refined.auto.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.WsScalaTestClient
@@ -26,11 +27,10 @@ import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileselfassessment.MobileSelfAssessmentTestData
 import uk.gov.hmrc.mobileselfassessment.model.types.JourneyId
-import eu.timepit.refined.auto.*
 
 import scala.concurrent.Future
 
-abstract class BaseISpec
+abstract class BaseHipCesaISpec
     extends AnyWordSpecLike
     with Matchers
     with WsScalaTestClient
@@ -56,6 +56,7 @@ abstract class BaseISpec
       "microservice.services.citizen-details.port"   -> wireMockPort,
       "microservice.services.mobile-shuttering.port" -> wireMockPort,
       "enableITSA"                                   -> false,
+      "enableDWIT"                                   -> true,
       "selfAssessmentCessationUrl"                   -> "/cessation-mobile"
     )
 

@@ -8,68 +8,140 @@ import java.time.{LocalDate, ZoneId}
 
 object CesaStub {
 
+  val suffix = "/ods-sa/v1"
+
   def stubForGetRootLinks(
     utr: SaUtr,
-    response: String
-  ): StubMapping =
-    stubFor(
-      get(
-        urlEqualTo(
-          s"/self-assessment/individual/$utr"
+    response: String,
+    enableDWIT: Boolean = false
+  ): StubMapping = {
+    println(" enable dwit is ::" + enableDWIT)
+    if (enableDWIT) {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"$suffix/self-assessment/individual/$utr"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
         )
-      ).willReturn(
-        aResponse()
-          .withStatus(200)
-          .withBody(response)
       )
-    )
+
+    } else {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"/self-assessment/individual/$utr"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
+        )
+      )
+
+    }
+
+  }
 
   def stubForGetRootLinksFailure(
     utr: SaUtr,
-    status: Int
-  ): StubMapping =
-    stubFor(
-      get(
-        urlEqualTo(
-          s"/self-assessment/individual/$utr"
+    status: Int,
+    enableDWIT: Boolean = false
+  ): StubMapping = {
+    if (enableDWIT) {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"$suffix/self-assessment/individual/$utr"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(status)
         )
-      ).willReturn(
-        aResponse()
-          .withStatus(status)
       )
-    )
+    } else {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"/self-assessment/individual/$utr"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(status)
+        )
+      )
+    }
+
+  }
 
   def stubForGetAccountSummary(
     utr: SaUtr,
-    response: String
-  ): StubMapping =
-    stubFor(
-      get(
-        urlEqualTo(
-          s"/self-assessment/individual/$utr/account-summary"
+    response: String,
+    enableDWIT: Boolean = false
+  ): StubMapping = {
+    if (enableDWIT) {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"$suffix/self-assessment/individual/$utr/account-summary"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
         )
-      ).willReturn(
-        aResponse()
-          .withStatus(200)
-          .withBody(response)
       )
-    )
+    } else {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"/self-assessment/individual/$utr/account-summary"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
+        )
+      )
+    }
+
+  }
 
   def stubForGetFutureLiabilities(
     utr: SaUtr,
-    response: String
-  ): StubMapping =
-    stubFor(
-      get(
-        urlEqualTo(
-          s"/self-assessment/individual/$utr/account/futureliabilities"
+    response: String,
+    enableDWIT: Boolean = false
+  ): StubMapping = {
+    if (enableDWIT) {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"$suffix/self-assessment/individual/$utr/account/futureliabilities"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
         )
-      ).willReturn(
-        aResponse()
-          .withStatus(200)
-          .withBody(response)
       )
-    )
+    } else {
+      stubFor(
+        get(
+          urlEqualTo(
+            s"/self-assessment/individual/$utr/account/futureliabilities"
+          )
+        ).willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(response)
+        )
+      )
+    }
+
+  }
 
   def stubForGetFutureLiabilitiesViaHip(
     utr: SaUtr,
@@ -91,9 +163,9 @@ object CesaStub {
   }
 
   def stubForGetFutureLiabilitiesViaHipError(
-                                         utr: SaUtr,
-                                         status: Int
-                                       ): StubMapping = {
+    utr: SaUtr,
+    status: Int
+  ): StubMapping = {
     val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
     stubFor(
       get(
@@ -103,7 +175,6 @@ object CesaStub {
       ).willReturn(
         aResponse()
           .withStatus(status)
-          
       )
     )
   }
