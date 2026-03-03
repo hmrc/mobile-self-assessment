@@ -40,9 +40,14 @@ class CesaIndividualsConnector @Inject() (
 )(implicit ec: ExecutionContext)
     extends Logging {
 
-  lazy val serviceUrl: String = appConfig.cesaBaseUrl
+  lazy val serviceCesaUrl: String = appConfig.cesaBaseUrl
+  lazy val serviceHipCesaUrl: String = appConfig.hipCesaBaseurl
 
-  def url(path: String) = s"$serviceUrl$path"
+  def url(path: String) = if (enableDWIT) {
+    s"$serviceHipCesaUrl$path"
+  } else {
+    s"$serviceCesaUrl$path"
+  }
 
   val correlationId = UUID.randomUUID.toString
 
