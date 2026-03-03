@@ -15,7 +15,6 @@ object CesaStub {
     response: String,
     enableDWIT: Boolean = false
   ): StubMapping = {
-    println(" enable dwit is ::" + enableDWIT)
     if (enableDWIT) {
       stubFor(
         get(
