@@ -46,7 +46,7 @@ class SandboxLiabilitiesControllerSpec extends BaseSpec {
       val response: GetLiabilitiesResponse = contentAsJson(result).as[GetLiabilitiesResponse]
       response.accountSummary.taxToPayStatus.toString              shouldBe "OnlyBill"
       response.accountSummary.totalAmountDueToHmrc.amount          shouldBe 0
-      response.accountSummary.totalAmountDueToHmrc.requiresPayment shouldBe true
+      response.accountSummary.totalAmountDueToHmrc.requiresPayment shouldBe false
       response.accountSummary.amountHmrcOwe                        shouldBe 0
       response.accountSummary.nextBill.get.dueDate.toString        shouldBe LocalDate.now().plusMonths(6).toString
       response.accountSummary.nextBill.get.daysRemaining.toString shouldBe ChronoUnit.DAYS

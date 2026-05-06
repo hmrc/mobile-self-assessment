@@ -3,7 +3,7 @@
     "taxToPayStatus": "OnlyBill",
     "totalAmountDueToHmrc": {
       "amount": 0,
-      "requiresPayment": true
+      "requiresPayment": false
     },
     "amountHmrcOwe": 0,
     "totalFutureLiability": 2000,
