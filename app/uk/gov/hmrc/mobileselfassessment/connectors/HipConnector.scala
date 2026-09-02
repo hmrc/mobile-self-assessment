@@ -60,7 +60,7 @@ class HipConnector @Inject() (val http: HttpClientV2, appConfig: AppConfig)(impl
     val currentDate = LocalDate.now(ZoneId.of("Europe/London"))
 
     val queryParameters = Seq(
-      "dateFrom" -> currentDate.minusYears(7).toString,
+      "dateFrom" -> currentDate.minusYears(6).toString,
       "dateTo"   -> currentDate.toString
     )
 
