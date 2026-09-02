@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.mobileselfassessment.controllers.api.ApiAccess
 @import play.api.libs.json.Json
 
-@(apiAccess: ApiAccess)
+@(apiAccess: String)
 {
   "api":{
     "name":"Mobile Self Assessment",

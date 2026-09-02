@@ -34,7 +34,7 @@ class GuiceModule(environment: Environment, configuration: Configuration) extend
     bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
     bindConfigInt("controllers.confidenceLevel")
-    bind(classOf[ApiAccess]).toInstance(ApiAccess("CONTROLLED"))
+    bind(classOf[String]).toInstance("CONTROLLED")
     bind(classOf[String])
       .annotatedWith(named("mobile-shuttering"))
       .toInstance(servicesConfig.baseUrl("mobile-shuttering"))
