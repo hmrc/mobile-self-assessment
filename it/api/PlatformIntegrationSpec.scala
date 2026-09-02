@@ -46,7 +46,7 @@ class PlatformIntegrationSpec extends BaseISpec with Eventually with PlayRunners
       (versionJson \ "version").as[String] shouldBe "1.0"
 
       val accessDetails: JsValue = (versionJson \\ "access").head
-      (accessDetails \ "type").as[String] shouldBe "PRIVATE"
+      (accessDetails \ "type").as[String] shouldBe "CONTROLLED"
     }
 
     "provide YAML conf endpoint" in {
