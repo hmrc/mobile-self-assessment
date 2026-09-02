@@ -151,7 +151,7 @@ object CesaStub {
     stubFor(
       get(
         urlEqualTo(
-          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(7).toString}&dateTo=${currentDate.toString}"
+          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(6).toString}&dateTo=${currentDate.toString}"
         )
       ).willReturn(
         aResponse()
@@ -169,7 +169,7 @@ object CesaStub {
     stubFor(
       get(
         urlEqualTo(
-          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(7).toString}&dateTo=${currentDate.toString}"
+          s"/as/self-assessment/account/$utr/liability-details?dateFrom=${currentDate.minusYears(6).toString}&dateTo=${currentDate.toString}"
         )
       ).willReturn(
         aResponse()
